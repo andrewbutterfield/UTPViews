@@ -1,0 +1,159 @@
+\section{Commands}
+
+\def\Atom{\textsf{Atom}}
+\def\cskip{\texttt{skip}}
+\def\cseq{\mathbin{;\!;}}
+\def\semlbr{[\![}
+\def\semrbr{]\!]}
+\def\sem#1{\semlbr{#1}\semrbr}
+\def\fun{\rightarrow}
+\def\defs{\widehat=}
+\def\cond#1{\mathrel{\lhd{#1}\rhd}}
+\def\Skip{I\!I}
+\def\W{\mathbf{W}}
+
+We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
+
+\subsection{Syntax}
+
+\begin{eqnarray*}
+   a &\in& \Atom
+\\ C &::=& a \mid \cskip \mid C \cseq C \mid C+C \mid C \parallel C \mid C^*
+\\ g &:& Gen
+\\ \ell &:& Lbl
+\\ G &::=&  g \mid G_{:} \mid G_1 \mid G_2
+\\ L &::=& \ell_G
+\end{eqnarray*}
+
+\subsection{Domains} 
+\begin{eqnarray*}
+   s &\in& \mathcal S
+\\ \sem{-} &:& \Atom \fun \mathcal S \fun \mathcal P(\mathcal S)
+\\ S \ominus (T|V) 
+   &\defs& (S \setminus T) \cup V
+\end{eqnarray*}
+
+\subsection{Alphabet}
+
+\begin{eqnarray*}
+   s, s' &:& \mathcal S
+\\ ls, ls' &:& \mathcal P (Lbl)
+\\ g &:& Gen
+\\ in, out &:& Lbl
+\end{eqnarray*} 
+\subsection{``Standard'' UTP Constructs}
+
+\begin{eqnarray*}
+   P \cond c Q
+   &\defs&
+   c \land P \lor \lnot c \land Q
+\\ P ; Q 
+   &\defs&
+   \exists s_m,ls_m \bullet P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
+\\ c * P 
+   &=&
+   P ; c * P \cond c \Skip
+\end{eqnarray*}
+
+\subsection{Simple Semantics}
+
+This follows the TASE2016 Submission style.
+
+\begin{eqnarray*}
+   a 
+   &\defs& 
+   ls(in) \land s' \in \sem a s \land ls'=ls \ominus (in|out)
+\\ \cskip 
+   &\defs&
+   ls(in) \land s' = s \land ls'=ls \ominus (in|out)
+\\ C \cseq D
+   &\defs&
+   C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in]
+\\ C + D
+   &\defs&
+   ls(in)
+   \land s' = s
+   \land ls' \in \{ ls \ominus (in|\ell_{g1}), ls \ominus (in|\ell_{g2})\}
+\\ &\lor&
+   C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]
+\\ C \parallel D
+   &\defs&
+   ls(in)
+   \land s' = s
+   \land ls'= ls \ominus (in|\ell_{g1},\ell_{g2})
+\\ &\lor&
+   C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out] 
+   \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ &\lor&
+   ls(in)
+   \land s' = s
+   \land ls'= ls \ominus (\ell_{g1:},\ell_{g2:}|out)
+\\ C^*
+   &\defs&
+   ls(in)
+   \land s' = s
+   \land ls' \in \{ ls \ominus (in|out), ls \ominus (in|\ell_g)\}
+\\ &\lor&
+   C[g_{:},\ell_g,in/g,in,out] 
+\\ run(C)
+   &\defs&
+   ( \lnot ls(\ell_{g:})
+     *
+     C[g_{::},\ell_g,\ell_{g:}/g,in,out]
+   )[\ell_g/ls]
+\end{eqnarray*}
+
+Function $run$ may be over-engineered---the following might be just as good:
+\begin{eqnarray*}
+   run(C)
+   &\defs&
+   ( \lnot ls(out) * C)[in/ls]
+\end{eqnarray*}
+
+\newpage
+\subsection{Wheels-within-Wheels}
+
+This is the new all-shiny fully compositional form%
+\footnote{We hope !}%
+.
+
+\begin{eqnarray*}
+   \W(C)
+   &\defs&
+   \lnot ls(out) * C
+\\ a
+   &\defs&
+   \W(ls(in) \land s' \in \sem a s \land ls'=ls \ominus (in|out))
+\\ \cskip
+   &\defs&
+   \W(ls(in) \land s' = s \land ls'=ls \ominus (in|out))
+\\ C \cseq D
+   &\defs&
+   \W(C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in])
+\\ C + D
+   &\defs&
+   \W(~ls(in)
+   \land s' = s
+   \land ls' \in \{ ls \ominus (in|\ell_{g1}), ls \ominus (in|\ell_{g2})\}
+\\ &\lor&
+   C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]~)
+\\ C \parallel D
+   &\defs&
+   \W(~ls(in)
+   \land s' = s
+   \land ls'= ls \ominus (in|\ell_{g1},\ell_{g2})
+\\ &\lor&
+   C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ &\lor&
+   ls(in)
+   \land s' = s
+   \land ls'= ls \ominus (\ell_{g1:},\ell_{g2:}|out)~)
+\\ C^*
+   &\defs&
+   \W(~ls(in)
+   \land s' = s
+   \land ls' \in \{ ls \ominus (in|out), ls \ominus (in|\ell_g)\}
+\\ &\lor&
+   C[g_{:},\ell_g,in/g,in,out]~)
+\end{eqnarray*}
