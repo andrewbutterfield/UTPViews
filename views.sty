@@ -1,0 +1,25 @@
+\def\setof#1{\{#1\}}
+
+\def\Atom{\textsf{Atom}}
+\def\cskip{\texttt{skip}}
+\def\cseq{\mathbin{;\!;}}
+\def\semlbr{[\![}
+\def\semrbr{]\!]}
+\def\sem#1{\semlbr{#1}\semrbr}
+\def\fun{\rightarrow}
+\def\defs{\widehat=}
+\def\cond#1{\mathrel{\lhd{#1}\rhd}}
+\def\Skip{I\!I}
+\def\W{\mathbf{W}}
+
+% semantic macros
+\def\lexc#1#2{ls\ominus(#1|#2)}
+\def\lupd#1#2{ls'=\lexc{#1}{#2}}
+\def\ss{s'=s}
+\def\atomdo#1{s' \in \sem{#1}s}
+\def\ado#1{\lfloor#1\rfloor}
+
+% proof/calculation stuff
+\def\say#1{\textrm{``#1''}}
+\def\EQ#1{\\&=&\say{#1}}
+\def\EOLC#1{\textrm{ --- ``#1''}}
