@@ -105,13 +105,29 @@ We introduce the following shorthands:
 \begin{eqnarray*}
    \ado a &\defs& \atomdo a
 \\ \LUPD S T &\defs& \lupd S T
+\\ \LUPD S {T \ndc V}
+   &\defs&
+   ls' \in \setof{\lexc S T, \lexc S V}
+\\ \LNDC{S_1}{T_1}{S_2}{T_2}
+   &\defs&
+   ls' \in \setof{\lexc{S_1}{T_1}, \lexc{S_2}{T_2}}
 \\ \LS S &\defs& ls(S)
 \\ \LSd S &\defs& ls'(S)
 \end{eqnarray*}
 
-The last three shorthands satisfy the following laws:
+These  shorthands satisfy the following laws:
 \begin{eqnarray*}
    \LUPD S T &=& \LUPD S T \land \LSd T
+\\ \LUPD S T &=& \LUPD S T \land \lnot\LSd S \land \LSd T, \textbf{ if }S \cap T = \emptyset
+\\ \LUPD S {T\ndc V} &=& \LUPD S T \land (\LSd T \lor \LSd V)
+\\ \LNDC{S_1}{T_1}{S_2}{T_2}
+   &=&
+   \LNDC{S_1}{T_1}{S_2}{T_2}  \land (\LSd{T_1} \lor \LSd{T_2})
+\\ &=& \textbf{ if }S_i \cap T_i = \emptyset \textbf{ then\ldots}
+\\&& \LNDC{S_1}{T_1}{S_2}{T_2}  
+\\&& {} \land (\lnot\LSd{S_1}\land\LSd{T_1} 
+            \lor 
+            \lnot\LSd{S_2}\land\LSd{T_2})
 \\ P \land \LSd T ; Q
    &=&
    P ; \LS T \land Q
@@ -122,45 +138,45 @@ The last three shorthands satisfy the following laws:
 
 The definitions:
 \begin{eqnarray*}
-   \W(C)
-   &\defs&
-   (\lnot ls(out) * C)
-\\ a
-   &\defs&
-   \W(ls(in) \land \ado a \land \lupd{in}{out})
-\\ &=& \W(~\LS{in} \land \ado a \land \LUPD{in}{out}~)
+   \W(C) &\defs& (\lnot ls(out) * C)
+\\
+\\ a &\defs&\W(~\LS{in} \land \ado a \land \LUPD{in}{out}~)
 \\ \cskip
    &\defs&
-   \W(ls(in) \land \ss \land \lupd{in}{out})
+   \W(~\LS{in} \land \ss \land \LUPD{in}{out}~)
+\\
 \\ C \cseq D
    &\defs&
    \W(C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in])
+\\
 \\ C + D
    &\defs&
-   \W(~ls(in)
+   \W(~\LS{in}
    \land \ss
-   \land ls' \in \{ \lexc{in,\ell_{g2}}{\ell_{g1}}
-                  , \lexc{in,\ell_{g1}}{\ell_{g2}}\}
-\\ &\lor&
+   \land \LNDC{in,\ell_{g2}}{\ell_{g1}}
+                {in,\ell_{g1}}{\ell_{g2}}
+\\ && \qquad {} \lor
    C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]~)
+\\
 \\ C \parallel D
    &\defs&
-   \W(~ls(in)
+   \W(~\LS{in}
    \land \ss
-   \land \lupd{in}{\ell_{g1},\ell_{g2}})
-\\ &\lor&
+   \land \LUPD{in}{\ell_{g1},\ell_{g2}}
+\\ && \qquad {}\lor
    C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
    \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\ &\lor&
-   ls(\ell_{g1:},\ell_{g2:})
+\\ && \qquad {}\lor
+   \LS{\ell_{g1:},\ell_{g2:}}
    \land \ss
-   \land \lupd{\ell_{g1:},\ell_{g2:}}{out}~)
+   \land \LUPD{\ell_{g1:},\ell_{g2:}}{out}~)
+\\
 \\ C^*
    &\defs&
-   \W(~ls(in)
+   \W(~\LS{in}
    \land \ss
-   \land ls' \in \{ \lexc{in}{out}), \lexc{in}{\ell_g}\}
-\\ &\lor&
+   \land \LUPD{in}{out \ndc \ell_g}
+\\ && \qquad {}\lor
    C[g_{:},\ell_g,in/g,in,out]~)
 \end{eqnarray*}
 
@@ -187,6 +203,17 @@ and suggest two important calcualtions:
 \\ S &\defs& c \land P \EOLC{Step}
 \\ L &\defs& S ; D \EOLC{Last}
 \\ T &\defs& D ; D \EOLC{Two-Step}
+\end{eqnarray*}
+
+We note some laws that apply to composition of $D$ with various
+things, given certain substitutions, and noting that for us,
+$D$ always has a specific instantiation:
+\begin{eqnarray*}
+   D &=& \LS{out} \land \Skip
+\\ D ; D &= & D
+\\ P \land \LSd{\ell} ; D[\ell/out] &=&  P \land \LSd{\ell}
+\\ P \land \lnot\LSd{\ell} ; D[\ell/out] &=&  false
+\\ D[\ell_1/out] ; D[\ell_2/out] &=& false,\textbf{ if }\ell_1/\neq\ell_2
 \end{eqnarray*}
 
 We now illustrate with the definition of $a$,
@@ -229,5 +256,57 @@ We see that all terms $S_a^i$ for $i \geq 2$ just vanish, so
 We overload sequential composition as follows:
 \begin{eqnarray*}
    \ado{a;b} &=& \ado a ; \ado b
+\end{eqnarray*}
+
+Now we look at $a \cseq b$:
+\begin{eqnarray*}
+   a \cseq b
+   &=& \W(a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])
+\\ &=& W_;
+\\ D &\defs& \D \EOLC{Independent of $a\cseq b$.}
+\\ S_; &=& a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in]
+\EQ{calc. of $a$ above}
+\\ && (D \lor L_a)[g_{:1},\ell_g/g,out]
+      \lor 
+      (D \lor L_b)[g_{:2},\ell_g/g,in]
+\\&=& \LS{\ell_g} \land \Skip
+      \lor \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
+\\&& \LS{out} \land \Skip
+      \lor \lnot \LS{out}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+\\ L_; &=& S_; ; D
+\\ &=& (~\LS{\ell_g} \land \Skip
+      \lor \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
+\\&& \LS{out} \land \Skip
+      \lor \lnot \LS{out}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}~)
+\\&& {} ; \LS{out} \land \Skip
+\\ &=& (\LS{\ell_g} \land \Skip ; \LS{out} \land \Skip) \lor{}
+\\ &&  (\lnot \LS{\ell_g}
+       \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
+       ; \LS{out} \land \Skip) \lor {}
+\\ &&  (\LS{out} \land \Skip ; \LS{out} \land \Skip )\lor {}
+\\ &&  (\lnot \LS{out}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+           ; \LS{out} \land \Skip )
+\\ &=& \LS{out} \land \Skip \lor 
+       \lnot \LS{out}
+       \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+\\ S_; ; S_; &=&
+     \LS{\ell_g} \land \Skip \lor{}
+\\&& \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
+\\&& \LS{out} \land \Skip \lor {}
+\\&&\lnot \LS{out}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+\\&& ;
+\\&&  \LS{\ell_g} \land \Skip \lor{}
+\\&& \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
+\\&& \LS{out} \land \Skip \lor {}
+\\&&\lnot \LS{out}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
 \end{eqnarray*}
 

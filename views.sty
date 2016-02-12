@@ -11,6 +11,7 @@
 \def\cond#1{\mathrel{\lhd{#1}\rhd}}
 \def\Skip{I\!I}
 \def\W{\mathbf{W}}
+\def\ndc{\sqcap}
 
 % semantic macros
 \def\lexc#1#2{ls\ominus(#1|#2)}
@@ -20,9 +21,18 @@
 
 % semantic shorthand macros
 \def\ado#1{\lfloor#1\rfloor}
-\def\LUPD#1#2{\langle#1\blacktriangleright#2\rangle}
-\def\LS#1{\langle?#1\rangle}
-\def\LSd#1{\langle?#1\rangle'}
+\def\llsbr{\langle\!|}
+\def\rlsbr{|\!\rangle}
+\def\LUPD#1#2{\llsbr#1\blacktriangleright#2\rlsbr}
+\def\LNDC#1#2#3#4{
+ \llsbr
+ #1\blacktriangleright#2
+ \ndc
+ #3\blacktriangleright#4
+ \rlsbr
+}
+\def\LS#1{\llsbr?#1\rlsbr}
+\def\LSd#1{\llsbr?#1\rlsbr'}
 \def\D{\LS{out} \land \Skip}
 
 % proof/calculation stuff
