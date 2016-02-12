@@ -1,17 +1,5 @@
 \section{Commands}
 
-\def\Atom{\textsf{Atom}}
-\def\cskip{\texttt{skip}}
-\def\cseq{\mathbin{;\!;}}
-\def\semlbr{[\![}
-\def\semrbr{]\!]}
-\def\sem#1{\semlbr{#1}\semrbr}
-\def\fun{\rightarrow}
-\def\defs{\widehat=}
-\def\cond#1{\mathrel{\lhd{#1}\rhd}}
-\def\Skip{I\!I}
-\def\W{\mathbf{W}}
-
 We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 
 \subsection{Syntax}
@@ -25,11 +13,11 @@ We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 \\ L &::=& \ell_G
 \end{eqnarray*}
 
-\subsection{Domains} 
+\subsection{Domains}
 \begin{eqnarray*}
    s &\in& \mathcal S
 \\ \sem{-} &:& \Atom \fun \mathcal S \fun \mathcal P(\mathcal S)
-\\ S \ominus (T|V) 
+\\ S \ominus (T|V)
    &\defs& (S \setminus T) \cup V
 \end{eqnarray*}
 
@@ -40,30 +28,31 @@ We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 \\ ls, ls' &:& \mathcal P (Lbl)
 \\ g &:& Gen
 \\ in, out &:& Lbl
-\end{eqnarray*} 
+\end{eqnarray*}
 \subsection{``Standard'' UTP Constructs}
 
 \begin{eqnarray*}
    P \cond c Q
    &\defs&
    c \land P \lor \lnot c \land Q
-\\ P ; Q 
+\\ P ; Q
    &\defs&
    \exists s_m,ls_m \bullet P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
-\\ c * P 
+\\ c * P
    &=&
    P ; c * P \cond c \Skip
 \end{eqnarray*}
 
 \subsection{Simple Semantics}
 
-This follows the TASE2016 Submission style.
+This follows the TASE2016 Submission style,
+with a simpler version of $run$.
 
 \begin{eqnarray*}
-   a 
-   &\defs& 
+   a
+   &\defs&
    ls(in) \land s' \in \sem a s \land ls'=ls \ominus (in|out)
-\\ \cskip 
+\\ \cskip
    &\defs&
    ls(in) \land s' = s \land ls'=ls \ominus (in|out)
 \\ C \cseq D
@@ -73,7 +62,8 @@ This follows the TASE2016 Submission style.
    &\defs&
    ls(in)
    \land s' = s
-   \land ls' \in \{ ls \ominus (in|\ell_{g1}), ls \ominus (in|\ell_{g2})\}
+   \land ls' \in \{ ls \ominus (in,\ell_{g2}|\ell_{g1})
+                  , ls \ominus (in,\ell_{g1}|\ell_{g2})\}
 \\ &\lor&
    C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]
 \\ C \parallel D
@@ -82,10 +72,10 @@ This follows the TASE2016 Submission style.
    \land s' = s
    \land ls'= ls \ominus (in|\ell_{g1},\ell_{g2})
 \\ &\lor&
-   C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out] 
+   C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
    \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
 \\ &\lor&
-   ls(in)
+   ls(\ell_{g1:},\ell_{g2:})
    \land s' = s
    \land ls'= ls \ominus (\ell_{g1:},\ell_{g2:}|out)
 \\ C^*
@@ -94,21 +84,12 @@ This follows the TASE2016 Submission style.
    \land s' = s
    \land ls' \in \{ ls \ominus (in|out), ls \ominus (in|\ell_g)\}
 \\ &\lor&
-   C[g_{:},\ell_g,in/g,in,out] 
+   C[g_{:},\ell_g,in/g,in,out]
 \\ run(C)
-   &\defs&
-   ( \lnot ls(\ell_{g:})
-     *
-     C[g_{::},\ell_g,\ell_{g:}/g,in,out]
-   )[\ell_g/ls]
-\end{eqnarray*}
-
-Function $run$ may be over-engineered---the following might be just as good:
-\begin{eqnarray*}
-   run(C)
    &\defs&
    ( \lnot ls(out) * C)[in/ls]
 \end{eqnarray*}
+
 
 \newpage
 \subsection{Wheels-within-Wheels}
@@ -117,43 +98,136 @@ This is the new all-shiny fully compositional form%
 \footnote{We hope !}%
 .
 
+
+\subsubsection{WwW Semantic Definitions}
+
+We introduce the following shorthands:
+\begin{eqnarray*}
+   \ado a &\defs& \atomdo a
+\\ \LUPD S T &\defs& \lupd S T
+\\ \LS S &\defs& ls(S)
+\\ \LSd S &\defs& ls'(S)
+\end{eqnarray*}
+
+The last three shorthands satisfy the following laws:
+\begin{eqnarray*}
+   \LUPD S T &=& \LUPD S T \land \LSd T
+\\ P \land \LSd T ; Q
+   &=&
+   P ; \LS T \land Q
+\\ P \land \LUPD S T ; Q
+   &=&
+   P \land \LUPD S T ; \LS T \land Q
+\end{eqnarray*}
+
+The definitions:
 \begin{eqnarray*}
    \W(C)
    &\defs&
-   \lnot ls(out) * C
+   (\lnot ls(out) * C)
 \\ a
    &\defs&
-   \W(ls(in) \land s' \in \sem a s \land ls'=ls \ominus (in|out))
+   \W(ls(in) \land \ado a \land \lupd{in}{out})
+\\ &=& \W(~\LS{in} \land \ado a \land \LUPD{in}{out}~)
 \\ \cskip
    &\defs&
-   \W(ls(in) \land s' = s \land ls'=ls \ominus (in|out))
+   \W(ls(in) \land \ss \land \lupd{in}{out})
 \\ C \cseq D
    &\defs&
    \W(C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in])
 \\ C + D
    &\defs&
    \W(~ls(in)
-   \land s' = s
-   \land ls' \in \{ ls \ominus (in|\ell_{g1}), ls \ominus (in|\ell_{g2})\}
+   \land \ss
+   \land ls' \in \{ \lexc{in,\ell_{g2}}{\ell_{g1}}
+                  , \lexc{in,\ell_{g1}}{\ell_{g2}}\}
 \\ &\lor&
    C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]~)
 \\ C \parallel D
    &\defs&
    \W(~ls(in)
-   \land s' = s
-   \land ls'= ls \ominus (in|\ell_{g1},\ell_{g2})
+   \land \ss
+   \land \lupd{in}{\ell_{g1},\ell_{g2}})
 \\ &\lor&
    C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
    \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
 \\ &\lor&
-   ls(in)
-   \land s' = s
-   \land ls'= ls \ominus (\ell_{g1:},\ell_{g2:}|out)~)
+   ls(\ell_{g1:},\ell_{g2:})
+   \land \ss
+   \land \lupd{\ell_{g1:},\ell_{g2:}}{out}~)
 \\ C^*
    &\defs&
    \W(~ls(in)
-   \land s' = s
-   \land ls' \in \{ ls \ominus (in|out), ls \ominus (in|\ell_g)\}
+   \land \ss
+   \land ls' \in \{ \lexc{in}{out}), \lexc{in}{\ell_g}\}
 \\ &\lor&
    C[g_{:},\ell_g,in/g,in,out]~)
 \end{eqnarray*}
+
+\subsubsection{WwW Calculations/Results}
+
+We will start by explaining a calculation method
+that should help structure our reasoning about loops.
+We consider a generic iteration $c*P$,
+and note the following identity,
+obtained by repeated application of the loop unrolling law
+coupled with expansion of the definition of conditionals:
+\begin{equation}\label{eqn:unroll-n-times}
+   c * P
+   \quad=\quad
+   \bigvee_{i=0}^{n-1} ( (c \land P)^i ; \lnot c \land \Skip)
+   \;\lor\;
+   (c \land P)^n ; c * P
+\end{equation}
+From this we define the following shorthands,
+and suggest two important calcualtions:
+\begin{eqnarray*}
+   W &\defs& c * P
+\\ D &\defs& \lnot c \land \Skip \EOLC{Done}
+\\ S &\defs& c \land P \EOLC{Step}
+\\ L &\defs& S ; D \EOLC{Last}
+\\ T &\defs& D ; D \EOLC{Two-Step}
+\end{eqnarray*}
+
+We now illustrate with the definition of $a$,
+using subscripts indicating that we are instantiating the above shorthands
+w.r.t. the semantics of $a$:
+
+\begin{eqnarray*}
+   a &\defs& \W( \LS{in} \land \ado a \land \LUPD{in}{out} )
+\\ &=& W_a
+\\ D &\defs& \D \EOLC{Independent of $a$.}
+\\ S_a &\defs& \lnot \LS{out}
+               \land \LS{in} \land \ado a \land \LUPD{in}{out}
+\\ L_a &\defs& S_a ; D
+\\ &=& \lnot \LS{out}
+               \land \LS{in} \land \ado a \land \LUPD{in}{out}
+\\ && {} ; \LS{out} \land \Skip
+\EQ{shorthand law, and $\Skip$ is $;$-identity}
+\\ && \lnot \LS{out}
+               \land \LS{in} \land \ado a \land \LUPD{in}{out}
+\\ T_a &\defs& S_a ; S_a
+\\ &=& \lnot \LS{out}
+               \land \LS{in} \land \ado a \land \LUPD{in}{out}
+\\ && {} ; \lnot \LS{out}
+               \land \LS{in} \land \ado a \land \LUPD{in}{out}
+\EQ{shorthand law}
+\\ && \lnot \LS{out}
+               \land \LS{in} \land \ado a \land \LUPD{in}{out}
+\\ && {} ; \LS{out} \land \lnot \LS{out}
+               \land \LS{in} \land \ado a \land \LUPD{in}{out}
+\\ &=& false
+\end{eqnarray*}
+We see that all terms $S_a^i$ for $i \geq 2$ just vanish, so
+\begin{eqnarray*}
+   a &=& D \lor L_a
+\\ &=& \D \;\lor\; \lnot \LS{out}
+               \land \LS{in} \land \ado a \land \LUPD{in}{out}
+\end{eqnarray*}
+
+
+We overload sequential composition as follows:
+\begin{eqnarray*}
+   \ado{a;b} &=& \ado a ; \ado b
+\end{eqnarray*}
+
