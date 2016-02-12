@@ -412,3 +412,77 @@ We look at $S_;^2 ; L_;$ now.
 \\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
     \land \ado{a;b}\land \LUPD{in}{out}
 }
+
+\subsection{Notation, Notation}
+
+We find essentially just two idioms here,
+where $L$, $I$, $O$, $R$ and $A$ are lists of labels,
+with $I \cap O = \emptyset$ and $R \cap A = \emptyset$:
+\RLEQNS{
+   D(L) &\defs&  \LS{L} \land \Skip &\ltype{L,L'}
+\\ &=& \LS{L} \land \Skip \land \LSd{L}
+\\ A(I,O,as,R,A)  
+   &=& \LS{I} \land \lnot\LS{O} \land \ado{as} \land \LUPD{R}{A}
+            &\ltype{I,\lnot O,\lnot R', A'}
+\\ &=& \LS{I} \land \lnot\LS{O} \land \ado{as} \land \LUPD{R}{A} \land {}
+\\ && \lnot\LSd{R,(O\!\setminus\! A)}
+      \land
+      \LSd{A,(I\!\setminus\! R)}
+}
+
+We get the following laws:
+\begin{eqnarray*}
+   D(L_1) ; D(L_2) &=& D(L_1 \cup L_2)
+%
+\\ D(L) ;  A(I,O,as,R,A)
+   &=&
+   L\cap O = \emptyset \land A(L\cup I,O,as,R,A)
+%
+\\  A(I,O,as,R,A) ; D(L)
+   &=&
+   R\cap L = \emptyset \land A(I,O,as,R,A \cup L)
+%
+\\ A(I_1,O_1,as,R_1,A_1) ; {}
+\\ A(I_2,O_2,bs,R_2,A_2)
+   &=&
+   R_1\cap I_2 = \emptyset \land 
+   A_1\cap O_2 = \emptyset \land {}
+\\ && A(I_1,O_1,(as;bs),R_3, A_3)
+\\ \textbf{where} && R_3 = (R_1 \cup R_2) \!\setminus\! A_2
+\\                && A_3 = (A_1 \cup A_2) \!\setminus\! R_2
+\end{eqnarray*}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
