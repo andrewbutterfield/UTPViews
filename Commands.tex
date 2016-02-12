@@ -379,7 +379,7 @@ of $L_;$, so we get
 \\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
     \land \ado{a;b}\land \LUPD{in}{out}
 \EQ{\ldots tidy-up}
-\\&& \LS{out} \land \Skip
+\\&& \LS{out} \land \Skip \lor {}
 \\&& \lnot \LS{\ell_g}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
             \land \LSd{out} \lor {}
@@ -387,4 +387,28 @@ of $L_;$, so we get
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
 \\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
     \land \ado{a;b}\land \LUPD{in}{out}
-\end{eqnarray*}
+\end{eqnarray*} Hmmm\dots
+
+We look at $S_;^2 ; L_;$ now.
+\RLEQNS{
+   S^2_; ; L_; &=&
+     \LS{\ell_g} \land \Skip \lor{}
+      & \ltype{\ell_g,\ell'_g}
+\\&& \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
+      & \ltype{\lnot\ell_g,in,\lnot in', \ell'_g}
+\\&& \LS{out} \land \Skip \lor {}
+     & \ltype{out,out'}
+\\&&\lnot \LS{out}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+           & \ltype{\lnot out,\ell_g,\lnot \ell'_g,out'}
+\\&& ;
+\\&& \LS{out} \land \Skip \lor {}
+\\&& \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
+            \land \LSd{out} \lor {}
+\\&& \lnot \LS{out}
+       \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
+\\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
+    \land \ado{a;b}\land \LUPD{in}{out}
+}
