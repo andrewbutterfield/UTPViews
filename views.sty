@@ -39,3 +39,14 @@
 \def\say#1{\textrm{``#1''}}
 \def\EQ#1{\\&=&\say{#1}}
 \def\EOLC#1{\textrm{ --- ``#1''}}
+
+\def\RLEQNS#1{
+  {$$\begin{array}{rcl@{\quad}l}
+    #1
+  \end{array}$$}
+}
+\def\ltype#1{
+ {\scriptscriptstyle\langle\!\langle}
+ #1
+ {\scriptscriptstyle\rangle\!\rangle}
+}

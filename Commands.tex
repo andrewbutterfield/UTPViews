@@ -294,7 +294,7 @@ Now we look at $a \cseq b$:
 \\ &=& \LS{out} \land \Skip \lor 
        \lnot \LS{out}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
-\\ S_; ; S_; &=&
+\\ S_; ; L_; &=&
      \LS{\ell_g} \land \Skip \lor{}
 \\&& \lnot \LS{\ell_g}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
@@ -302,11 +302,89 @@ Now we look at $a \cseq b$:
 \\&&\lnot \LS{out}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
 \\&& ;
-\\&&  \LS{\ell_g} \land \Skip \lor{}
+\\&& \LS{out} \land \Skip \lor {}
+\\&& \lnot \LS{out}
+       \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+\end{eqnarray*}
+We pause here, to do a little methodological innovation.
+We introduce the notion of a ``label-type''
+which is a  list of labels (in $\ltype\dots$), 
+which might be dashed,
+and might be prefixed with negation.
+We interpret these as follows:
+
+\begin{tabular}{|c|c|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  $\ell$ & we assert $ls(\ell)$ \\
+  $\lnot\ell$ & we assert $\lnot ls(\ell)$ \\
+  $\ell'$ & we assert $ls'(\ell)$ \\
+  $\lnot\ell'$ & we assert $\lnot ls'(\ell)$ \\
+  \hline
+\end{tabular}
+
+These lists are interpreted as conjunction.
+This helps us to quickly spot predicates that reduce to 
+contradictions when sequentially composed.
+Here is $S_; ; L_;$ with label-types added
+\RLEQNS{
+   S_; ; L_; &=&
+     \LS{\ell_g} \land \Skip \lor{}
+      & \ltype{\ell_g,\ell'_g}
 \\&& \lnot \LS{\ell_g}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
+      & \ltype{\lnot\ell_g,in,\lnot in', \ell'_g}
 \\&& \LS{out} \land \Skip \lor {}
+     & \ltype{out,out'}
 \\&&\lnot \LS{out}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+           & \ltype{\lnot out,\ell_g,\lnot \ell'_g,out'}
+\\&& ;
+\\&& \LS{out} \land \Skip \lor {}  & \ltype{out,out'}
+\\&& \lnot \LS{out}
+       \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+       & \ltype{\lnot out,\ell_g,\lnot\ell'_g,out'}
+}
+We see that the last two disjuncts of $S_;$ contradict the last disjunct
+of $L_;$, so we get
+\begin{eqnarray*}
+  &&
+     \LS{\ell_g} \land \Skip ; \LS{out} \land \Skip \lor{}
+\\&& \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
+            ; \LS{out} \land \Skip\lor {}
+\\&& \LS{out} \land \Skip ;\LS{out} \land \Skip\lor {}
+\\&&\lnot \LS{out}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} 
+           ; \LS{out} \land \Skip \lor {}
+\\&&
+     \LS{\ell_g} \land \Skip 
+     ; \lnot \LS{out}
+       \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
+\\&& \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} 
+            ; \lnot \LS{out}
+       \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+\EQ{with care\dots}
+\\&&\LS{\ell_g} \land\LS{out} \land \Skip
+\\&& \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
+            \land \LSd{out} \lor {}
+\\&& \LS{out} \land \Skip  \lor {}
+\\&&\lnot \LS{out}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
+           \lor {}
+\\&& \lnot \LS{out}
+       \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
+\\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
+    \land \ado{a;b}\land \LUPD{in}{out}
+\EQ{\ldots tidy-up}
+\\&& \LS{out} \land \Skip
+\\&& \lnot \LS{\ell_g}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
+            \land \LSd{out} \lor {}
+\\&& \lnot \LS{out}
+       \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
+\\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
+    \land \ado{a;b}\land \LUPD{in}{out}
 \end{eqnarray*}
-
