@@ -29,6 +29,7 @@ We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 \\ g &:& Gen
 \\ in, out &:& Lbl
 \end{eqnarray*}
+
 \subsection{``Standard'' UTP Constructs}
 
 \begin{eqnarray*}
@@ -41,6 +42,15 @@ We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 \\ c * P
    &=&
    P ; c * P \cond c \Skip
+\end{eqnarray*}
+
+\subsection{Shorthands}
+
+\begin{eqnarray*}
+   ls(\ell) &\defs& \ell \in ls
+\\ ls(L) &\defs& L \subseteq ls
+\\ ls(\B\ell) &\defs& \ell \notin ls
+\\ ls(\B L) &\defs& L \cap ls = \emptyset
 \end{eqnarray*}
 
 \subsection{Simple Semantics}
@@ -87,7 +97,7 @@ with a simpler version of $run$.
    C[g_{:},\ell_g,in/g,in,out]
 \\ run(C)
    &\defs&
-   ( \lnot ls(out) * C)[in/ls]
+   ( ls(\B{out}) * C)[in/ls]
 \end{eqnarray*}
 
 
@@ -113,21 +123,23 @@ We introduce the following shorthands:
    ls' \in \setof{\lexc{S_1}{T_1}, \lexc{S_2}{T_2}}
 \\ \LS S &\defs& ls(S)
 \\ \LSd S &\defs& ls'(S)
+\\ \LS{\B S} &\defs& ls(\B S)
+\\ \LSd{\B S} &\defs& ls'(\B S)
 \end{eqnarray*}
 
 These  shorthands satisfy the following laws:
 \begin{eqnarray*}
    \LUPD S T &=& \LUPD S T \land \LSd T
-\\ \LUPD S T &=& \LUPD S T \land \lnot\LSd S \land \LSd T, \textbf{ if }S \cap T = \emptyset
+\\ \LUPD S T &=& \LUPD S T \land \LSd{\B S} \land \LSd T, \textbf{ if }S \cap T = \emptyset
 \\ \LUPD S {T\ndc V} &=& \LUPD S T \land (\LSd T \lor \LSd V)
 \\ \LNDC{S_1}{T_1}{S_2}{T_2}
    &=&
    \LNDC{S_1}{T_1}{S_2}{T_2}  \land (\LSd{T_1} \lor \LSd{T_2})
 \\ &=& \textbf{ if }S_i \cap T_i = \emptyset \textbf{ then\ldots}
-\\&& \LNDC{S_1}{T_1}{S_2}{T_2}  
-\\&& {} \land (\lnot\LSd{S_1}\land\LSd{T_1} 
-            \lor 
-            \lnot\LSd{S_2}\land\LSd{T_2})
+\\&& \LNDC{S_1}{T_1}{S_2}{T_2}
+\\&& {} \land (\LSd{\B{S_1}}\land\LSd{T_1}
+            \lor
+            \LSd{\B{S_2}}\land\LSd{T_2})
 \\ P \land \LSd T ; Q
    &=&
    P ; \LS T \land Q
@@ -138,7 +150,7 @@ These  shorthands satisfy the following laws:
 
 The definitions:
 \begin{eqnarray*}
-   \W(C) &\defs& (\lnot ls(out) * C)
+   \W(C) &\defs& ls(\B{out}) * C)
 \\
 \\ a &\defs&\W(~\LS{in} \land \ado a \land \LUPD{in}{out}~)
 \\ \cskip
@@ -212,7 +224,7 @@ $D$ always has a specific instantiation:
    D &=& \LS{out} \land \Skip
 \\ D ; D &= & D
 \\ P \land \LSd{\ell} ; D[\ell/out] &=&  P \land \LSd{\ell}
-\\ P \land \lnot\LSd{\ell} ; D[\ell/out] &=&  false
+\\ P \land \LSd{\B\ell} ; D[\ell/out] &=&  false
 \\ D[\ell_1/out] ; D[\ell_2/out] &=& false,\textbf{ if }\ell_1/\neq\ell_2
 \end{eqnarray*}
 
@@ -224,31 +236,31 @@ w.r.t. the semantics of $a$:
    a &\defs& \W( \LS{in} \land \ado a \land \LUPD{in}{out} )
 \\ &=& W_a
 \\ D &\defs& \D \EOLC{Independent of $a$.}
-\\ S_a &\defs& \lnot \LS{out}
+\\ S_a &\defs& \LS{\B{out}}
                \land \LS{in} \land \ado a \land \LUPD{in}{out}
 \\ L_a &\defs& S_a ; D
-\\ &=& \lnot \LS{out}
+\\ &=& \LS{\B{out}}
                \land \LS{in} \land \ado a \land \LUPD{in}{out}
 \\ && {} ; \LS{out} \land \Skip
 \EQ{shorthand law, and $\Skip$ is $;$-identity}
-\\ && \lnot \LS{out}
+\\ && \LS{\B{out}}
                \land \LS{in} \land \ado a \land \LUPD{in}{out}
 \\ T_a &\defs& S_a ; S_a
-\\ &=& \lnot \LS{out}
+\\ &=& \LS{\B{out}}
                \land \LS{in} \land \ado a \land \LUPD{in}{out}
-\\ && {} ; \lnot \LS{out}
+\\ && {} ; \LS{\B{out}}
                \land \LS{in} \land \ado a \land \LUPD{in}{out}
 \EQ{shorthand law}
-\\ && \lnot \LS{out}
+\\ && \LS{\B{out}}
                \land \LS{in} \land \ado a \land \LUPD{in}{out}
-\\ && {} ; \LS{out} \land \lnot \LS{out}
+\\ && {} ; \LS{out} \land \LS{\B{out}}
                \land \LS{in} \land \ado a \land \LUPD{in}{out}
 \\ &=& false
 \end{eqnarray*}
 We see that all terms $S_a^i$ for $i \geq 2$ just vanish, so
 \begin{eqnarray*}
    a &=& D \lor L_a
-\\ &=& \D \;\lor\; \lnot \LS{out}
+\\ &=& \D \;\lor\; \LS{\B{out}}
                \land \LS{in} \land \ado a \land \LUPD{in}{out}
 \end{eqnarray*}
 
@@ -267,48 +279,48 @@ Now we look at $a \cseq b$:
 \\ S_; &=& a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in]
 \EQ{calc. of $a$ above}
 \\ && (D \lor L_a)[g_{:1},\ell_g/g,out]
-      \lor 
+      \lor
       (D \lor L_b)[g_{:2},\ell_g/g,in]
 \\&=& \LS{\ell_g} \land \Skip
-      \lor \lnot \LS{\ell_g}
+      \lor \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
 \\&& \LS{out} \land \Skip
-      \lor \lnot \LS{out}
+      \lor \LS{\B{out}}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
 \\ L_; &=& S_; ; D
 \\ &=& (~\LS{\ell_g} \land \Skip
-      \lor \lnot \LS{\ell_g}
+      \lor \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
 \\&& \LS{out} \land \Skip
-      \lor \lnot \LS{out}
+      \lor \LS{\B{out}}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}~)
 \\&& {} ; \LS{out} \land \Skip
 \\ &=& (\LS{\ell_g} \land \Skip ; \LS{out} \land \Skip) \lor{}
-\\ &&  (\lnot \LS{\ell_g}
+\\ &&  (\LS{\B{\ell_g}}
        \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
        ; \LS{out} \land \Skip) \lor {}
 \\ &&  (\LS{out} \land \Skip ; \LS{out} \land \Skip )\lor {}
-\\ &&  (\lnot \LS{out}
+\\ &&  (\LS{\B{out}}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
            ; \LS{out} \land \Skip )
-\\ &=& \LS{out} \land \Skip \lor 
-       \lnot \LS{out}
+\\ &=& \LS{out} \land \Skip \lor
+       \LS{\B{out}}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
 \\ S_; ; L_; &=&
      \LS{\ell_g} \land \Skip \lor{}
-\\&& \lnot \LS{\ell_g}
+\\&& \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
 \\&& \LS{out} \land \Skip \lor {}
-\\&&\lnot \LS{out}
+\\&&\LS{\B{out}}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
 \\&& ;
 \\&& \LS{out} \land \Skip \lor {}
-\\&& \lnot \LS{out}
+\\&& \LS{\B{out}}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
 \end{eqnarray*}
 We pause here, to do a little methodological innovation.
 We introduce the notion of a ``label-type''
-which is a  list of labels (in $\ltype\dots$), 
+which is a  list of labels (in $\ltype\dots$),
 which might be dashed,
 and might be prefixed with negation.
 We interpret these as follows:
@@ -317,75 +329,75 @@ We interpret these as follows:
   \hline
   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
   $\ell$ & we assert $ls(\ell)$ \\
-  $\lnot\ell$ & we assert $\lnot ls(\ell)$ \\
+  $\B\ell$ & we assert $\lnot ls(\ell)$ \\
   $\ell'$ & we assert $ls'(\ell)$ \\
-  $\lnot\ell'$ & we assert $\lnot ls'(\ell)$ \\
+  $\B\ell'$ & we assert $\lnot ls'(\ell)$ \\
   \hline
 \end{tabular}
 
 These lists are interpreted as conjunction.
-This helps us to quickly spot predicates that reduce to 
+This helps us to quickly spot predicates that reduce to
 contradictions when sequentially composed.
 Here is $S_; ; L_;$ with label-types added
 \RLEQNS{
    S_; ; L_; &=&
      \LS{\ell_g} \land \Skip \lor{}
       & \ltype{\ell_g,\ell'_g}
-\\&& \lnot \LS{\ell_g}
+\\&& \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
-      & \ltype{\lnot\ell_g,in,\lnot in', \ell'_g}
+      & \ltype{\B{\ell_g},in,\B{in'}, \ell'_g}
 \\&& \LS{out} \land \Skip \lor {}
      & \ltype{out,out'}
-\\&&\lnot \LS{out}
+\\&&\LS{\B{out}}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
-           & \ltype{\lnot out,\ell_g,\lnot \ell'_g,out'}
+           & \ltype{\B{out},\ell_g,\B{\ell'_g},out'}
 \\&& ;
 \\&& \LS{out} \land \Skip \lor {}  & \ltype{out,out'}
-\\&& \lnot \LS{out}
+\\&& \LS{\B{out}}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
-       & \ltype{\lnot out,\ell_g,\lnot\ell'_g,out'}
+       & \ltype{\B{out},\ell_g,\B{\ell'_g},out'}
 }
 We see that the last two disjuncts of $S_;$ contradict the last disjunct
 of $L_;$, so we get
 \begin{eqnarray*}
   &&
      \LS{\ell_g} \land \Skip ; \LS{out} \land \Skip \lor{}
-\\&& \lnot \LS{\ell_g}
+\\&& \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
             ; \LS{out} \land \Skip\lor {}
 \\&& \LS{out} \land \Skip ;\LS{out} \land \Skip\lor {}
-\\&&\lnot \LS{out}
-           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} 
+\\&&\LS{\B{out}}
+           \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
            ; \LS{out} \land \Skip \lor {}
 \\&&
-     \LS{\ell_g} \land \Skip 
-     ; \lnot \LS{out}
+     \LS{\ell_g} \land \Skip
+     ; \LS{\B{out}}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
-\\&& \lnot \LS{\ell_g}
-           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} 
-            ; \lnot \LS{out}
+\\&& \LS{\B{\ell_g}}
+           \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
+            ; \LS{\B{out}}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
 \EQ{with care\dots}
 \\&&\LS{\ell_g} \land\LS{out} \land \Skip
-\\&& \lnot \LS{\ell_g}
+\\&& \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
             \land \LSd{out} \lor {}
 \\&& \LS{out} \land \Skip  \lor {}
-\\&&\lnot \LS{out}
+\\&&\LS{\B{out}}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
            \lor {}
-\\&& \lnot \LS{out}
+\\&& \LS{\B{out}}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
-\\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
+\\&& \LS{\B{\ell_g}} \land \LS{in} \land \LS{\B{out}}
     \land \ado{a;b}\land \LUPD{in}{out}
 \EQ{\ldots tidy-up}
 \\&& \LS{out} \land \Skip \lor {}
-\\&& \lnot \LS{\ell_g}
+\\&& \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
             \land \LSd{out} \lor {}
-\\&& \lnot \LS{out}
+\\&& \LS{\B{out}}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
-\\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
+\\&& \LS{\B{\ell_g}} \land \LS{in} \land \LS{\B{out}}
     \land \ado{a;b}\land \LUPD{in}{out}
 \end{eqnarray*} Hmmm\dots
 
@@ -394,22 +406,22 @@ We look at $S_;^2 ; L_;$ now.
    S^2_; ; L_; &=&
      \LS{\ell_g} \land \Skip \lor{}
       & \ltype{\ell_g,\ell'_g}
-\\&& \lnot \LS{\ell_g}
+\\&& \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g} \lor {}
-      & \ltype{\lnot\ell_g,in,\lnot in', \ell'_g}
+      & \ltype{\B{\ell_g},in,\B{in'}, \ell'_g}
 \\&& \LS{out} \land \Skip \lor {}
      & \ltype{out,out'}
-\\&&\lnot \LS{out}
+\\&&\LS{\B{out}}
            \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out}
-           & \ltype{\lnot out,\ell_g,\lnot \ell'_g,out'}
+           & \ltype{\B{out},\ell_g,\B{\ell'_g},out'}
 \\&& ;
 \\&& \LS{out} \land \Skip \lor {}
-\\&& \lnot \LS{\ell_g}
+\\&& \LS{\B{\ell_g}}
            \land \LS{in} \land \ado a \land \LUPD{in}{\ell_g}
             \land \LSd{out} \lor {}
-\\&& \lnot \LS{out}
+\\&& \LS{\B{out}}
        \land \LS{\ell_g} \land \ado b \land \LUPD{\ell_g}{out} \lor{}
-\\&& \lnot \LS{\ell_g} \land \LS{in} \land \lnot\LS{out}
+\\&& \LS{\B{\ell_g}} \land \LS{in} \land \LS{\B{out}}
     \land \ado{a;b}\land \LUPD{in}{out}
 }
 
@@ -418,40 +430,200 @@ We look at $S_;^2 ; L_;$ now.
 We find essentially just two idioms here,
 where $L$, $I$, $O$, $R$ and $A$ are lists of labels,
 with $I \cap O = \emptyset$ and $R \cap A = \emptyset$:
-\RLEQNS{
-   D(L) &\defs&  \LS{L} \land \Skip &\ltype{L,L'}
+\begin{eqnarray*}
+   D(L) &\defs&  \LS{L} \land \Skip
+\\ &=& ls(L) \land s'=s \land ls'=ls
+\\ &=& ls(L) \land s'=s \land ls'=ls \land ls'(L)
 \\ &=& \LS{L} \land \Skip \land \LSd{L}
-\\ A(I,O,as,R,A)  
-   &=& \LS{I} \land \lnot\LS{O} \land \ado{as} \land \LUPD{R}{A}
-            &\ltype{I,\lnot O,\lnot R', A'}
-\\ &=& \LS{I} \land \lnot\LS{O} \land \ado{as} \land \LUPD{R}{A} \land {}
-\\ && \lnot\LSd{R,(O\!\setminus\! A)}
-      \land
-      \LSd{A,(I\!\setminus\! R)}
-}
+\\ &:&  \ltype{L,L'}
+\\ A(I,O,as,R,A,L)
+   &\defs& \LS{I} \land \LS{\B O} 
+           \land \ado{as} 
+           \land \LUPD{R}{A} \land \LSd{L}
+\\ &=& ls(I) \land ls(\B O) \land \ado{as}
+       \land ls'=ls\ominus(R|A) \land ls'(L)
+\\ &:& \ltype{I,\B O,\B{R'\setminus A'},L',A'}
+\\ &=& I \cap O = \emptyset \land ls(I) \land ls(\B O)
+\\ && {} \land \ado{as}
+\\ && {} \land ls'=ls\ominus(R|A) \land ls'(L)
+         \land (R\setminus A) \cap L = \emptyset
+\end{eqnarray*}
+The first and second lines above in each definition/expansion
+are the so-called ``implicit'' forms,
+in that we have a minimal complete description,
+but without any explicit identification of situations that force
+the predicate to evaluate to false.
+The last version of $A$ above is the so-called ``explicit-form'',
+which states the relationships on parameters $I$, $O$, $R$, $A$ and $L$
+that most hold in order for the predicate not to be false everywhere.
 
-We get the following laws:
+
+
+We get the following laws (implicit form):
 \begin{eqnarray*}
    D(L_1) ; D(L_2) &=& D(L_1 \cup L_2)
 %
-\\ D(L) ;  A(I,O,as,R,A)
+\\ D(L_1) ;  A(I,O,as,R,A,L_2)
    &=&
-   L\cap O = \emptyset \land A(L\cup I,O,as,R,A)
+   A(L_1\cup I,O,as,R,A,L_2)
 %
-\\  A(I,O,as,R,A) ; D(L)
+\\  A(I,O,as,R,A,L_1) ; D(L_2)
    &=&
-   R\cap L = \emptyset \land A(I,O,as,R,A \cup L)
+   A(I,O,as,R,A,L_1\cup L_2)
 %
-\\ A(I_1,O_1,as,R_1,A_1) ; {}
-\\ A(I_2,O_2,bs,R_2,A_2)
-   &=&
-   R_1\cap I_2 = \emptyset \land 
-   A_1\cap O_2 = \emptyset \land {}
-\\ && A(I_1,O_1,(as;bs),R_3, A_3)
-\\ \textbf{where} && R_3 = (R_1 \cup R_2) \!\setminus\! A_2
-\\                && A_3 = (A_1 \cup A_2) \!\setminus\! R_2
+\\ A(I_1,O_1,as,R_1,A_1,L_1) ; {}
+\\ A(I_2,O_2,bs,R_2,A_2,L_2)
+   &=& \dots
 \end{eqnarray*}
 
+\subsubsection{Proofs}
+
+Full forms
+\begin{eqnarray*}
+   D(L) 
+   &\defs& \LS{L} \land \Skip
+\\ &  =  & ls(L) \land s'=s \land ls'=ls
+\\
+\\ A(I,O,as,R,A,L)
+   &\defs& 
+   \LS{I} \land \LS{\B O} \land \ado{as} \land \LUPD{R}{A} \land \LSd{L}
+\\ &  =  & ls(I) \land ls(\B O) \land \ado{as} \land \lupd R A \land ls'(L)
+\end{eqnarray*}
+
+\begin{eqnarray*}
+  && D(L_1) \seq D(L_2)
+\EQ{Defn. $D$}
+\\&& ls(L_1) \land s'=s \land ls'=ls \seq ls(L_2) \land s'=s \land ls'=ls
+\EQ{Defn. $\seq$}
+\\&& \exists s_m,ls_m \bullet
+    ls(L_1) \land s_m=s \land ls_m=ls
+    \land ls_m(L_2) \land s'=s_m \land ls'=ls_m
+\EQ{One-point, $s_m,ls_m = s,ls$}
+\\&& ls(L_1) \land ls(L_2) \land s'=s \land ls'=ls
+\EQ{$A \subseteq S \land B \subseteq S = (A \cup B) \subseteq S$}
+\\&& ls(L_1 \cup L_2) \land s'=s \land ls'=ls
+\EQ{Defn. $D$, fold}
+\\&& D(L_1 \cup L_2)
+\end{eqnarray*}
+
+\begin{eqnarray*}
+  && D(L_1) \seq A(I,O,as,R,A,L_2)
+\EQ{Defn. of $D$ and $A$.}
+\\&& ls(L_1) \land s'=s \land ls'=ls
+     \seq
+     ls(I) \land ls(\B O) \land \ado{as} \land \lupd R A \land ls'(L_2)
+\EQ{Defn. of $\seq$.}
+\\&& \exists s_m,ls_m \bullet ls(L_1) \land s_m=s \land ls_m=ls
+\\&& \qquad {} \land
+     ls_m(I) \land ls_m(\B O) \land \ado{as}[s_m/s]
+     \land ls'=ls_m \ominus (R|A) \land ls'(L_2)
+\EQ{One-point, $s_m,ls_m = s,ls$}
+\\&& ls(L_1) \land
+     ls(I) \land ls(\B O) \land \ado{as}
+     \land ls'=ls \ominus (R|A) \land ls'(L_2)
+\EQ{$A \subseteq S \land B \subseteq S = (A \cup B) \subseteq S$}
+\\&& ls(L_1 \cup I) \land ls(\B O) \land \ado{as}
+     \land ls'=ls \ominus (R|A) \land ls'(L_2)
+\EQ{Defn. $A$, fold}
+\\&& A(L_1 \cup I,O,as,R,A,L_2)
+\end{eqnarray*}
+
+\begin{eqnarray*}
+  && A(I,O,as,R,A,L_1) \seq D(L_2)
+\EQ{Defn. of $A$ and $D$.}
+\\&& ls(I) \land ls(\B O) \land \ado{as} \land \lupd R A \land ls'(L_1)
+     \seq
+     ls(L_2) \land s'=s \land ls'=ls
+\EQ{Defn. $\seq$}
+\\&& \exists s_m,ls_m \bullet
+\\&& \quad
+     ls(I) \land ls(\B O) \land \ado{as}[s_m/s'] 
+     \land ls_m=ls \ominus (R|A) \land ls_m(L_1)
+\\&& {} \land
+     ls_m(L_2) \land s'=s_m \land ls'=ls_m
+\EQ{One-point, $s_m,ls_m = s',ls'$}
+\\&& ls(I) \land ls(\B O) \land \ado{as} 
+\land ls'=ls \ominus (R|A) \land ls'(L_1)
+     \land ls'(L_2)
+\EQ{$A \subseteq S \land B \subseteq S = (A \cup B) \subseteq S$}
+\\&& ls(I) \land ls(\B O) \land \ado{as} \land ls'=ls \ominus (R|A)
+     \land ls'(L_1 \cup L_2)
+\EQ{Defn. $A$, fold}
+\\&& A(I,O,as,R,A,L_1 \cup L_2)
+\end{eqnarray*}
+
+\begin{eqnarray*}
+  && A(I_1,O_1,as,R_1,A_1) \seq A(I_2,O_2,bs,R_2,A_2)
+\EQ{Defn $A$, twice}
+\\&& ls(I_1) \land ls(\B{O_1}) \land \ado{as} 
+     \land \lupd{R_1}{A_1} \land ls'(L_1)
+\\&& {} \seq
+     ls(I_2) \land ls(\B{O_2}) \land \ado{bs} 
+     \land \lupd{R_2}{A_2} \land ls'(L_2)
+\EQ{Defn $\seq$.}
+\\&& \exists s_m,ls_m \bullet
+\\&& \qquad ls(I_1) \land ls(\B{O_1}) \land \ado{as}[s_m/s']
+     \land ls_m = ls\ominus(R_1|A_1) \land ls_m(L_1)
+\\&& \quad {} \land
+     ls_m(I_2) \land ls_m(\B{O_2}) \land \ado{bs}[s_m/s]
+     \land ls' = ls_m\ominus(R_2|A_2) \land ls'(L_2)
+\EQ{$A \subseteq S \land B \subseteq S = (A \cup B) \subseteq S$, re-arrange}
+\\&& \exists s_m,ls_m \bullet
+\\&& \qquad ls(I_1) \land ls(\B{O_1}) \land ls_m = ls\ominus(R_1|A_1)
+     \land ls_m(L_1 \cup I_2)
+\\&& \quad {}\land ls_m(\B{O_2}) \land ls' = ls_m\ominus(R_2|A_2) \land ls'(L_2)
+     \land \ado{as}[s_m/s'] \land \ado{bs}[s_m/s]
+\EQ{One-point, $ls_m = ls\ominus(R_1|A_1)$}
+\\&& \exists s_m \bullet ls(I_1) \land ls(\B{O_1})
+     \land (ls\ominus(R_1|A_1))(L_1 \cup I_2)
+\\&& \qquad {}\land (ls\ominus(R_1|A_1))(\B{O_2})
+      \land ls' = (ls\ominus(R_1|A_1))\ominus(R_2|A_2) \land ls'(L_2)
+\\&& \qquad {} \land \ado{as}[s_m/s'] \land \ado{bs}[s_m/s]
+\EQ{Push quantifier in}
+\\&& ls(I_1)  \land ls(\B{O_1})
+     \land (ls\ominus(R_1|A_1))(L_1 \cup I_2)
+\\&& {}\land (ls\ominus(R_1|A_1))(\B{O_2})
+      \land ls' = (ls\ominus(R_1|A_1))\ominus(R_2|A_2) \land ls'(L_2)
+\\&& {}\land \exists s_m \bullet \ado{as}[s_m/s'] \land \ado{bs}[s_m/s]
+\EQ{Defn. of $\seq$ for atomic $as$,$bs$.}
+\\&& ls(I_1)  \land ls(\B{O_1})
+     \land (ls\ominus(R_1|A_1))(L_1 \cup I_2)
+\\&& {}\land (ls\ominus(R_1|A_1))(\B{O_2})
+      \land ls' = (ls\ominus(R_1|A_1))\ominus(R_2|A_2) \land ls'(L_2)
+\\&& {}\land (\ado{as \seq bs})
+\end{eqnarray*}
+We now take stock, and seek to simplify some stuff.
+
+\begin{eqnarray*}
+  && (ls\ominus(R_1|A_1))(L_1 \cup I_2)
+\\&=& (L_1\cup I_2) \subseteq (ls \setminus R_1) \cup A_1
+\end{eqnarray*}
+
+\begin{eqnarray*}
+  && (ls\ominus(R_1|A_1))(\B{O_2})
+\\&=& O_2 \cap ((ls \setminus R_1) \cup A_1) = \emptyset
+\end{eqnarray*}
+
+\begin{eqnarray*}
+  && (ls\ominus(R_1|A_1))\ominus(R_2|A_2)
+\\&=& (((ls \setminus R_1) \cup A_1) \setminus R_2) \cup A_1
+\end{eqnarray*}
+
+Hmmmm\dots  
+We may need to assume explicit false-avoiding and minimalist conditions,
+e.g. for
+\[ 
+   A(I,O,as,R,A,L) 
+\]
+the false avoiding conditions are
+$I \cap O = \emptyset$ 
+and $L \cap (R \setminus A) = \emptyset$,
+while the minimalist condition is $R \cap A = \emptyset$.
+
+The basic atomic action $a$ has semantics
+\[
+  D(out) \lor A(in,out,a,in,out,\emptyset)
+\]
 
 
 
