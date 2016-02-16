@@ -437,8 +437,8 @@ with $I \cap O = \emptyset$ and $R \cap A = \emptyset$:
 \\ &=& \LS{L} \land \Skip \land \LSd{L}
 \\ &:&  \ltype{L,L'}
 \\ A(I,O,as,R,A,L)
-   &\defs& \LS{I} \land \LS{\B O} 
-           \land \ado{as} 
+   &\defs& \LS{I} \land \LS{\B O}
+           \land \ado{as}
            \land \LUPD{R}{A} \land \LSd{L}
 \\ &=& ls(I) \land ls(\B O) \land \ado{as}
        \land ls'=ls\ominus(R|A) \land ls'(L)
@@ -473,19 +473,26 @@ We get the following laws (implicit form):
 %
 \\ A(I_1,O_1,as,R_1,A_1,L_1) ; {}
 \\ A(I_2,O_2,bs,R_2,A_2,L_2)
-   &=& \dots
+   &=&  (L_1 \cup I_2)\setminus A_1 \cap R_1 = \emptyset
+        \land O_2 \cap A_1 = \emptyset \land {}
+\\&& A(~   I_1 \cup I_2\setminus A_1
+      ,~   O_1 \cup O_2\setminus R_1
+\\&& ~~~,~ (as\!\seq\! bs)
+\\&& ~~~,~ R_1 \cup R_2
+      ,~   A_1\setminus R_2 \cup A_2
+      ,~   L_2 ~)
 \end{eqnarray*}
 
 \subsubsection{Proofs}
 
 Full forms
 \begin{eqnarray*}
-   D(L) 
+   D(L)
    &\defs& \LS{L} \land \Skip
 \\ &  =  & ls(L) \land s'=s \land ls'=ls
 \\
 \\ A(I,O,as,R,A,L)
-   &\defs& 
+   &\defs&
    \LS{I} \land \LS{\B O} \land \ado{as} \land \LUPD{R}{A} \land \LSd{L}
 \\ &  =  & ls(I) \land ls(\B O) \land \ado{as} \land \lupd R A \land ls'(L)
 \end{eqnarray*}
@@ -537,12 +544,12 @@ Full forms
 \EQ{Defn. $\seq$}
 \\&& \exists s_m,ls_m \bullet
 \\&& \quad
-     ls(I) \land ls(\B O) \land \ado{as}[s_m/s'] 
+     ls(I) \land ls(\B O) \land \ado{as}[s_m/s']
      \land ls_m=ls \ominus (R|A) \land ls_m(L_1)
 \\&& {} \land
      ls_m(L_2) \land s'=s_m \land ls'=ls_m
 \EQ{One-point, $s_m,ls_m = s',ls'$}
-\\&& ls(I) \land ls(\B O) \land \ado{as} 
+\\&& ls(I) \land ls(\B O) \land \ado{as}
 \land ls'=ls \ominus (R|A) \land ls'(L_1)
      \land ls'(L_2)
 \EQ{$A \subseteq S \land B \subseteq S = (A \cup B) \subseteq S$}
@@ -553,12 +560,12 @@ Full forms
 \end{eqnarray*}
 
 \begin{eqnarray*}
-  && A(I_1,O_1,as,R_1,A_1) \seq A(I_2,O_2,bs,R_2,A_2)
+  && A(I_1,O_1,as,R_1,A_1,L_1) \seq A(I_2,O_2,bs,R_2,A_2,L_2)
 \EQ{Defn $A$, twice}
-\\&& ls(I_1) \land ls(\B{O_1}) \land \ado{as} 
+\\&& ls(I_1) \land ls(\B{O_1}) \land \ado{as}
      \land \lupd{R_1}{A_1} \land ls'(L_1)
 \\&& {} \seq
-     ls(I_2) \land ls(\B{O_2}) \land \ado{bs} 
+     ls(I_2) \land ls(\B{O_2}) \land \ado{bs}
      \land \lupd{R_2}{A_2} \land ls'(L_2)
 \EQ{Defn $\seq$.}
 \\&& \exists s_m,ls_m \bullet
@@ -595,28 +602,102 @@ Full forms
 We now take stock, and seek to simplify some stuff.
 
 \begin{eqnarray*}
-  && (ls\ominus(R_1|A_1))(L_1 \cup I_2)
-\\&=& (L_1\cup I_2) \subseteq (ls \setminus R_1) \cup A_1
+  && (ls\ominus(R|A))(L)
+\\&=& L \subseteq (ls \setminus R) \cup A
+\\&=&  L \setminus ((ls \setminus R) \cup A) = \emptyset
+\\&=&  L \setminus (A \cup (ls \setminus R)) = \emptyset
+\\&=&  (L \setminus A) \setminus (ls \setminus R) = \emptyset
+\EQ{$A\setminus(B\setminus C) = A\setminus B \cup A\cap C$}
+\\&&  (L \setminus A) \setminus ls
+      \cup
+     (L \setminus A) \cap R = \emptyset
+\\&=&  (L \setminus A) \setminus ls = \emptyset
+      \land
+     (L \setminus A) \cap R = \emptyset
+\\&=&  (L \setminus A) \subseteq ls
+      \land
+     (L \setminus A) \cap R = \emptyset
 \end{eqnarray*}
 
 \begin{eqnarray*}
   && (ls\ominus(R_1|A_1))(\B{O_2})
 \\&=& O_2 \cap ((ls \setminus R_1) \cup A_1) = \emptyset
+\\&=& O_2 \cap (ls \setminus R_1)  = \emptyset
+      \land
+      O_2 \cap A_1 = \emptyset
+\\&=& ls \cap (O_2 \setminus R_1)  = \emptyset
+      \land
+      O_2 \cap A_1 = \emptyset
+\\&=& ls(\B{O_2 \setminus R_1})
+      \land
+      O_2 \cap A_1 = \emptyset
 \end{eqnarray*}
 
 \begin{eqnarray*}
   && (ls\ominus(R_1|A_1))\ominus(R_2|A_2)
-\\&=& (((ls \setminus R_1) \cup A_1) \setminus R_2) \cup A_1
+\EQ{defn. $\ominus$, twice}
+\\&& (((ls \setminus R_1) \cup A_1) \setminus R_2) \cup A_1
+\EQ{$(A \cup B) \setminus C = (A\setminus C) \cup (B \setminus C)$}
+\\&& (((ls \setminus R_1)\setminus R_2) \cup (A_1\setminus R_2) )\cup A_1
+\EQ{$(A \setminus B) \setminus C = A \setminus (B \cup C)$}
+\\&& (ls \setminus (R_1 \cup R_2)) \cup (A_1\setminus R_2) \cup A_1
+\EQ{Defn $\ominus$, fold}
+\\&& (ls \ominus  (R_1 \cup R_2|(A_1\setminus R_2) \cup A_1)
 \end{eqnarray*}
 
-Hmmmm\dots  
+Now, back into the fray\dots
+\begin{eqnarray*}
+  && ls(I_1)  \land ls(\B{O_1})
+\\&& {}\land (ls\ominus(R_1|A_1))(L_1 \cup I_2)
+\\&& {}\land (ls\ominus(R_1|A_1))(\B{O_2})
+\\&& {}\land ls' = (ls\ominus(R_1|A_1))\ominus(R_2|A_2) \land ls'(L_2)
+\\&& {}\land (\ado{as \seq bs})
+\EQ{three calculations above}
+\\&& ls(I_1)  \land ls(\B{O_1})
+\\&& {}\land ls((L_1 \cup I_2)\setminus A_1)
+       \land (L_1 \cup I_2)\setminus A_1 \cap R_1 = \emptyset
+\\&& {}\land ls(\B{O_2\setminus R_1})
+       \land O_2 \cap A_1 = \emptyset
+\\&& {}\land ls' = ls\ominus(R_1 \cup R_2| A_1\setminus R_2 \cup A_2)
+       \land ls'(L_2)
+\\&& {}\land (\ado{as \seq bs})
+\EQ{re-group}
+\\&& (L_1 \cup I_2)\setminus A_1 \cap R_1 = \emptyset
+     \land O_2 \cap A_1 = \emptyset
+\\&& {}\land ls(I_1)
+       \land ls((L_1 \cup I_2)\setminus A_1)
+\\&& {}\land ls(\B{O_1})
+       \land ls(\B{O_2\setminus R_1})
+\\&& {}\land (\ado{as \seq bs})
+\\&& {}\land ls' = ls\ominus(R_1 \cup R_2| A_1\setminus R_2 \cup A_2)
+       \land ls'(L_2)
+\EQ{merge  and simplify $ls$ assertions}
+\\&& (L_1 \cup I_2)\setminus A_1 \cap R_1 = \emptyset
+     \land O_2 \cap A_1 = \emptyset
+\\&& {}\land ls(I_1 \cup I_2\setminus A_1)
+\\&& {}\land ls(\B{O_1 \cup O_2\setminus R_1})
+\\&& {}\land (\ado{as \seq bs})
+\\&& {}\land ls' = ls\ominus(R_1 \cup R_2| A_1\setminus R_2 \cup A_2)
+       \land ls'(L_2)
+\EQ{Defn. of $A$, fold}
+\\&& (L_1 \cup I_2)\setminus A_1 \cap R_1 = \emptyset
+     \land O_2 \cap A_1 = \emptyset
+\\&& {}\land A( I_1 \cup I_2\setminus A_1
+              , O_1 \cup O_2\setminus R_1
+              , (as\!\seq\! bs)
+              , R_1 \cup R_2
+              , A_1\setminus R_2 \cup A_2
+              , L_2 )
+\end{eqnarray*}
+
+Hmmmm\dots
 We may need to assume explicit false-avoiding and minimalist conditions,
 e.g. for
-\[ 
-   A(I,O,as,R,A,L) 
+\[
+   A(I,O,as,R,A,L)
 \]
 the false avoiding conditions are
-$I \cap O = \emptyset$ 
+$I \cap O = \emptyset$
 and $L \cap (R \setminus A) = \emptyset$,
 while the minimalist condition is $R \cap A = \emptyset$.
 
