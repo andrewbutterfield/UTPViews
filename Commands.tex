@@ -703,11 +703,49 @@ while the minimalist condition is $R \cap A = \emptyset$.
 
 The basic atomic action $a$ has semantics
 \[
-  D(out) \lor A(in,out,a,in,out,\emptyset)
+  D(out) \lor A(in,\emptyset,a,in,out,out)
 \]
 
-
-
+\subsection{WwW Semantic Definitions}
+The definitions, using the new shorthand:
+\begin{eqnarray*}
+   \W(C) &\defs& ls(\B{out}) * C)
+\\ ii &\defs& s'=s
+\\
+\\ a &\defs&\W(A(in,\emptyset,a,in,out,out))
+\\ \cskip
+   &\defs&
+   \W(A(in,\emptyset,ii,in,out,out))
+\\
+\\ C \cseq D
+   &\defs&
+   \W(C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in])
+\\
+\\ C + D
+   &\defs&
+   \W(\quad {}\phlor A(in,\emptyset,ii,\setof{in,\ell_{g2}},\ell_{g1},\ell_{g1})
+\\ && \qquad {} \lor
+   A(in,\emptyset,ii,\setof{in,\ell_{g1}},\ell_{g2},\ell_{g2})
+\\ && \qquad {} \lor
+   C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]~)
+\\
+\\ C \parallel D
+   &\defs&
+   \W(\quad\phlor A(in,\emptyset,ii,in,\setof{\ell_{g1},\ell_{g2}},\setof{\ell_{g1},\ell_{g2}})
+\\ && \qquad {}\lor
+   C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ && \qquad {}\lor
+   A(\setof{\ell_{g1:},\ell_{g2:}},\emptyset
+      ,ii
+      ,\setof{\ell_{g1:},\ell_{g2:}},out,out)~)
+\\
+\\ C^*
+   &\defs&
+   \W(\quad\phlor A(in,\emptyset,ii,\setof{in,\ell_g},out,out)
+\\ && \qquad {}\lor A(in,\emptyset,ii,\setof{in,out},\ell_g,\ell_g)
+\\ && \qquad {}\lor C[g_{:},\ell_g,in/g,in,out]~)
+\end{eqnarray*}
 
 
 
