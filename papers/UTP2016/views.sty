@@ -43,6 +43,46 @@
 \def\EQ#1{\\&=&\say{#1}}
 \def\EOLC#1{\textrm{ --- ``#1''}}
 
+\def\llawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\langle\!\langle\cdot}$}}}
+\def\rlawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\cdot\rangle\!\rangle}$}}}
+\def\mkelabel#1{\textsf{\llawnamebr{#1}\rlawnamebr}}
+\def\elab#1#2{\mkelabel{#1}\label{#2}}
+\def\elabel#1{\elab{#1}{#1}}
+\def\ecite#1{\mkelabel{#1}}
+\def\eref#1{\mkelabel{#1, p\pageref{#1}}}
+
+\def\mathHC#1{\ensuremath{\mathbf{#1}}}
+\def\mkH#1#2{\mathHC{mk{#1}{#2}}}
+\def\isH#1#2{\mathHC{is{#1}{#2}}}
+\def\theH#1#2{\mathHC{{#1}{#2}}}
+
+\def\mkHH#1{\mkH{H}{#1}}
+\def\isHH#1{\isH{H}{#1}}
+\def\HH#1{\theH{H}{#1}}
+\def\H{\HH{}}
+
+\def\mkPP#1{\mkH{P}{#1}}
+\def\isPP#1{\isH{P}{#1}}
+\def\PP#1{\theH{P}{#1}}
+\def\PML{\theH{P}{}}
+
+\def\mkRR#1{\mkH{R}{#1}}
+\def\isRR#1{\isH{R}{#1}}
+\def\RR#1{\theH{R}{#1}}
+\def\R{\RR{}}
+
+\def\mkGG#1{\mkH{G}{#1}}
+\def\isGG#1{\isH{G}{#1}}
+\def\GG#1{\theH{G}{#1}}
+\def\G{\GG{}}
+
+\def\g#1{g_{#1}}
+
+\def\WW#1{\theH{WW}{#1}}
+
+\def\fv{\mathsf{fv.}}
+\def\FV{\mathsf{fv}}
+
 \def\RLEQNS#1{
   {$$\begin{array}{rcl@{\quad}l}
     #1
@@ -53,3 +93,71 @@
  #1
  {\scriptscriptstyle\rangle\!\rangle}
 }
+\def\RLEQNSs#1{
+  \begin{eqnarray*}
+    #1
+  \end{eqnarray*}
+}
+
+
+
+\def\power{\mathop{\mathcal P}}
+\def\fun{\rightarrow}
+\def\pfun{\nrightarrow}
+\def\Bool{\mathbb{B}}
+\def\Nat{\mathbb{N}}
+\def\Int{\mathbb{Z}}
+\def\Rat{\mathbb{Q}}
+\def\Real{\mathbb{R}}
+\def\Cmpx{\mathbb C}
+\def\One{\mathbf 1}
+\def\Alt{\mathrel{|}}
+\def\Char{\mathbb A}
+\def\Set{\mathcal P}
+\def\Seq#1{{#1}^*}
+\def\setof#1{\{{#1}\}}
+\def\Map#1#2{{#1}\pfun{#2}}
+\def\mapof#1{\setof{#1}}
+\def\maplet#1#2{\mapof{{#1}\mapsto{#2}}}
+\def\nul{\setof{}}
+\def\seqof#1{\langle{#1}\rangle}
+\def\nil{\seqof{}}
+\def\mapof#1{\{{#1}\}}
+\def\cat{\mathbin{\frown}}
+\def\dom{\mathop{\mathrm{dom}}}
+\def\rng{\mathop{\mathrm{rng}}}
+
+\def\defs{\mathrel{\widehat=}}
+\def\cond#1{\mathrel{\lhd ~ {#1} ~ \rhd}}
+\def\false{\ensuremath{\mathbf{false}}}
+\def\true{\ensuremath{\mathbf{true}}}
+\def\alf#1{\alpha{#1}}
+\def\False{\ensuremath{\mathbf{False}}}
+\def\True{\ensuremath{\mathbf{True}}}
+
+
+\def\wdo{\circledast}
+\def\lseq{\mathrel{\mathbf{;\!;}}}
+\def\lcond#1{\mathrel{\blacktriangleleft  {#1}  \blacktriangleright}}
+\def\rplby{\mathbin{\langle\!|}}
+
+\def\then{\rightarrow}
+\def\design{\vdash}
+\def\lsembr{[\![}
+\def\rsembr{]\!]}
+\def\sem#1{\lsembr{#1}\rsembr}
+
+\def\Skip{\mathit{II}}
+
+\def\g#1{g_{#1}}
+
+\def\kword#1{\mathbf{#1}}
+\def\LET{\kword{let}}
+\def\IN{\kword{in}}
+\def\WHERE{\kword{where}}
+\def\WHILE{\kword{while}}
+\def\DO{\kword{do}}
+\def\IF{\kword{if}}
+\def\THEN{\kword{then}}
+\def\ELSE{\kword{else}}
+\def\ELSEIF{\kword{elseif}}

@@ -1,0 +1,41 @@
+\section{Related Work}\label{sec:related}
+
+\DRAFT{From TASE submission --- also needs re-working}
+
+
+Key work was done on concurrent semantics in the 80s and 90s,
+with a strong focus on fully abstract denotational
+semantics.
+Notable work form this period includes that by
+Stephen Brookes\cite{DBLP:journals/iandc/Brookes96}
+and Frank de Boer and colleagues\cite{DBLP:conf/concur/BoerKPR91}.
+Both looked at denotations based on the notion of sets of transition traces,
+these being sequences of pairs of before-after states.
+In order to get compositionality the traces of any program fragment
+had to have arbitrary ``stuttering'' and ``mumbling'' state-pairs
+added to capture the notion of outside interference.
+Full abstraction meant that the semantics had to identify
+programs like $skip\lseq skip$ with $skip$,
+while distinguishing between $x:=2$ and $x:=1\lseq x:=x+1$.
+This latter aspect required the language to be augmented with
+an atomic wrapper construct.
+A common feature of both was the very close linkage of the denotational
+semantics to the operational one.
+The work of Brookes\cite{DBLP:journals/iandc/Brookes96}
+focussed on imperative languages with fair schedulers,
+while that of de Boer et.al\cite{DBLP:conf/concur/BoerKPR91}
+looked at a general framework (``failures of failures'')
+that covered not just imperative programs
+but also constraint solving systems
+and \emph{asynchronous} versions of process algebras.
+
+As already state earlier,
+the key inspiration and starting point for the work presented here
+was the UTPP paper\cite{DBLP:conf/icfem/WoodcockH02}.
+This combined guarded commands\cite{1976:book:dijkstra}
+with the idea of action systems\cite{PODC::BackK1983},
+interpreted in UTP as non-deterministic choice
+over guarded atomic actions,
+where disabled actions behave the the unit for that choice.
+This basic lattice-theoretic architecture for the UTPP semantics
+forms the foundation for the UTCP semantics presented here.
