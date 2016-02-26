@@ -17,8 +17,14 @@ We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 \begin{eqnarray*}
    s &\in& \mathcal S
 \\ \sem{-} &:& \Atom \fun \mathcal S \fun \mathcal P(\mathcal S)
-\\ S \ominus (T|V)
-   &\defs& (S \setminus T) \cup V
+\\ new &:& Gen \fun Lbl \times Gen
+\\ split &:& Gen\fun Gen \times Gen
+\end{eqnarray*}
+If $(\ell,g') = new(g)$ and $(g_a,g_b) = split(g)$ then:
+\begin{eqnarray*}
+   labs(g) &=& \setof\ell \cup labs(g') \cup labs(g_a) \cup labs (g_b)
+\\ \setof\ell \cap labs(g') &=& \emptyset
+\\ labs(g_a) \cap labs(g_b) &=& \emptyset
 \end{eqnarray*}
 
 \subsection{Alphabet}
@@ -49,11 +55,68 @@ We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 \begin{eqnarray*}
    ls(\ell) &\defs& \ell \in ls
 \\ ls(L) &\defs& L \subseteq ls
-\\ ls(\B\ell) &\defs& \ell \notin ls
-\\ ls(\B L) &\defs& L \cap ls = \emptyset
+\\ \B{ls(\ell)} &\defs& \ell \notin ls
+\\ \B{ls(L)} &\defs& L \cap ls = \emptyset
+\\ ls(L) \land ls(M) &=& ls(L \cup M)
+\\ \B{ls(L)} \land \B{ls(M)} &=& \B{ls(L \cup M)}
+\\
+\\ S \ominus (T|V)
+   &\defs& (S \setminus T) \cup V
+\\ S \ominus (r_1,\dots,r_m|a_1,\dots,a_n)
+   &\defs& (S \setminus \setof{r_1,\dots,r_m}) \cup \setof{a_1,\dots,a_n}
+\\
+\\ \ell_G &\defs& \pi_1 (new (G))
+\\ G_: &\defs& \pi_2 (new (G))
+\\ G_1 &\defs& \pi_1 (split(G))
+\\ G_2 &\defs& \pi_2 (split(G))
+\\
+\\ ii &\defs& s'=s
+\\ ~[a] &\defs& s' \in \sem a s
 \end{eqnarray*}
 
-\subsection{Simple Semantics}
+\subsection{Operational Semantics}
+
+\def\arr#1{\stackrel{#1}{\fun}}
+\def\arrs{\fun^*}
+From \cite{conf/popl/Dinsdale-YoungBGPY13}.
+\begin{mathpar}
+\inferrule{C_1 \arr\alpha C'_1}{C_1 \cseq C_2 \arr\alpha C'_1 \cseq C_2}
+\and
+\inferrule{ }{\cskip \cseq C_2 \arr{ii} C_2}
+\and
+\inferrule{ }{C_1 + C_2 \arr{ii} C_i} i \in \setof{1,2}
+\and
+\inferrule{ }{C^* \arr{ii} C\cseq C^*}
+\and
+\inferrule{ }{C^* \arr{ii} C\cseq\cskip}
+\and
+\inferrule{ }{\cskip \parallel C_2 \arr{ii} C_2}
+\and
+\inferrule{ }{C_1 \parallel \cskip \arr{ii} C_1}
+\and
+\inferrule{ }{a \arr{a} \cskip}
+\and
+\inferrule{C_1 \arr\alpha C'_1}{C_1 \parallel C_2 \arr\alpha C'_1 \parallel C_2}
+\and
+\inferrule{C_2 \arr\alpha C'_2}{C_1 \parallel C_2 \arr\alpha C_1 \parallel C'_2}
+\\\\
+\inferrule{ }{C,s \arrs C,s}
+\and
+\inferrule
+ {C_1 \arr\alpha C_2
+  \\
+  s_2 \in \sem\alpha(s_1)
+  \\
+  C_2,s_2 \arrs C_3,s_3
+ }
+ {C_1,s_1 \arrs C_3,s_3}
+\end{mathpar}
+
+
+
+
+
+\subsection{UTP Denotational Semantics}
 
 This follows the TASE2016 Submission style,
 with a simpler version of $run$.
@@ -61,21 +124,25 @@ with a simpler version of $run$.
 \begin{eqnarray*}
    a
    &\defs&
-   ls(in) \land s' \in \sem a s \land ls'=ls \ominus (in|out)
+   ls(in) \land [a] \land ls'=ls \ominus (in|out)
 \\ \cskip
    &\defs&
-   ls(in) \land s' = s \land ls'=ls \ominus (in|out)
+   ls(in) \land ii \land ls'=ls \ominus (in|out)
 \\ C \cseq D
    &\defs&
-   C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in]
+   C[g_{:1},\ell_g/g,out]
+\\ &\lor&
+   D[g_{:2},\ell_g/g,in]
 \\ C + D
    &\defs&
    ls(in)
-   \land s' = s
+   \land ii
    \land ls' \in \{ ls \ominus (in,\ell_{g2}|\ell_{g1})
                   , ls \ominus (in,\ell_{g1}|\ell_{g2})\}
 \\ &\lor&
-   C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]
+   C[g_{1:},\ell_{g1}/g,in]
+\\ &\lor&
+   D[g_{2:},\ell_{g2}/g,in]
 \\ C \parallel D
    &\defs&
    ls(in)
@@ -83,19 +150,372 @@ with a simpler version of $run$.
    \land ls'= ls \ominus (in|\ell_{g1},\ell_{g2})
 \\ &\lor&
    C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ &\lor&
+   D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
 \\ &\lor&
    ls(\ell_{g1:},\ell_{g2:})
-   \land s' = s
+   \land ii
    \land ls'= ls \ominus (\ell_{g1:},\ell_{g2:}|out)
 \\ C^*
    &\defs&
    ls(in)
-   \land s' = s
+   \land ii
    \land ls' \in \{ ls \ominus (in|out), ls \ominus (in|\ell_g)\}
 \\ &\lor&
    C[g_{:},\ell_g,in/g,in,out]
 \\ run(C)
    &\defs&
-   ( ls(\B{out}) * C)[in/ls]
+   ( \B{ls(out)} * C)[in/ls]
 \end{eqnarray*}
+
+\subsection{Calculations}
+
+Let us do some simple calculations.
+
+\subsubsection{$run(a)$}
+
+\begin{eqnarray*}
+  && run(a)
+\EQ{defn $run$}
+\\&& ( \B{ls(out)} * a)[in/ls]
+\EQ{will do at least one iteration}
+\\&& (\B{ls(out)} \land a \seq run(a))[in/ls]
+\EQ{$(P;Q)[e/x] = P[e/x];Q$, for undashed $x$}
+\\&& (\B{ls(out)} \land a) [in/ls] \seq \B{ls(out)} * a
+\EQ{defn $a$}
+\\&& (\B{ls(out)}
+      \land ls(in) \land [a] \land ls'=ls \ominus (in|out))
+      [in/ls]
+      \seq \B{ls(out)} * a
+\EQ{substitution}
+\\&& \B{in(out)}
+      \land in(in) \land [a] \land ls'=in \ominus (in|out)
+      \seq \B{ls(out)} * a
+\EQ{set theory, propositional logic}
+\\&& [a] \land ls'=out \seq \B{ls(out)} * a
+\EQ{push after-obs through $\seq$}
+\\&& [a] \seq  ls=out \land \B{ls(out)} * a
+\EQ{$\lnot c \land c*P = \lnot c \land \Skip$}
+\\&& [a] \seq  ls=out \land \Skip
+\EQ{Easy UTP calculation}
+\\&& [a] \land  ls'=out
+\end{eqnarray*}
+We have shown that
+an execution of an atomic action $a$ is
+\begin{eqnarray*}
+   a &=& [a] \land  ls'=out
+\\   &=& s' \in \sem a s \land ls'=out
+\end{eqnarray*}
+We end with a predicate with only $s,s',ls'$ as free variables.
+This is a pattern that recurs.
+
+\subsubsection{$run(\cskip)$}
+
+\begin{eqnarray*}
+  && run(\cskip)
+\EQ{the only difference is that $ii$ replaces $[a]$}
+\\&& ii \land  ls'=out
+\end{eqnarray*}
+
+\subsubsection{$run(\cskip \cseq a)$}
+
+\begin{eqnarray*}
+  && run(\cskip \cseq a)
+\EQ{First three steps of $run(a)$ calculation apply.}
+\\&& (\B{ls(out)} \land (\cskip \cseq a)) [in/ls] \seq \B{ls(out)} * a
+\EQ{Defn. $\cseq$}
+\\&& ( \B{ls(out)}
+       \land ( \cskip[\g{:1},\ell_g/g,out]
+               \lor
+                a[\g{:2},\ell_g/g,in]
+              )
+     ) [in/ls]
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{Substitution}
+\\&& \B{in(out)}
+       \land ( \cskip[\g{:1},\ell_g,in/g,out,ls]
+               \lor
+                a[\g{:2},\ell_g,in/g,in,ls]
+              )
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{Distributivity of $\land$, and $\seq$ w.r.t $\lor$}
+\\&& \B{in(out)}
+       \land \cskip[\g{:1},\ell_g,in/g,out,ls]
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\\&\lor&
+     \B{in(out)}
+       \land a[\g{:2},\ell_g,in/g,in,ls]
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{defns of $\cskip$ and $a$}
+\\&& \B{in(out)}
+       \land (ls(in) \land ii \land ls'=ls \ominus (in|out))[\g{:1},\ell_g,in/g,out,ls]
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\\&\lor&
+     \B{in(out)}
+       \land (ls(in) \land [a] \land ls'=ls \ominus (in|out))[\g{:2},\ell_g,in/g,in,ls]
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{substitution}
+\\&& \B{in(out)}
+       \land in(in) \land ii \land ls'=in \ominus (in|\ell_g)
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\\&\lor&
+     \B{in(out)}
+       \land in(\ell_g) \land [a] \land ls'=in \ominus (\ell_g|out)
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{simplification, noting $in(\ell_g)=\false$}
+\\&& ii \land ls'=\ell_g
+     \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{Push $ls'$ through}
+\\&& ii \seq ls=\ell_g
+     \land \B{ls(out)} * (\cskip \cseq a)
+\EQ{$ii \seq P=P$, loop condition still true, unroll}
+\\&& ls=\ell_g
+     \land (\cskip \cseq a) \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{Defn $\cseq$, distributivity of most things w.r.t. $\lor$}
+\\&& ls=\ell_g
+     \land \cskip[\g{:1},\ell_g/g,out] \seq \B{ls(out)} * (\cskip \cseq a)
+\\&\lor&
+     ls=\ell_g
+     \land a[\g{:2},\ell_g/g,in] \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{Defns.  $\cskip$ and $a$, with substitutions}
+\\&& ls=\ell_g
+     \land ls(in) \land ii \land ls'=ls \ominus (in|\ell_g) \seq \B{ls(out)} * (\cskip \cseq a)
+\\&\lor&
+     ls=\ell_g
+     \land ls(\ell_g) \land [a] \land ls'=ls \ominus (\ell_g|out) \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{Simplification, noting $ls=\ell_g$ and so $ls(in) = \false$}
+\\&& [a] \land ls'=out \seq \B{ls(out)} * (\cskip \cseq a)
+\EQ{$P \land c' \seq \lnot c * Q = P \land c'$}
+\\&& [a] \land ls'=out
+\end{eqnarray*}
+We have shown $\cskip \cseq a = a$!
+
+\subsubsection{$run(\cskip \cseq C)$}
+
+\begin{eqnarray*}
+  && run(\cskip \cseq C)
+\EQ{First three steps of $run(a)$ calculation apply.}
+\\&& (\B{ls(out)} \land (\cskip \cseq C)) [in/ls] \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{Defn. $\cseq$}
+\\&& ( \B{ls(out)}
+       \land ( \cskip[\g{:1},\ell_g/g,out]
+               \lor
+                C[\g{:2},\ell_g/g,in]
+              )
+     ) [in/ls]
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{Substitution}
+\\&& \B{in(out)}
+       \land ( \cskip[\g{:1},\ell_g,in/g,out,ls]
+               \lor
+                C[\g{:2},\ell_g,in/g,in,ls]
+              )
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{Distributivity of $\land$, and $\seq$ w.r.t $\lor$}
+\\&& \B{in(out)}
+       \land \cskip[\g{:1},\ell_g,in/g,out,ls]
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\\&\lor&
+     \B{in(out)}
+       \land C[\g{:2},\ell_g,in/g,in,ls]
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{defn of $\cskip$ }
+\\&& \B{in(out)}
+       \land (ls(in) \land ii \land ls'=ls \ominus (in|out))[\g{:1},\ell_g,in/g,out,ls]
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\\&\lor&
+     \B{in(out)}
+       \land C[\g{:2},\ell_g,in/g,in,ls]
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{substitution}
+\\&& \B{in(out)}
+       \land in(in) \land ii \land ls'=in \ominus (in|\ell_g)
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\\&\lor&
+     \B{in(out)}
+       \land C[\g{:2},\ell_g,in/g,in,ls]
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{simplification}
+\\&& ii \land ls'=\ell_g
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\\&\lor&
+     \B{in(out)}
+       \land C[\g{:2},\ell_g,in/g,in,ls]
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\end{eqnarray*}
+At this stage we pause.
+Intuitively, we know that none of the atomic parts
+inside of $ C[\g{:2},\ell_g,in/g,in,ls]$ can be enabled:
+\begin{itemize}
+  \item
+    $C$ refers to $ls$, $in$, $out$
+    and maybe other labels in $labs(g)$.
+  \item
+    $C[\g{:2},\ell_g,in/g,in,ls]$
+    now has mappings as follows:
+    \begin{eqnarray*}
+       ls &\mapsto& in
+    \\ in &\mapsto& \ell_g
+    \\ out &\mapsto& out
+    \\ labs(g) &\mapsto& labs(\g{:2})
+    \end{eqnarray*}
+  \item
+    Assuming that $C$ is ``sensible'' then it requires
+    $ls(in)$ to get started,
+    which in $C[\g{:2},\ell_g,in/g,in,ls]$
+    becomes the condition $in(\ell_g)$, that is $\false$.
+  \item
+    So we should conclude that here
+    $C[\g{:2},\ell_g,in/g,in,ls]=\false$,
+    as it can never get started.
+\end{itemize}
+Let us do so, and continue:
+\begin{eqnarray*}
+  && ii \land ls'=\ell_g
+     \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{Push $ls'$ through}
+\\&& ii \seq ls=\ell_g
+     \land \B{ls(out)} * (\cskip \cseq C)
+\EQ{$ii \seq P=P$, loop condition still true, unroll}
+\\&& ls=\ell_g
+     \land (\cskip \cseq C) \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{Defn $\cseq$, distributivity of most things w.r.t. $\lor$}
+\\&& ls=\ell_g
+     \land \cskip[\g{:1},\ell_g/g,out] \seq \B{ls(out)} * (\cskip \cseq C)
+\\&\lor&
+     ls=\ell_g
+     \land C[\g{:2},\ell_g/g,in] \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{Defn  $\cskip$ with substitutions}
+\\&& ls=\ell_g
+     \land ls(in) \land ii \land ls'=ls \ominus (in|\ell_g) \seq \B{ls(out)} * (\cskip \cseq C)
+\\&\lor&
+     ls=\ell_g
+     \land C[\g{:2},\ell_g/g,in] \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{Simplification, noting $ls=\ell_g$ and so $ls(in) = \false$}
+\\&&      ls=\ell_g
+     \land C[\g{:2},\ell_g/g,in] \seq \B{ls(out)} * (\cskip \cseq C)
+\EQ{can do a little substitution `fusion' here}
+\\&&  (ls=in \land C)[\g{:2},\ell_g/g,in] \seq \B{ls(out)} * (\cskip \cseq C)
+\end{eqnarray*}
+We pause once more.
+This has been transformed into the `execution' of $C$
+in a context where it's start ($in$) label is present,
+but as seen from outside $C$, so its $in$ appears to us as $\ell_g$,
+and its $g$ has become what we, from the top-level,
+could consider to be $\g{:2}$.
+As we have handed the case of atomic $C$,
+we can assume $C$ is non-atomic.
+Now all non-atomic commands have a form that flattens
+out into a finite disjunction of atomic actions
+of the form
+\[
+   ls(L) \land [a] \land ls'=ls\ominus(L|M)
+\]
+where both $L$ and $M$ are either subsets of $lab(g)$,
+or are precisely one of the sets $\setof{in}$ or $\setof{out}$.
+(as seen by the composite), and here $[a]$ can also be $ii$.
+In particular every flattened composite contains
+exactly one instance of each of the following two
+atomic action forms:
+\begin{align*}
+   ls(in) \land [a] \land ls'=ls\ominus(in|L)
+\\ ls(L) \land [a] \land ls'=ls\ominus(L|out)
+\end{align*}
+where $\setof{in,out}\cap L = \emptyset$.
+So in any history of the execution of commands
+we find that no actions of any composite
+will occur until $in$ (as see by it) appears in $ls$.
+At this point precisly one action will be enabled:
+\[
+ ls(in) \land [a] \land ls'=ls\ominus(in|L)
+\]
+Once scheduled, $in$ be removed, $L$ added to $ls$,
+enabling other actions in that composite.
+Again careful inspection of the semantics shows that there
+is a ``flow'' that ensures that every action gets
+enabled eventually, changing $ls$
+until the point where $N$ (say) is in $ls$,
+and the following action is enabled:
+\[
+ ls(N) \land [a] \land ls'=ls\ominus(N|out)
+\]
+Once this runs, $out$ will be in $ls$,
+and this composite will be completely inactive,
+either till program execution terminates altogether,
+or some outside agency, (another command) places
+this commands $in$-label back into $ls$.
+
+Looking back at our calculation
+of $run(\cskip \cseq C)$
+we see we have got the position where
+and execution of $C$ has been setup and ready to go.
+We can now state that in
+\[
+(ls=in \land C)[\g{:2},\ell_g/g,in]
+\seq
+\B{ls(out)} * (\cskip \cseq C)
+\]
+we shall see,
+from $C$'s perspective,
+that  only the $ls(in)$ enabled action happens,
+and then $in$ will be out of $ls$,
+and some labels in $labs(g)$ will be in,
+but not $out$.
+So the loop condition will still hold and we will go
+around again, with
+\[
+\setof{in,out} \cap ls = \emptyset
+\land labs(g) \cap ls \neq \emptyset
+\]
+as seen by $C$.
+From our perspective at top-level
+this property appears as
+\[
+\setof{\ell_g,out} \cap ls = \emptyset
+\land labs(\g{2:}) \cap ls \neq \emptyset
+\]
+The loop should continue to run until
+the final action of $C$ is enabled,
+after which we should find $out$ in $ls$
+and so $run$ will be done.
+
+
+\DRAFT{
+THIS IS A LOT OF HAND-WAVING!
+HOW DO WE FORMALISE THIS?
+}
+In some sense, what we have done above,
+is try to calculate a single ``step'' of
+$\cskip \cseq C$, as per the operational semantics
+rule:
+\[
+  \inferrule
+    { }
+    {\cskip\cseq C \arr{ii} C}
+\]
+We saw the execution of $\cskip$ and its state change $ii$,
+and we are left, not with $C$ exactly,
+but something that we hope will behave just like $C$.
+
+\subsubsection{Taking Stock}
+
+\DRAFT{This bit was written before all the material immediately
+above discussing the calculation of $\cskip\cseq C$}
+
+We have a notion of ``sensible'' predicates $C$
+as being ones that require $ls(in)$ to hold
+in order to start or become alive,
+and only then will events unfold that allow $in$
+to be removed from $ls$ and elements of $labs(g)$
+to flow in and out of $ls$, until we are left
+with $out$ in $ls$,
+at which point $C$'s execution is complete.
+If we are in a state where we know that $ls(in$)
+is false,
+then any disjunctive branch with $C$ as its prefix
+will simply disappear.
+
+For $C[\g{:2},\ell_g,in/g,in,ls]$ as the prefix
+of a sequence, $ls(in)$ becomes $in(\ell_g)$
+which is always false, since in a well-formed context
+$in$ and $\ell_g$ are always distinct labels.

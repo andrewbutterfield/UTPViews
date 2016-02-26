@@ -4,31 +4,11 @@
 
 \subsection{Designs}
 
-We have exploited the fact that,
-for atomic action $A$ with alphabet $\setof{s,s'}$ we have:
-$A[f,\ell_1,\ell_2,S/g,in,out,ls] = A$,
-which dramatically simplifies the results of various calculations, e.g.:
-\RLEQNS{
-   run(\A(A) \lseq \A(B))
-   &=& (A ; B ) \land ls'=\setof{\ell_{g:}}
-\\ run(\A(A) \parallel \A(B))
-   &=& ( (A ; B ) \lor (B ; A ) ) \land ls'=\setof{\ell_{g:}}
-}
-The semantics of $c \wdo \A(A)$ we expect to have a terminating part
-and a non-terminating part:
-\RLEQNS{
-   run(c \wdo \A(A))
-   &=& (\bigvee_{i \in \Nat} A^i ) \land \lnot c \land ls'=\setof{\ell_{g:}}
-       \lor A^\omega \land c \land \ell_{g:} \notin ls'
-\\ \WHERE & & A^0 = s'=s
-\\        & & A^{n+1} = A ; A^n
-\\        & & A^\omega = \mbox{infinite sequence of $A$s}
-}
 From the above we can see that a possible interpretation of our semantics as a
 Design is
 \RLEQNS{
-   ok &\defs&  \ell_g \in ls
-\\ ok' &\defs&  \ell_{g:} \in ls'
+   ok &\defs&  ls(in)
+\\ ok' &\defs&  ls'(out)
 }
 
 \subsection{Healthiness Conditions}
@@ -48,17 +28,17 @@ Should atomic state change actions be considered as designs?
 
 We can define some program predicates as follows:
 \RLEQNS{
-   justStarted(P)
+   justStarted(C)
    &\defs&
    in \in ls
-\\ running(P)
+\\ running(C)
    &\defs&
    \setof{in,out} \cap ls = \emptyset
    \land
-   \exists \ell \in ls @ \ell \in labs(g)
-\\ justStopped(P) &\defs& out \in ls
+   \exists \ell \in ls \bullet \ell \in labs(g)
+\\ justStopped(C) &\defs& out \in ls
 }
-Note that $running(\A(A)$ is always false.
+Note that $running(a)$ is always false.
 
 How useful are these for reasoning?
 
