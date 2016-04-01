@@ -1,0 +1,34 @@
+\section{UTP Approach for Operational Semantics}
+
+All form Chapter 10 in ``the Book''.
+Notations:
+
+\begin{tabular}{|c|c|l|}
+\hline
+  Syntax & Semantic & Comment
+\\\hline
+  \texttt{s} & $s$ & State Description
+\\\hline
+  \texttt{P} & $P$ & Program
+\\\hline
+\end{tabular}
+
+The state description $s$ has the form $obs:=consts$,
+or equivalently $\true \design obs'=consts$.
+\RLEQNS{
+   (\texttt{s},\texttt{P}) \arr{} (\texttt{t},\texttt{Q})
+   &\defs&
+   (s\seq P) \refinedby (t\seq Q)
+   & \mbox{(Step Relation)}
+}
+
+
+\RLEQNS{
+  && (\texttt{s},\texttt{v:=e}) \arr{} (\texttt{v:=(s;e)},\texttt{II})
+\EQ{Step Relation}
+\\&& (s \seq v:=e ) \refinedby ( v:=(s\seq e) \seq \Skip )
+\EQ{Assignment composition, $\Skip$ as right-unit}
+\\&& v:=(s\seq e ) \refinedby v:=(s\seq e)
+\EQ{reflexivity}
+\\&& \true
+}
