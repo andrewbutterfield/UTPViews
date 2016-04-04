@@ -142,7 +142,7 @@ to the transitions above in terms of our semantic model.
 \subsection{Induced Transitions}
 
 We shall write an atomic behavior
-that is enabled only when $E \subset ls$,
+that is enabled only when $E \subseteq ls$,
 does a state change described by predicate $a$ over $s$ and $s'$
 and then removes all of $E$ from $ls$ and adds in the labels in $N$
 with the suggestive notation:
@@ -196,7 +196,7 @@ then we can re-write our semantics as follows:
    &\defs&
    ( ls(\B{out}) * C)[in/ls]
 \end{eqnarray*}
-We note the following substitution law:
+We note the following substitution laws:
 \begin{eqnarray*}
   && (E \arr a N)[G,L,M/g,in,out]
 \\&=& (ls(E) \land s' \in \sem a \land ls'=ls\ominus(E|N))[G,L,M/g,in,out]
@@ -204,4 +204,223 @@ We note the following substitution law:
        \land s' \in \sem a
 \\&& {}\land ls'=ls\ominus(E[G,L,M/g,in,out]|N[G,L,M/g,in,out]))
 \\&=& E[G,L,M/g,in,out] \arr a N[G,L,M/g,in,out]
+\\
+\\&& a[G,L,M/g,in,out] = L \arr a M
 \end{eqnarray*}
+
+\subsection{Finding Bisimulations}
+
+
+Idea: define the desired bisimulations in such a way that
+we can manipulate them with the same kind of substitutions as found. in
+the semantics.
+
+\subsubsection{\protect{$a \parallel b = b \parallel a$}}
+
+Consider a simple example: prove that $a \parallel b = b \parallel a$,
+
+\RLEQNS{
+  && a \parallel b
+\EQ{defn of $\parallel$ }
+\\&&      in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+     \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+\\ &\lor&
+   a[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor b[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{defn of $a$ and $b$}
+\\&&      in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+     \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+\\ &\lor&
+   (in \arr a out)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor (in \arr b out)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{substitutions, as per above}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+     \lor
+     \ell_{g1} \arr a \ell_{g1:}
+     \lor
+     \ell_{g2} \arr b \ell_{g2:}
+     \lor
+     \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+\\
+\\&& b \parallel a
+\EQ{Above calculations with $a$ and $b$ swapped}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+     \lor
+     \ell_{g1} \arr b \ell_{g1:}
+     \lor
+     \ell_{g2} \arr a \ell_{g2:}
+     \lor
+     \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+}
+
+If we define%
+\footnote{If is a label is not mentioned, it maps to itself}
+the following bijection on labels:
+\[
+  \ell_{g1} \mapsto \ell{g2}
+, \ell_{g1:} \mapsto \ell{g2:}
+, \ell_{g2} \mapsto \ell{g1}
+, \ell_{g2:} \mapsto \ell{g1:}
+\]
+we can show that the two sides are isomorphic modulo that bijection.
+Interestingly, this isomorphism works if we define the following
+generator bijection $g1 \rightleftharpoons g2$.
+
+\subsubsection{\protect{$(a \cseq b)\parallel c = c \parallel (a \cseq b)$}}
+
+Now, a bit more ambitious---consider
+\[ (a \cseq b)\parallel c
+    = c \parallel (a \cseq b)
+\]
+
+LHS:
+\RLEQNS{
+   && (a \cseq b)\parallel c
+\EQ{defn $\parallel$}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   (a \cseq b)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor c[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{defn $\cseq$}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\&& {}\lor c[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{atomic substitution}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   (in \arr a \ell_g \lor \ell_g \arr b out)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\&& {}\lor \ell_{g2} \arr c\ell_{g2:}
+\EQ{substitution}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   \ell_{g1} \arr a \ell_{g1::}
+   \lor \ell_{g1::} \arr b \ell_{g1:}
+   \lor \ell_{g2} \arr c\ell_{g2:}
+}
+
+RHS:
+\RLEQNS{
+  && c \parallel (a \cseq b)
+\EQ{defn $\parallel$}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   c[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor (a \cseq b)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{defn $\cseq$}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   c[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out] \lor {}
+\\&& (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{atomic substitution}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   \ell_{g1} \arr c \ell_{g1:} \lor {}
+\\&& (in \arr a \ell_g \lor \ell_g \arr b out)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{substitution}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   \ell_{g1} \arr c \ell_{g1:}
+   \lor \ell_{g2} \arr a \ell_{g2::}
+   \lor \ell_{g2::} \arr b \ell_{g2:}
+}
+
+Reprise LHS:
+\[
+in \arr{ii} \setof{\ell_{g1},\ell_{g2}} \lor
+\setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor
+\ell_{g1} \arr a \ell_{g1::} \lor
+\ell_{g1::} \arr b \ell_{g1:} \lor
+\ell_{g2} \arr c\ell_{g2:}
+\]
+Reprise RHS:
+\[
+in \arr{ii} \setof{\ell_{g1},\ell_{g2}} \lor
+\setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor
+\ell_{g1} \arr c \ell_{g1:} \lor
+\ell_{g2} \arr a \ell_{g2::} \lor
+\ell_{g2::} \arr b \ell_{g2:}
+\]
+Reorder LHS:
+\[
+in \arr{ii} \setof{\ell_{g2},\ell_{g1}} \lor
+\setof{\ell_{g2:},\ell_{g1:}} \arr{ii} out \lor
+\ell_{g2} \arr c\ell_{g2:} \lor
+\ell_{g1} \arr a \ell_{g1::} \lor
+\ell_{g1::} \arr b \ell_{g1:}
+\]
+We immediately see the following bijection: $g1 \leftrightharpoons g2$.
+
+\subsubsection{\protect{$(a \cseq b) \cseq c   = a \cseq (b \cseq c)$}}
+
+Now we look at the following:
+\[
+  (a \cseq b) \cseq c   = a \cseq (b \cseq c)
+\]
+
+LHS:
+\RLEQNS{
+  && (a \cseq b) \cseq c
+\EQ{defn $\cseq$}
+\\&& (a \cseq b)[g_{:1},\ell_g/g,out] \lor c[g_{:2},\ell_g/g,in]
+\EQ{defn $\cseq$}
+\\&& (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{:1},\ell_g/g,out]
+     \lor c[g_{:2},\ell_g/g,in]
+\EQ{atomic substitution}
+\\&& (in \arr a out \lor \ell_g \arr b out)[g_{:1},\ell_g/g,out]
+     \lor \ell_g \arr c out
+\EQ{substitution}
+\\&& in \arr a \ell_{g:1} \lor \ell_{g:1} \arr b \ell_g \lor \ell_g \arr c out
+}
+
+% C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in]
+RHS:
+\RLEQNS{
+  && a \cseq (b \cseq c)
+\EQ{defn $\cseq$}
+\\&& a[g_{:1},\ell_g/g,out] \lor (b \cseq c)[g_{:2},\ell_g/g,in]
+\EQ{defn $\cseq$}
+\\&& a[g_{:1},\ell_g/g,out] \lor
+  (b[g_{:1},\ell_g/g,out] \lor c[g_{:2},\ell_g/g,in])[g_{:2},\ell_g/g,in]
+\EQ{atomic substitution}
+\\&& in \arr a \ell_g \lor
+  (in \arr b \ell_g \lor \ell_g \arr c out)[g_{:2},\ell_g/g,in]
+\EQ{substitution}
+\\&& in \arr a \ell_g \lor \ell_g \arr b \ell_{g:2} \lor \ell_{g:2} \arr c out
+}
+
+We see the following bijection:
+$\ell_{g:1} \leftrightharpoons \ell_{g},
+ \ell_{g}   \leftrightharpoons \ell_{g:2}
+$
+
+\subsubsection{Bijective Substitutions}
+
+Idea: aren't all our substitutions actually bijections?
+\begin{eqnarray*}
+   \cseq
+   &&
+   [g_{:1},\ell_g/g,out]
+   [g_{:2},\ell_g/g,in]
+\\ +
+   &&
+   [g_{1:},\ell_{g1}/g,in]
+   [g_{2:},\ell_{g2}/g,in]
+\\ \parallel
+   &&
+   [g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   [g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ {}^*
+   &&
+   [g_{:},\ell_g,in/g,in,out]
+\end{eqnarray*}
+Under reasonable assumptions about the structure or and use of everything,
+at least.
