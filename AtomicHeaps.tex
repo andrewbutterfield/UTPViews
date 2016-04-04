@@ -1,0 +1,40 @@
+\section{Atomic Heaps}
+
+We do a quick run-down of Atomic Heaps in \cite{conf/popl/Dinsdale-YoungBGPY13}.
+
+\begin{eqnarray*}
+   \vx,\vy &:& \Var
+\\ v &\in& \Val
+\\ l \in \Loc &\subseteq& \Val
+\\ a \in \Atom{H}
+   &::=&
+   \vx := \vy
+   \mid
+   [\vx] := v
+   \mid
+   [\vx] := \vy
+   \mid
+   \vx := [\vy]
+   \mid
+   \vx := \reft\vy
+\end{eqnarray*}
+
+\[
+ \SS{H} \defs ((\Var \uplus \Loc) \ffun \Val) \uplus \setof{\bang}
+\]
+
+\begin{eqnarray*}
+   b \rhd s &\defs& \textit{if }b\textit{ then }s\textit{ else }\bang
+\\ \dom(\bang) &\defs& \emptyset
+\\ \sem{\vx:=\vy}(s)
+              &\defs& \vy \in \dom(s)\rhd \setof{s[\vx \mapsto s(\vy)]}
+\\ \sem{\vx:=v}(s)
+              &\defs& \vx,s(\vx) \in \dom(s)\rhd \setof{s[s(\vx) \mapsto v]}
+\\ \sem{[\vx]:=\vy}(s)
+              &\defs& \vx,\vy,s(\vx) \in \dom(s)\rhd \setof{s[s(\vx) \mapsto s(\vy)]}
+\\ \sem{\vx:=[\vy]}(s)
+              &\defs& \vy,s(\vy) \in \dom(s)\rhd \setof{s[\vx \mapsto s(s(\vy))]}
+\\ \sem{\vx:=\reft\vy}(s)
+              &\defs& \vy \in \dom(s)\rhd
+              \setof{s[\vx \mapsto l,l \mapsto s(\vy)] \mid l \in \Loc \setminus \dom(s) }
+\end{eqnarray*}

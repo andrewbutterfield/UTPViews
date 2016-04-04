@@ -1,0 +1,44 @@
+\section{Types}
+
+We do a quick run-down of Types in \cite{conf/popl/Dinsdale-YoungBGPY13}.
+
+
+\begin{eqnarray*}
+  \tau \in \Type &=& \valt \mid \reft \tau
+\\ \Gamma &:& \Var \pfun \Type
+\end{eqnarray*}
+
+View monoid: $((\Var \pfun \Type)\uplus\setof\bot,\cup_\bot,\emptyset)$
+
+Type axioms:
+\begin{mathpar}
+\vx : \tau, \vy : \tau \vdash \vx := \vy
+\and
+x: \reft \valt \vdash [x]:=v
+\\
+\vx:\tau, \vy:\reft\tau \vdash \vx := [\vy]
+\and
+\vx : \reft\tau, \vy:\tau \vdash \vx := \reft \vy
+\\
+\vx : \reft\tau, y:\tau \vdash [\vx] := \vy
+\end{mathpar}
+
+\def\op{\mathbin{\mathsf{op}}}
+Type inference
+\begin{mathpar}
+\inferrule{ }
+ {\Gamma \vdash \cskip}
+\and
+\inferrule
+{\Gamma \vdash C_1 \and \Gamma \vdash C_2 \and \op \in \setof{\cseq,+} }
+               {\Gamma \vdash C_1 \op C_2}
+\\
+\inferrule{\Gamma_1 \vdash C_1 \and \Gamma_2 \vdash C_2}
+           {\Gamma_1,\Gamma_2 \vdash C_1 \parallel C_2}
+\and
+\inferrule{\Gamma \vdash C}
+         {\Gamma \vdash C^*}
+\and
+\inferrule{\Gamma \vdash C}
+    {\Gamma,\Gamma' \vdash C}
+\end{mathpar}
