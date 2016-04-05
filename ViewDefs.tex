@@ -2,25 +2,27 @@
 
 We list all the generic view definitions\cite{conf/popl/Dinsdale-YoungBGPY13}.
 
+
+\subsection{Universal Definitions}
+
 \setcounter{secnumdepth}{0}
 
-
-\subsection{Parameter A}(Atomic Commands)
+\subsubsection{Parameter A}(Atomic Commands)
 Assume a set of (syntactic)
 \emph{atomic commands} \Atom{}, ranged over by $a$.
 
-\subsection{Definition 1} (Language Syntax)
+\subsubsection{Definition 1} (Language Syntax)
 The set of (syntactic) \emph{commands},
 \Comm, ranged over by $C$, is defined by the following grammar:
 \begin{eqnarray*}
    C &::=& a \mid \Vskip \mid C ; C \mid C+C \mid C \parallel C \mid C^*
 \end{eqnarray*}
 
-\subsection{Parameter B}(Machine States)
+\subsubsection{Parameter B}(Machine States)
 Assume a set of \emph{machine states} $\SS{}$,
 ranged over by $s$.
 
-\subsection{Parameter C}(Interpretation of Atomic Commands)
+\subsubsection{Parameter C}(Interpretation of Atomic Commands)
 Assume a function $\sem{-} : \Atom{} \fun \SS{} \fun \power(\SS{})$
 that associates each atomic
 command with a non-deterministic state transformer. (Where necessary,
@@ -28,14 +30,14 @@ we lift non-deterministic state transformers to sets of states:
 for $S \in \power(\SS{}), \sem a(A) = \bigcup\setof{\sem a(a) \mid s \in S}$.)
 
 
-\subsection{Definition 2} (Transition Labels)
+\subsubsection{Definition 2} (Transition Labels)
 The set of transition labels, $\Label \vwdef \Atom{} \uplus \setof\vid$,
 extends the set of atomic commands with a
 designated identity label, \vid.
 Labels are ranged over by $\alpha$.
 $\sem{-}$ is extended to \Label\ by defining $\sem\vid \vwdef \lambda s .\setof s$.
 
-\subsection{Definition 3}
+\subsubsection{Definition 3}
 (Labelled Transition System and Operational Semantics).
 The labelled transition relation
 $\_ \arr{\_} \_ : \Comm \times \Label \times \Comm$
@@ -80,7 +82,7 @@ is defined by the following rules:
 An interesting exercise is to try and give a meaning
 to the transitions above in terms of our semantic model.
 
-\subsection{Parameter D} (View Commutative Semigroup).
+\subsubsection{Parameter D} (View Commutative Semigroup).
 Assume a commutative
 semigroup $(\View,*)$. The variables $p$, $q$, $r$ are used to denote
 elements of \View.
@@ -88,10 +90,10 @@ elements of \View.
 If the semigroup has a unit, $u$, then we call it a \emph{view monoid},
 written $(\View,*,u)$.
 
-\subsection{Parameter E} (Axiomatisation).
+\subsubsection{Parameter E} (Axiomatisation).
 Assume a set of axioms $\Axiom \subseteq \View \times \Label \times \View$.
 
-\subsection{Definition 7}
+\subsubsection{Definition 7}
 (Entailment).
 The entailment relation
 $\models \subseteq \View \times \View$
@@ -100,7 +102,7 @@ is defined by:
   p\models q \eqvdef (p,\vid,q) \in \Axiom
 \]
 
-\subsection{Definition 8} (Program Logic).
+\subsubsection{Definition 8} (Program Logic).
 The program logic’s judgements
 are of the form
 $\plogic p C q$,
@@ -137,12 +139,12 @@ proof rules for these judgements are as follows:
           {\plogic p C q}
 \end{mathpar}
 
-\subsection{Parameter F} (Reification).
+\subsubsection{Parameter F} (Reification).
 Assume a reification function
 $\reify{-} : \View \fun \power(\SS{})$
 which maps views to sets of machine states.
 
-\subsection{Definition 11} (Action Judgement).
+\subsubsection{Definition 11} (Action Judgement).
 The \emph{action judgement} is defined
 as:
 \begin{eqnarray*}
@@ -159,13 +161,24 @@ For a view monoid, this definition simplifies to:
    \forall r \in \View . \sem\alpha(\reify{p*r}) \subseteq \reify{q*r}
 \end{eqnarray*}
 
-\subsection{Definition 12} (Semantic Entailment)
+\subsubsection{Definition 12} (Semantic Entailment)
 $p \entails q  \eqvdef \ajudge \vid p q$.
 
-\subsection{Property G} (Axiom Soundness).
+\subsubsection{Property G} (Axiom Soundness).
 For every $(p,\alpha,q) \in \Axiom)$
 \[
   \ajudge \alpha p q
 \]
+
+\setcounter{secnumdepth}{4}
+
+\subsection{Specialized Definitions}
+
+The definitions are specialisations
+specific to groups of similar instances of views.
+
+\setcounter{secnumdepth}{0}
+
+\subsubsection{More To Come \ldots}
 
 \setcounter{secnumdepth}{4}

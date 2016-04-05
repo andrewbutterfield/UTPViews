@@ -1,14 +1,19 @@
 \section{Types}
 
-We do a quick run-down of Types in \cite{conf/popl/Dinsdale-YoungBGPY13}.
+\subsection{Types as a View}
 
+We do a quick run-down of Types in \cite{conf/popl/Dinsdale-YoungBGPY13}.
 
 \begin{eqnarray*}
   \tau \in \Type &=& \valt \mid \reft \tau
 \\ \Gamma &:& \Var \pfun \Type
 \end{eqnarray*}
 
+\textbf{Definition 9} (Simple Type Views) : \textbf{Parameter D}.
+
 View monoid: $((\Var \pfun \Type)\uplus\setof\bot,\cup_\bot,\emptyset)$
+
+\textbf{Definition 10} (Simple Type Axioms) : \textbf{Parameter E}.
 
 Type axioms:
 \begin{mathpar}
@@ -42,3 +47,33 @@ Type inference
 \inferrule{\Gamma \vdash C}
     {\Gamma,\Gamma' \vdash C}
 \end{mathpar}
+
+\textbf{Definition 13} (State Typing).
+
+The state typing judgement $\Gamma;\Theta \vdash s$,
+where $\Gamma : \Var \pfun \Type$, $s \in \SS{H}$
+and $\Theta : \Loc \pfun \Type$ ranges
+over heap typing contexts, is defined as follows:
+\begin{eqnarray*}
+   \Gamma;\Theta \vdash s
+   &\eqvdef&
+   \forall \vx \in \dom(\Gamma) . \Theta \vdash s(\vx) : \Gamma(\vx)
+\\ && {} \land \forall l \in \dom(\Theta) . \Theta \vdash s(l) : \Theta(l)
+\end{eqnarray*}
+where $\Theta \vdash v : \tau \eqvdef \tau=\valt \lor \tau=\reft (\Theta(v))$.
+
+
+\textbf{Definition 14} (Simple Type Reification) : \textbf{Parameter F}.
+
+The simple type reification,
+$\reify{-}_{\TS} : \View_{\mathcal M \TS} \fun \power(\SS{H})$,
+is defined as follows:
+\[
+  \reify{\Gamma}_{\TS}
+  \vwdef \setof{ s \in \SS H \mid \exists \Theta . \Gamma;\Theta \vdash s}
+\]
+
+\subsection{View Types in UTP}
+
+We first note that types are defined over the same heap model
+used for atomic heaps.
