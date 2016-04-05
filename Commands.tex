@@ -1,6 +1,8 @@
 \section{Commands}
 
-We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
+
+We present the commands here,
+with a notational tweak that suits a UTP encoding.
 
 \subsection{Syntax}
 
@@ -55,8 +57,6 @@ We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 
 \subsection{Simple Semantics}
 
-This follows the TASE2016 Submission style,
-with a simpler version of $run$.
 
 \begin{eqnarray*}
    a
@@ -100,44 +100,6 @@ with a simpler version of $run$.
    ( ls(\B{out}) * C)[in/ls]
 \end{eqnarray*}
 
-\subsection{Operational Semantics}
-
-As per \cite{conf/popl/Dinsdale-YoungBGPY13}.
-\begin{mathpar}
-\inferrule{C_1 \arr\alpha C'_1}{C_1 \cseq C_2 \arr\alpha C'_1 \cseq C_2}
-\and
-\inferrule{ }{\cskip \cseq C_2 \arr{ii} C_2}
-\and
-\inferrule{ }{C_1 + C_2 \arr{ii} C_i} i \in \setof{1,2}
-\and
-\inferrule{ }{C^* \arr{ii} C\cseq C^*}
-\and
-\inferrule{ }{C^* \arr{ii} \cskip}
-\and
-\inferrule{ }{\cskip \parallel C_2 \arr{ii} C_2}
-\and
-\inferrule{ }{C_1 \parallel \cskip \arr{ii} C_1}
-\and
-\inferrule{ }{a \arr{a} \cskip}
-\and
-\inferrule{C_1 \arr\alpha C'_1}{C_1 \parallel C_2 \arr\alpha C'_1 \parallel C_2}
-\and
-\inferrule{C_2 \arr\alpha C'_2}{C_1 \parallel C_2 \arr\alpha C_1 \parallel C'_2}
-\\\\
-\inferrule{ }{C,s \arrs C,s}
-\and
-\inferrule
- {C_1 \arr\alpha C_2
-  \\
-  s_2 \in \sem\alpha(s_1)
-  \\
-  C_2,s_2 \arrs C_3,s_3
- }
- {C_1,s_1 \arrs C_3,s_3}
-\end{mathpar}
-
-An interesting exercise is to try and give a meaning
-to the transitions above in terms of our semantic model.
 
 \subsection{Induced Transitions}
 

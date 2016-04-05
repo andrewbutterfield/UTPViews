@@ -47,4 +47,51 @@ We do a quick run-down of Atomic Heaps in \cite{conf/popl/Dinsdale-YoungBGPY13}.
 
 \subsection{Atomic Heaps in UTP}
 
-\textbf{\emph{I need to get Jim's model here.}}
+All we need to do is to instantiate our state:
+\begin{eqnarray*}
+  s,s' &:& \SS{H}
+\\ &=& ((\Var \uplus \Loc) \ffun \Val) \uplus \setof{\bang}
+\end{eqnarray*}
+and define the semantics of each action,
+as a binary relation over $s$ and $s'$.
+\begin{eqnarray*}
+\\ \vx:=\vy
+   &\defs& \vy \in \dom(s) \blacktriangleright
+           s' = s[\vx \mapsto s(\vy)]
+\\ \vx:=v
+   &\defs& \vx,s(\vx) \in \dom(s) \blacktriangleright
+           s' = s[s(\vx) \mapsto v]
+\\ ~[\vx]:=\vy
+   &\defs& \vx,\vy,s(\vx) \in \dom(s) \blacktriangleright
+           s' = s[s(\vx) \mapsto s(\vy)]
+\\ \vx:=[\vy]
+   &\defs& \vy,s(\vy) \in \dom(s) \blacktriangleright
+           s' = s[\vx \mapsto s(s(\vy))]
+\\ \vx:=\reft\vy
+              &\defs& \vy \in \dom(s) \blacktriangleright
+              \exists l \in \Loc \setminus \dom(s) \bullet
+               s' = s[\vx \mapsto l,l \mapsto s(\vy)]
+\\ p \blacktriangleright Q &\defs& Q \cond p ( s'=\bang )
+\end{eqnarray*}
+
+Open Qs: what is the View here, and the composition?
+\begin{eqnarray*}
+   \bang * s_2 &\defs& \bang
+\\ s_1 * \bang &\defs& \bang
+\\  s_1 * s_2
+   &\defs?& s_1
+   \uplus s_2
+   \cond{\dom(s_1)\cap\dom(s_2)=\emptyset}
+   \bang
+\end{eqnarray*}
+Is this too harsh?
+Should we except overlaps so long as they agree?
+\begin{eqnarray*}
+   s_1 * s_2
+   &\defs?& s_1
+   \cup s_2
+   \cond{~(\dom(s_1)\lhd s_2) = (\dom(s_2)\lhd s_1)~}
+   \bang
+\end{eqnarray*}
+
+\textbf{\emph{I need to check against Jim's model here.}}
