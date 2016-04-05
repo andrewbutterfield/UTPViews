@@ -2,8 +2,6 @@
 
 \subsection{Types as a View}
 
-We do a quick run-down of Types in \cite{conf/popl/Dinsdale-YoungBGPY13}.
-
 \begin{eqnarray*}
   \tau \in \Type &=& \valt \mid \reft \tau
 \\ \Gamma &:& \Var \pfun \Type
@@ -77,3 +75,130 @@ is defined as follows:
 
 We first note that types are defined over the same heap model
 used for atomic heaps.
+
+We first elaborate the view a little.
+\begin{eqnarray*}
+   \View_{TS} &\defs& (\Var \pfun \Type)\uplus\setof\bot
+\\ \bot \uts \Gamma &\defs& \bot
+\\ \Gamma \uts \bot &\defs& \bot
+\\ \Gamma \uts \Theta
+     &\defs&
+       \Gamma \cup \Theta
+       \cond{~\Gamma \sim \Theta~}
+       \bot
+\\ \Gamma \sim \Theta &\defs& (\dom(\Gamma)\lhd \Theta) = (\dom(\Theta)\lhd\Gamma)
+\end{eqnarray*}
+Here we define a shorthand $\sim$ that asserts that two type contexts
+are compatible
+
+The type assertions $\Gamma \vdash C$
+are shorthand for $\plogic \Gamma C \Gamma$,
+and are effectively UTP conditions.
+We can still express them as pre/post relations as shown
+by the following two versions of the first type axiom:
+
+\begin{eqnarray*}
+   \vx : \tau, \vy : \tau &\vdash& \vx := \vy
+\\ \vx := \vy &\defs& \Gamma = \setof{\vx : \tau, \vy : \tau} \land \Gamma'=\Gamma
+\end{eqnarray*}
+Actually, this proves to be too strong.
+In effect we need to build in the weakening inference rule
+from Definition 10 here, by replacing equality with a form of
+superset relation:
+\begin{eqnarray*}
+   \Gamma \supts \bot &\defs& \false
+\\ \bot \supts \Theta &\defs& \false
+\\ \Gamma \supts \Theta
+   &\defs&
+   \dom(\Theta)\subseteq \dom(\Gamma)
+   \land
+   \forall v \in \dom(\Theta) \bullet \Theta(v) = \Gamma(v)
+\end{eqnarray*}
+We can use a healthiness condition here
+(which effectively asserts that we are doing ``static'' analysis).
+\begin{eqnarray*}
+  \HTS(P) &\defs& P \land \Gamma'=\Gamma
+  \\ \vx := \vy     &\defs& \HTS(\Gamma \supts \setof{\vx : \tau, \vy : \tau})
+\\ ~[x]:=v          &\defs& \HTS(\Gamma \supts \setof{x: \reft \valt})
+\\ \vx := [\vy]     &\defs& \HTS(\Gamma \supts \setof{\vx:\tau, \vy:\reft\tau})
+\\ \vx := \reft \vy &\defs& \HTS(\Gamma \supts \setof{\vx : \reft\tau, \vy:\tau})
+\\ ~[\vx] := \vy    &\defs& \HTS(\Gamma \supts \setof{\vx : \reft\tau, y:\tau})
+\end{eqnarray*}
+
+Now, how does the semantics of commands play out here?
+As we observed in the Commands section,
+the outcomes of computing $run(C)$
+are of the form
+\[
+  atomicExpr \land ls'=out
+\]
+where $atomicExpr$ is an expression built up from atomic actions
+$a$ and $b$, using only disjunction and sequential composition
+over the shared state only.
+
+All our atomic actions in this type theory
+are of the form $t \land \Gamma'=\Gamma$,
+where $t$ is a condition, a predicate over $\Gamma$ only.
+
+So we can calculate the sequential composition of two type `actions'
+as follows:
+\begin{eqnarray*}
+  && (t_1 \land \Gamma'=\Gamma) \seq (t_2 \land \Gamma'=\Gamma)
+\EQ{Defn of $\seq$}
+\\&& \exists \Gamma_m \bullet
+     t_1[\Gamma_m/\Gamma'] \land \Gamma_m=\Gamma
+     \land
+     t_2[\Gamma_m/\Gamma] \land \Gamma'=\Gamma_m
+\EQ{One-point Rule, $\Gamma_m=\Gamma$}
+\\&& t_1
+     \land
+     t_2[\Gamma_m/\Gamma][\Gamma/\Gamma_m] \land \Gamma'=\Gamma
+\EQ{Tidy-up}
+\\&& t_1 \land t_2 \land \Gamma'=\Gamma
+\end{eqnarray*}
+So, sequential composition turns into a conjunction of the
+relevant type context assertions.
+In terms of our healthiness condition:
+\[
+  \HTS(t_1) \seq \HTS(t_2)  = \HTS(t_1 \land t_2)
+\]
+It is also worth doing the following calculation,
+where neither of $\Gamma_i$ are $\bot$:
+\begin{eqnarray*}
+  && \HTS(\Gamma \supts \Gamma_1 \uts \Gamma_2)
+\EQ{Defn $\uts$}
+\\&& \HTS(~\Gamma \supts ( \Gamma_1 \cup \Gamma_2
+                   \cond{\Gamma_1\sim\Gamma_2}
+                   \bot)~)
+\EQ{lift conditional}
+\\&& \HTS(~(\Gamma \supts \Gamma_1 \cup \Gamma_2)
+            \cond{\Gamma_1\sim\Gamma_2}
+            (\Gamma \supts \bot))
+\EQ{else-case is false, defn of $\cond{-}$}
+\\&& \HTS(~(\Gamma \supts \Gamma_1 \cup \Gamma_2)
+            \land (\Gamma_1\sim\Gamma_2))
+\EQ{pull conjunct out, noting it ensures $\supts$ is like map-$\supseteq$}
+\\&& \HTS(\Gamma \supseteq ( \Gamma_1 \cup \Gamma_2))
+            \land \Gamma_1\sim\Gamma_2
+\EQ{superset law}
+\\&& \HTS(\Gamma \supseteq \Gamma_1 \land \Gamma \supseteq \Gamma_2))
+            \land \Gamma_1\sim\Gamma_2
+\EQ{$\HTS$ and conjunction distribute}
+\\&& \HTS(\Gamma \supseteq \Gamma_1)
+     \land \HTS(\Gamma \supseteq \Gamma_2)
+            \land \Gamma_1\sim\Gamma_2
+\end{eqnarray*}
+So, if the type contexts are incompatible,
+both the following, from the command semantics calculations,
+\[
+  \HTS(\Gamma\supts\Gamma_1) \seq \HTS(\Gamma\supts\Gamma_2)
+\]
+and this, capturing a common case in the type inference rules,
+\[
+  \HTS(\Gamma\supts(\Gamma_1\uts\Gamma_2))
+\]
+reduce to $\false$.
+If they are compatible, they reduce to the assertion
+\[
+  \HTS(\Gamma\supts(\Gamma_1\cup\Gamma_2)).
+\]

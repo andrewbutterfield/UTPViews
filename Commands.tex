@@ -100,6 +100,26 @@ with a notational tweak that suits a UTP encoding.
    ( ls(\B{out}) * C)[in/ls]
 \end{eqnarray*}
 
+\subsection{Simple Calculations}
+
+Careful calculations of simple cases (atomic components only)
+give the following results:
+\begin{eqnarray*}
+   run(a) &=& a \land ls'=out
+\\ run(\cskip) &=& s'=s \land ls'=out
+\\ run(a\cseq b) &=& (a\seq b) \land ls'=out
+\\ run(a \parallel b) &=& ((a \seq b) \lor (b \seq a)) \land ls'=out
+\\ run(a + b) &=& (a \lor b) \land ls'=out
+\\ run(a^*) &=& run(\cskip) \lor run(a) \lor run(a\cseq a) \lor \dots
+\end{eqnarray*}
+What is notable is that the only way in which atomic state changes
+get combined in the final result is using either disjunction
+or sequential composition
+that is effectively restricted to relations on shared state only:
+\[
+  a \seq b = \exists s_m \bullet a[s_m/s'] \land b[s_m/s]
+\]
+
 
 \subsection{Induced Transitions}
 

@@ -2,8 +2,6 @@
 
 \subsection{Atomic Heaps as a View}
 
-We do a quick run-down of Atomic Heaps in \cite{conf/popl/Dinsdale-YoungBGPY13}.
-
 \textbf{Definition 4 }(Atomic Heap Commands) : \textbf{Parameter A}.
 \begin{eqnarray*}
    \vx,\vy &:& \Var
@@ -52,7 +50,9 @@ All we need to do is to instantiate our state:
   s,s' &:& \SS{H}
 \\ &=& ((\Var \uplus \Loc) \ffun \Val) \uplus \setof{\bang}
 \end{eqnarray*}
-and define the semantics of each action,
+
+
+We then define the semantics of each action,
 as a binary relation over $s$ and $s'$.
 \begin{eqnarray*}
 \\ \vx:=\vy
@@ -75,6 +75,7 @@ as a binary relation over $s$ and $s'$.
 \end{eqnarray*}
 
 Open Qs: what is the View here, and the composition?
+It looks like we have $\View_{H} = \SS{H}$.
 \begin{eqnarray*}
    \bang * s_2 &\defs& \bang
 \\ s_1 * \bang &\defs& \bang
@@ -93,5 +94,13 @@ Should we except overlaps so long as they agree?
    \cond{~(\dom(s_1)\lhd s_2) = (\dom(s_2)\lhd s_1)~}
    \bang
 \end{eqnarray*}
-
-\textbf{\emph{I need to check against Jim's model here.}}
+We can get triples by the rule:
+\[
+  (s_1,a,s_2) \textbf{ iff } a[s_1,s_2/s,s']
+\]
+where the first occurrence of $a$ represents its text,
+whilst the second is the corresponding semantic predicate.
+Or, using the notation in Chapter 10 f the UTP book:
+\[
+  (s_1,\texttt{a},s_2) \textbf{ iff } a[s_1,s_2/s,s']
+\]
