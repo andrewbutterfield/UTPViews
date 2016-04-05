@@ -1,6 +1,42 @@
-\def\setof#1{\{#1\}}
+% View paper notation macros
+\def\VN#1{\ensuremath{\mathsf{#1}}}
+\def\VT#1{\ensuremath{\mathtt{#1}}}
 
-\def\Atom{\textsf{Atom}}
+\def\Comm{\VN{Comm}}
+\def\Vskip{\VT{skip}}
+
+\def\Label{\VN{Label}}
+\def\vid{\VN{id}}
+\def\vwdef{\stackrel{\mathrm{def}}{=}}
+
+\def\View{\VN{View}}
+\def\Axiom{\VN{Axiom}}
+\def\eqvdef{\mathrel{\stackrel{\mathrm{def}}{\,\Leftarrow\!\Rightarrow\,}}}
+\def\plogic#1#2#3{\vdash \setof{#1}\, {#2}\, \setof{#3}}
+
+\def\reify#1{\lfloor{#1}\rfloor}
+\def\ajudge#1#2#3{{#1} \Vdash \setof{#2} \setof{#3}}
+\def\entails{\preceq}
+
+\def\Var{\VN{Var} }
+\def\Val{\VN{Var} }
+\def\vx{\VT{x}}
+\def\vy{\VT{y}}
+\def\Loc{\VN{Loc}}
+\def\Atom#1{\VN{Atom_{#1}}}
+\def\SS#1{\ensuremath{\mathcal{S}_{\VN{#1}}}}
+\def\bang{\ddagger}
+\def\dom{\mathrm{dom}}
+
+\def\Type{\VN{Type} }
+\def\valt{\VN{val} }
+\def\reft{\mathop{\mathsf{ref}} }
+
+
+
+\def\setof#1{\{#1\}}
+\def\power{\mathcal{P}}
+
 \def\cskip{\texttt{skip}}
 \def\cseq{\mathbin{;\!;}}
 \def\semlbr{[\![}
@@ -63,17 +99,3 @@
 \def\arrs{\fun^*}
 \def\pfun{\rightharpoonup}
 \def\ffun{\pfun_{fin}}
-
-\def\Var{\mathsf{Var} }
-\def\Val{\mathsf{Var} }
-\def\vx{\mathtt{x}}
-\def\vy{\mathtt{y}}
-\def\Loc{\mathsf{Loc}}
-\def\Atom#1{\mathsf{Atom_{#1}}}
-\def\SS#1{\mathcal{S}_{\mathsf{#1}}}
-\def\bang{\ddagger}
-\def\dom{\mathrm{dom}}
-
-\def\Type{\mathsf{Type} }
-\def\valt{\mathsf{val} }
-\def\reft{\mathop{\mathsf{ref}} }

@@ -1,0 +1,171 @@
+\section{View Definitions}
+
+We list all the generic view definitions\cite{conf/popl/Dinsdale-YoungBGPY13}.
+
+\setcounter{secnumdepth}{0}
+
+
+\subsection{Parameter A}(Atomic Commands)
+Assume a set of (syntactic)
+\emph{atomic commands} \Atom{}, ranged over by $a$.
+
+\subsection{Definition 1} (Language Syntax)
+The set of (syntactic) \emph{commands},
+\Comm, ranged over by $C$, is defined by the following grammar:
+\begin{eqnarray*}
+   C &::=& a \mid \Vskip \mid C ; C \mid C+C \mid C \parallel C \mid C^*
+\end{eqnarray*}
+
+\subsection{Parameter B}(Machine States)
+Assume a set of \emph{machine states} $\SS{}$,
+ranged over by $s$.
+
+\subsection{Parameter C}(Interpretation of Atomic Commands)
+Assume a function $\sem{-} : \Atom{} \fun \SS{} \fun \power(\SS{})$
+that associates each atomic
+command with a non-deterministic state transformer. (Where necessary,
+we lift non-deterministic state transformers to sets of states:
+for $S \in \power(\SS{}), \sem a(A) = \bigcup\setof{\sem a(a) \mid s \in S}$.)
+
+
+\subsection{Definition 2} (Transition Labels)
+The set of transition labels, $\Label \vwdef \Atom{} \uplus \setof\vid$,
+extends the set of atomic commands with a
+designated identity label, \vid.
+Labels are ranged over by $\alpha$.
+$\sem{-}$ is extended to \Label\ by defining $\sem\vid \vwdef \lambda s .\setof s$.
+
+\subsection{Definition 3}
+(Labelled Transition System and Operational Semantics).
+The labelled transition relation
+$\_ \arr{\_} \_ : \Comm \times \Label \times \Comm$
+is defined by the following rules:
+\begin{mathpar}
+\inferrule{C_1 \arr\alpha C'_1}{C_1 \seq C_2 \arr\alpha C'_1 \seq C_2}
+\and
+\inferrule{ }{\Vskip \seq C_2 \arr{ii} C_2}
+\and
+\inferrule{ }{C_1 + C_2 \arr{ii} C_i} i \in \setof{1,2}
+\and
+\inferrule{ }{C^* \arr{ii} C\cseq C^*}
+\and
+\inferrule{ }{C^* \arr{ii} \Vskip}
+\and
+\inferrule{ }{\Vskip \parallel C_2 \arr{ii} C_2}
+\and
+\inferrule{ }{C_1 \parallel \Vskip \arr{ii} C_1}
+\and
+\inferrule{ }{a \arr{a} \Vskip}
+\and
+\inferrule{C_1 \arr\alpha C'_1}{C_1 \parallel C_2 \arr\alpha C'_1 \parallel C_2}
+\and
+\inferrule{C_2 \arr\alpha C'_2}{C_1 \parallel C_2 \arr\alpha C_1 \parallel C'_2}
+\end{mathpar}
+The multi-step operational transition relation
+$\_,\_ \arrs \_,\_ : (\Comm\times\SS{}) \times (\Comm\times\SS{})$
+is defined by the following rules:
+\begin{mathpar}
+\inferrule{ }{C,s \arrs C,s}
+\and
+\inferrule
+ {C_1 \arr\alpha C_2
+  \\
+  s_2 \in \sem\alpha(s_1)
+  \\
+  C_2,s_2 \arrs C_3,s_3
+ }
+ {C_1,s_1 \arrs C_3,s_3}
+\end{mathpar}
+
+An interesting exercise is to try and give a meaning
+to the transitions above in terms of our semantic model.
+
+\subsection{Parameter D} (View Commutative Semigroup).
+Assume a commutative
+semigroup $(\View,*)$. The variables $p$, $q$, $r$ are used to denote
+elements of \View.
+
+If the semigroup has a unit, $u$, then we call it a \emph{view monoid},
+written $(\View,*,u)$.
+
+\subsection{Parameter E} (Axiomatisation).
+Assume a set of axioms $\Axiom \subseteq \View \times \Label \times \View$.
+
+\subsection{Definition 7}
+(Entailment).
+The entailment relation
+$\models \subseteq \View \times \View$
+is defined by:
+\[
+  p\models q \eqvdef (p,\vid,q) \in \Axiom
+\]
+
+\subsection{Definition 8} (Program Logic).
+The program logic’s judgements
+are of the form
+$\plogic p C q$,
+where $p, q \in \View$ provide the
+precondition and postcondition of command $C \in \Comm$. The
+proof rules for these judgements are as follows:
+\begin{mathpar}
+\inferrule
+  {(p,a,q) \in \Axiom}
+     {\plogic p a q}
+\and \inferrule
+    {\plogic p C q}
+  {\plogic{p*r}C{q*r}}
+\and \inferrule
+          { }
+  {\plogic p \Vskip p}
+\and \inferrule
+  {\plogic p {C_1} q \\ \plogic p {C_2} q}
+        {\plogic p {C_1 + C_2} q}
+\and \inferrule
+    {\plogic p C p}
+  {\plogic p {C^*} P}
+\and \inferrule
+   { \plogic p {C_1} r \\ \plogic r {C_2} q }
+        {\plogic p {C_1 ; C_2} q}
+\and \inferrule
+  {\plogic{p_1}{C_1}{q_1} \\ \plogic{p_2}{C_2}{q_2}}
+  {\plogic{p_1 * p_2}{C_1\parallel C_2}{q_1 * q_2}}
+\and \inferrule
+  {p \models p' \\ \plogic{p'} C q}
+          {\plogic p C q}
+\and \inferrule
+  {\plogic p C {q'} \\ q' \models q}
+          {\plogic p C q}
+\end{mathpar}
+
+\subsection{Parameter F} (Reification).
+Assume a reification function
+$\reify{-} : \View \fun \power(\SS{})$
+which maps views to sets of machine states.
+
+\subsection{Definition 11} (Action Judgement).
+The \emph{action judgement} is defined
+as:
+\begin{eqnarray*}
+   \ajudge \alpha p q
+   &\eqvdef&
+   \sem\alpha(\reify p) \subseteq \reify q
+   \land
+   \forall r \in \View . \sem\alpha(\reify{p*r}) \subseteq \reify{q*r}
+\end{eqnarray*}
+For a view monoid, this definition simplifies to:
+\begin{eqnarray*}
+   \ajudge \alpha p q
+   &\eqvdef&
+   \forall r \in \View . \sem\alpha(\reify{p*r}) \subseteq \reify{q*r}
+\end{eqnarray*}
+
+\subsection{Definition 12} (Semantic Entailment)
+$p \entails q  \eqvdef \ajudge \vid p q$.
+
+\subsection{Property G} (Axiom Soundness).
+For every $(p,\alpha,q) \in \Axiom)$
+\[
+  \ajudge \alpha p q
+\]
+
+\setcounter{secnumdepth}{4}
