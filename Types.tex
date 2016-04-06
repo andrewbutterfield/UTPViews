@@ -1,4 +1,4 @@
-\section{Types}
+\section{Types}\label{sec:types}
 
 \subsection{Types as a View}
 
@@ -103,7 +103,7 @@ by the following two versions of the first type axiom:
 \end{eqnarray*}
 Actually, this proves to be too strong.
 In effect we need to build in the weakening inference rule
-from Definition 10 here, by replacing equality with a form of
+from \textbf{Definition 10} here, by replacing equality with a form of
 superset relation:
 \begin{eqnarray*}
    \Gamma \supts \bot &\defs& \false
@@ -126,7 +126,7 @@ We can use a healthiness condition here
 \end{eqnarray*}
 
 Now, how does the semantics of commands play out here?
-As we observed in the Commands section,
+As we observed in the Commands section (\S\ref{sec:commands}),
 the outcomes of computing $run(C)$
 are of the form
 \[
@@ -149,7 +149,7 @@ as follows:
      t_1[\Gamma_m/\Gamma'] \land \Gamma_m=\Gamma
      \land
      t_2[\Gamma_m/\Gamma] \land \Gamma'=\Gamma_m
-\EQ{One-point Rule, $\Gamma_m=\Gamma$}
+\EQ{$\Gamma'$ not in $t_1$, One-point Rule, $\Gamma_m=\Gamma$}
 \\&& t_1
      \land
      t_2[\Gamma_m/\Gamma][\Gamma/\Gamma_m] \land \Gamma'=\Gamma
