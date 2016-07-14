@@ -1,0 +1,324 @@
+\section{Laws}\label{sec:laws}
+
+We expect our language to obey the following laws
+(\textbf{\emph{SCRAPED FROM fPAISEAN hUTCP-TODO}}):
+
+\def\E{\mathcal{E}}
+\def\B{\mathcal{B}}
+\def\M{\mathcal{M}}
+\def\bpre{\sqsubseteq_{\M}}
+\def\bequiv{\equiv_{\M}}
+\def\spre{\leq_{\M}}
+\def\sequiv{=_{\M}}
+\def\trans{\rightarrow}
+\def\rtrans{\trans^{*}}
+\def\T{\mathcal{T}}
+\def\ClsTrc{\power^\dagger(\Sigma^+)}
+\def\tclose#1{\setof{{#1}}^{\dagger}}
+\def\TT#1{\T\sem{{#1}}}
+\def\override{\oplus}
+\def\tpre{\sqsubseteq_{\T}}
+\def\tequiv{\equiv_{\T}}
+\def\wtrans{\trans^\omega}
+
+\def\bor{\textbf{ or }}
+
+\def\wdo{\circledast}
+\def\lseq{\mathrel{\mathbf{;\!;}}}
+\def\lcond#1{\mathrel{\blacktriangleleft  {#1}  \blacktriangleright}}
+\def\llawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\langle\!\langle\cdot}$}}}
+\def\rlawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\cdot\rangle\!\rangle}$}}}
+\def\mkelabel#1{\textsf{\llawnamebr{#1}\rlawnamebr}}
+\def\elab#1#2{\mkelabel{#1}\label{#2}}
+\def\elabel#1{\elab{#1}{#1}}
+\def\ecite#1{\mkelabel{#1}}
+\def\eref#1{\mkelabel{#1, p\pageref{#1}}}
+
+\RLEQNS{
+   P \lseq ( Q \lseq R) &=& ( P \lseq Q ) \lseq R
+   & \elab{$\lseq$-assoc}{;;-assoc}
+\\ Idle \lseq P &=& P & \elab{$\lseq$-l-unit}{;;-l-unit}
+\\ P \lseq Idle &=& P & \elab{$\lseq$-Q-unit}{;;-r-unit}
+\\ P \parallel Q &=& Q \parallel P & \elab{$\parallel$-comm}{||-comm}
+\\ P \parallel ( Q \parallel R) &=& ( P \parallel Q ) \parallel R
+   & \elab{$\parallel$-assoc}{||-assoc}
+\\ P \lcond{true} Q &=& P & \elab{$\lcond{true}$}{lcond-true}
+\\ P \lcond{false} Q &=& Q & \elab{$\lcond{false}$}{lcond-false}
+\\ c \wdo P &=& (P \lseq c \wdo P) \lcond c Idle
+   & \elab{$\wdo$-unroll}{wdo-unroll}
+}
+
+\def\bnew#1#2{\nu {#1}={#2} @}
+\def\hide{\backslash}
+\def\bskip{skip}
+\def\bseq{\lseq}
+\def\bpar{\parallel}
+\def\bcond#1{\lcond{#1}}
+\def\bdo{\wdo}
+\def\bawait{\mathbin{!}}
+
+Here $=$ and $\sqsubseteq$ correspond to $\tequiv$ and $\tpre$, respectively,
+and assuming that assignment is atomic:
+\RLEQNS{
+   \bskip &=& i:=i
+\\ \bskip \bseq c           & = c = & c \bseq skip
+\\ (c_1 \bseq c_2) \bseq c_3 &=& c_1 \bseq (c_2 \bseq c_3)
+\\ c \bpar \bskip &=& c
+\\ c_1 \bpar c_2 &=& c_2 \bpar c_1
+\\ (c_1 \bpar c_2) \bpar c_3 &=& c_1 \bpar (c_2 \bpar c_3)
+\\ c_1 \bseq (c_2 \bpar c_3) &\sqsubseteq& (c_1 \bseq c_2) \bpar c_3
+\\ c_1 \bseq c_2 &\sqsubseteq& c_1 \bpar c_2
+\\ (c_1 \bcond b c_2) \bseq c_3 &=& (c_1 \bseq c_3) \bcond c (c_2 \bseq c_3)
+\\ c_1 \bcond{b_1 \land b_2} c_2
+   &\sqsubseteq&
+   (c_1 \bcond{b_2} c_2) \bcond{b_1} c_2
+\\ b \bdo c &=& (c \bseq b \bdo c) \cond b \bskip
+\\ (b_1 \land b_2) \bawait c &=& b_1 \bawait (b_2 \bawait c)
+\\ false \bawait c &\sqsubseteq& c'
+\\ false \bawait c &=& true \bdo \bskip
+}
+If expression evaluation is deterministic:
+\RLEQNS{
+   i:=e_2[e_1/i] &\sqsubseteq& i:=e_1 \bseq i:=e_2
+}
+If assignment is \emph{not} atomic:
+\RLEQNS{
+   \bskip &\sqsubseteq& i:=i
+}
+If we allow infinite \emph{fair} traces then some of the laws above break/alter as follows:
+\RLEQNS{
+   c_1 \bseq (c_2 \bpar c_3) &\sqsubseteq& (c_1 \bseq c_2) \bpar c_3
+   & \say{only if $c_1$ is loop-free}
+\\ false \bawait c &\neq& true \bdo \bskip
+\\ true \bdo \bskip &\not\sqsubseteq& c'
+}
+A loop for $c_1$ in the first case results in inequality because
+of the fairness assumption which will force some $c_3$ events to occur
+on the rhs, even if $c_1$ is non-terminating,
+whereas the lhs will only ever produce $c_1$'s ever-growing trace.
+
+\RLEQNS{
+   \TT{c_1 \bor c_2} &=& \TT{c_1} \cup \TT{c_2}
+\\ c \sqsubseteq c' &\equiv& (c \bor c') = c'
+\\ i_1:=e_1 \bpar i_2:=e_2
+   &=&
+   (i_1:=e_1 \bseq i_2:=e_2) \bor (i_2:=e_2 \bseq i_1:=e_1)
+}
+The latter holding for atomic assignment.
+
+\subsection{Finding Bisimulations}
+
+
+Idea: define the desired bisimulations in such a way that
+we can manipulate them with the same kind of substitutions
+as found in the semantics.
+
+\subsubsection{\protect{$a \parallel b = b \parallel a$}}
+
+Consider a simple example: prove that $a \parallel b = b \parallel a$,
+
+\RLEQNS{
+  && a \parallel b
+\EQ{defn of $\parallel$ }
+\\&&      in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+     \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+\\ &\lor&
+   a[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor b[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{defn of $a$ and $b$}
+\\&&      in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+     \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+\\ &\lor&
+   (in \arr a out)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor (in \arr b out)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{substitutions, as per above}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+     \lor
+     \ell_{g1} \arr a \ell_{g1:}
+     \lor
+     \ell_{g2} \arr b \ell_{g2:}
+     \lor
+     \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+\\
+\\&& b \parallel a
+\EQ{Above calculations with $a$ and $b$ swapped}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+     \lor
+     \ell_{g1} \arr b \ell_{g1:}
+     \lor
+     \ell_{g2} \arr a \ell_{g2:}
+     \lor
+     \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+}
+
+If we define%
+\footnote{If is a label is not mentioned, it maps to itself}
+the following bijection on labels:
+\[
+  \ell_{g1} \mapsto \ell{g2}
+, \ell_{g1:} \mapsto \ell{g2:}
+, \ell_{g2} \mapsto \ell{g1}
+, \ell_{g2:} \mapsto \ell{g1:}
+\]
+we can show that the two sides are isomorphic modulo that bijection.
+Interestingly, this isomorphism works if we define the following
+generator bijection $g1 \rightleftharpoons g2$.
+
+\subsubsection{\protect{$(a \cseq b)\parallel c = c \parallel (a \cseq b)$}}
+
+Now, a bit more ambitious---consider
+\[ (a \cseq b)\parallel c
+    = c \parallel (a \cseq b)
+\]
+
+LHS:
+\RLEQNS{
+   && (a \cseq b)\parallel c
+\EQ{defn $\parallel$}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   (a \cseq b)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor c[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{defn $\cseq$}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\&& {}\lor c[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{atomic substitution}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   (in \arr a \ell_g \lor \ell_g \arr b out)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\&& {}\lor \ell_{g2} \arr c\ell_{g2:}
+\EQ{substitution}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   \ell_{g1} \arr a \ell_{g1::}
+   \lor \ell_{g1::} \arr b \ell_{g1:}
+   \lor \ell_{g2} \arr c\ell_{g2:}
+}
+
+RHS:
+\RLEQNS{
+  && c \parallel (a \cseq b)
+\EQ{defn $\parallel$}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   c[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor (a \cseq b)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{defn $\cseq$}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   c[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out] \lor {}
+\\&& (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{atomic substitution}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   \ell_{g1} \arr c \ell_{g1:} \lor {}
+\\&& (in \arr a \ell_g \lor \ell_g \arr b out)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\EQ{substitution}
+\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
+\\ &&
+   \ell_{g1} \arr c \ell_{g1:}
+   \lor \ell_{g2} \arr a \ell_{g2::}
+   \lor \ell_{g2::} \arr b \ell_{g2:}
+}
+
+Reprise LHS:
+\[
+in \arr{ii} \setof{\ell_{g1},\ell_{g2}} \lor
+\setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor
+\ell_{g1} \arr a \ell_{g1::} \lor
+\ell_{g1::} \arr b \ell_{g1:} \lor
+\ell_{g2} \arr c\ell_{g2:}
+\]
+Reprise RHS:
+\[
+in \arr{ii} \setof{\ell_{g1},\ell_{g2}} \lor
+\setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor
+\ell_{g1} \arr c \ell_{g1:} \lor
+\ell_{g2} \arr a \ell_{g2::} \lor
+\ell_{g2::} \arr b \ell_{g2:}
+\]
+Reorder LHS:
+\[
+in \arr{ii} \setof{\ell_{g2},\ell_{g1}} \lor
+\setof{\ell_{g2:},\ell_{g1:}} \arr{ii} out \lor
+\ell_{g2} \arr c\ell_{g2:} \lor
+\ell_{g1} \arr a \ell_{g1::} \lor
+\ell_{g1::} \arr b \ell_{g1:}
+\]
+We immediately see the following bijection: $g1 \leftrightharpoons g2$.
+
+\subsubsection{\protect{$(a \cseq b) \cseq c   = a \cseq (b \cseq c)$}}
+
+Now we look at the following:
+\[
+  (a \cseq b) \cseq c   = a \cseq (b \cseq c)
+\]
+
+LHS:
+\RLEQNS{
+  && (a \cseq b) \cseq c
+\EQ{defn $\cseq$}
+\\&& (a \cseq b)[g_{:1},\ell_g/g,out] \lor c[g_{:2},\ell_g/g,in]
+\EQ{defn $\cseq$}
+\\&& (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{:1},\ell_g/g,out]
+     \lor c[g_{:2},\ell_g/g,in]
+\EQ{atomic substitution}
+\\&& (in \arr a out \lor \ell_g \arr b out)[g_{:1},\ell_g/g,out]
+     \lor \ell_g \arr c out
+\EQ{substitution}
+\\&& in \arr a \ell_{g:1} \lor \ell_{g:1} \arr b \ell_g \lor \ell_g \arr c out
+}
+
+% C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in]
+RHS:
+\RLEQNS{
+  && a \cseq (b \cseq c)
+\EQ{defn $\cseq$}
+\\&& a[g_{:1},\ell_g/g,out] \lor (b \cseq c)[g_{:2},\ell_g/g,in]
+\EQ{defn $\cseq$}
+\\&& a[g_{:1},\ell_g/g,out] \lor
+  (b[g_{:1},\ell_g/g,out] \lor c[g_{:2},\ell_g/g,in])[g_{:2},\ell_g/g,in]
+\EQ{atomic substitution}
+\\&& in \arr a \ell_g \lor
+  (in \arr b \ell_g \lor \ell_g \arr c out)[g_{:2},\ell_g/g,in]
+\EQ{substitution}
+\\&& in \arr a \ell_g \lor \ell_g \arr b \ell_{g:2} \lor \ell_{g:2} \arr c out
+}
+
+We see the following bijection:
+$\ell_{g:1} \leftrightharpoons \ell_{g},
+ \ell_{g}   \leftrightharpoons \ell_{g:2}
+$
+
+\subsubsection{Bijective Substitutions}
+
+Idea: aren't all our substitutions actually bijections?
+\begin{eqnarray*}
+   \cseq
+   &&
+   [g_{:1},\ell_g/g,out]
+   [g_{:2},\ell_g/g,in]
+\\ +
+   &&
+   [g_{1:},\ell_{g1}/g,in]
+   [g_{2:},\ell_{g2}/g,in]
+\\ \parallel
+   &&
+   [g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   [g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ {}^*
+   &&
+   [g_{:},\ell_g,in/g,in,out]
+\end{eqnarray*}
+Under reasonable assumptions about the structure and use of everything,
+at least.

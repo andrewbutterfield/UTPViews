@@ -40,9 +40,15 @@
 
 \def\setof#1{\{#1\}}
 \def\power{\mathcal{P}}
+\def\Int{\mathbb{Z}}
+\def\Bool{\mathbb{B}}
 
+% UTP macros
+
+% Command macros
 \def\cskip{\texttt{skip}}
 \def\cseq{\mathbin{;\!;}}
+
 \def\semlbr{[\![}
 \def\semrbr{]\!]}
 \def\sem#1{\semlbr{#1}\semrbr}
@@ -56,6 +62,13 @@
 \def\seq{\mathrel{;}}
 \def\phlor{\phantom{\lor}}
 
+% Deterministic  macros
+\def\dcond#1{\mathrel{\blacktriangleleft{#1}\blacktriangleright}}
+\def\ddo{\mathrel{\circledast}}
+
+% PML Macros
+\def\pgrd{\&}
+
 \def\true{\mathbf{true}}
 \def\false{\mathbf{false}}
 \def\design{\vdash}
@@ -65,6 +78,8 @@
 \def\lupd#1#2{ls'=\lexc{#1}{#2}}
 \def\ss{s'=s}
 \def\atomdo#1{s' \in \sem{#1}s}
+
+\def\WwW{\ensuremath{\mathbf{WwW}}}
 
 % semantic shorthand macros
 \def\ado#1{\lfloor#1\rfloor}

@@ -1,24 +1,45 @@
-\section{Introduction}
+\section{Introduction}\label{sec:intro}
 
-Encoding views as per \cite{conf/popl/Dinsdale-YoungBGPY13}
+We now give a proper presentation of our UTP theory
+of concurrent programming, looking at both the condition-free command language
+of the Views paper\cite{conf/popl/Dinsdale-YoungBGPY13},
+as well as the more complete language covered in the UTPP paper\cite{DBLP:conf/icfem/WoodcockH02}.
 in UTP.
 
 All references in bold to things
 like \textbf{Definition 9} or \textbf{Parameter E} refer to corresponding material
-in the above cited paper.
-
+in the Views paper.
 The generic definitions from\cite{conf/popl/Dinsdale-YoungBGPY13}
 are in Appendix \ref{sec:viewdefs}.
 
+\subsection{The Language Menagerie}
 
-\subsection{Related Work}
-
-The UTP views paper by van Staden\cite{DBLP:conf/utp/Staden14}
-starts algebraically, looking at Kleene alebras over languages.
-Languages here are sets of string over an alphabet $A$.
-He then takes $A =\Sigma\times\Sigma$,
-which in effect encodes the Brookes model\cite{DBLP:journals/iandc/Brookes96}
-(see also Park\cite{conf/ac/Park79}).
-
-This paper may provide a way for me to prove all the laws hold for
-my formulation of UTCP.
+Both languages are concurrent with shared state.
+The most abstract is the Command language from \cite{conf/popl/Dinsdale-YoungBGPY13}:
+\[
+ C ::= a \mid \cskip \mid C \cseq C \mid C \parallel C \mid C+C \mid C^*
+\]
+with non-deterministic choice and iteration.
+Note that we have replaced 
+The language from \cite{DBLP:conf/icfem/WoodcockH02} replaces both
+non-deterministic constructs by deterministic ones depending
+on a condition over shared-state:
+\[
+ D ::= a \mid \cskip \mid D \cseq D \mid D \parallel D \mid D \dcond c D \mid c \ddo D
+\]
+We will also consider Process Modelling Language (PML)\cite{DBLP:journals/infsof/AtkinsonWN07}
+which is like the Views command language except that atomic actions
+have a state-based guard:
+\[
+ M ::= c \pgrd a \mid \cskip \mid M \cseq M \mid M \parallel M \mid M+M \mid M^*
+\]
+A key point to note is that the semantics of common constructs is the same
+in every language.
+Given this observation we shall define a single semantics over
+a universal concurrent programming language:
+\[
+ P ::= c \pgrd a \mid \cskip \mid P \cseq P  \mid P \parallel P
+   \mid P+P\mid P^*
+   \mid P \dcond c P \mid c \ddo P
+\]
+where $a$ is simply $\true\pgrd a$.

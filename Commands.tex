@@ -1,26 +1,32 @@
 \section{Commands}\label{sec:commands}
 
 
-We present the commands here,
-with a notational tweak that suits a UTP encoding.
 
 \subsection{Syntax}
 
 \begin{eqnarray*}
    a &\in& \Atom{}
-\\ C &::=& a \mid \cskip \mid C \cseq C \mid C+C \mid C \parallel C \mid C^*
 \\ g &:& Gen
-\\ \ell &:& Lbl
+\\ \ell &:& Gen \fun Lbl
 \\ G &::=&  g \mid G_{:} \mid G_1 \mid G_2
 \\ L &::=& \ell_G
+\end{eqnarray*}
+
+\begin{eqnarray*}
+   P &::= & c \pgrd a
+\\   &\mid& \cskip
+\\   &\mid& P \cseq P
+\\   &\mid& P \parallel P
+\\   &\mid& P+P
+\\   &\mid& P^*
+\\   &\mid& P \dcond c P
+\\   &\mid& c \ddo P
 \end{eqnarray*}
 
 \subsection{Domains}
 \begin{eqnarray*}
    s &\in& \mathcal S
-\\ \sem{-} &:& \Atom \fun \mathcal S \fun \mathcal P(\mathcal S)
-\\ S \ominus (T|V)
-   &\defs& (S \setminus T) \cup V
+\\ \sem{-} &:& \Atom{} \fun \mathcal S \fun \mathcal P(\mathcal S)
 \end{eqnarray*}
 
 \subsection{Alphabet}
@@ -38,6 +44,9 @@ with a notational tweak that suits a UTP encoding.
    P \cond c Q
    &\defs&
    c \land P \lor \lnot c \land Q
+\\ \Skip
+   &\defs&
+   s'= s \land ls'=ls
 \\ P ; Q
    &\defs&
    \exists s_m,ls_m \bullet P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
@@ -55,354 +64,148 @@ with a notational tweak that suits a UTP encoding.
 \\ ls(\B L) &\defs& L \cap ls = \emptyset
 \end{eqnarray*}
 
-\subsection{Simple Semantics}
+\subsection{Semantic Concepts}
 
+\subsubsection{Basic Action}
 
 \begin{eqnarray*}
-   a
+   A(E|a|N)
    &\defs&
-   ls(in) \land s' \in \sem a s \land ls'=ls \ominus (in|out)
-\\ \cskip
-   &\defs&
-   ls(in) \land s' = s \land ls'=ls \ominus (in|out)
-\\ C \cseq D
-   &\defs&
-   C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in]
-\\ C + D
-   &\defs&
-   ls(in)
-   \land s' = s
-   \land ls' \in \{ ls \ominus (in,\ell_{g2}|\ell_{g1})
-                  , ls \ominus (in,\ell_{g1}|\ell_{g2})\}
-\\ &\lor&
-   C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]
-\\ C \parallel D
-   &\defs&
-   ls(in)
-   \land s' = s
-   \land ls'= ls \ominus (in|\ell_{g1},\ell_{g2})
-\\ &\lor&
-   C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\ &\lor&
-   ls(\ell_{g1:},\ell_{g2:})
-   \land s' = s
-   \land ls'= ls \ominus (\ell_{g1:},\ell_{g2:}|out)
-\\ C^*
-   &\defs&
-   ls(in)
-   \land s' = s
-   \land ls' \in \{ ls \ominus (in|out), ls \ominus (in|\ell_g)\}
-\\ &\lor&
-   C[g_{:},\ell_g,in/g,in,out]
-\\ run(C)
-   &\defs&
-   ( ls(\B{out}) * C)[in/ls]
+   ls(E) \land s' \in \sem a \land ls'=(ls\setminus E) \cup N
 \end{eqnarray*}
 
-\subsection{Simple Calculations}
 
-Careful calculations of simple cases (atomic components only)
-give the following results:
+\subsubsection{Wheels-within-Wheels}
+
 \begin{eqnarray*}
-   run(a) &=& a \land ls'=out
-\\ run(\cskip) &=& s'=s \land ls'=out
-\\ run(a\cseq b) &=& (a\seq b) \land ls'=out
-\\ run(a \parallel b) &=& ((a \seq b) \lor (b \seq a)) \land ls'=out
-\\ run(a + b) &=& (a \lor b) \land ls'=out
-\\ run(a^*) &=& run(\cskip) \lor run(a) \lor run(a\cseq a) \lor \dots
-\end{eqnarray*}
-What is notable is that the only way in which atomic state changes
-get combined in the final result is using either disjunction
-or sequential composition
-that is effectively restricted to relations on shared state only:
-\[
-  a \seq b = \exists s_m \bullet a[s_m/s'] \land b[s_m/s]
-\]
-
-
-\subsection{Induced Transitions}
-
-We shall write an atomic behavior
-that is enabled only when $E \subseteq ls$,
-does a state change described by predicate $a$ over $s$ and $s'$
-and then removes all of $E$ from $ls$ and adds in the labels in $N$
-with the suggestive notation:
-\[
- E \arr a N
-\]
-Here we shall assume that both $E$ and $N$
-contain only expressions over $in$, $out$ and $\ell_G$
-where $G$ is a generator expression over $g$ only.
-Written according to our semantics,
-this corresponds to the predicate
-\[
-  ls(E) \land s' \in \sem a \land ls'=ls\ominus(E|N)
-\]
-
-If we define $ii$ as being  $s'=s$,
-then we can re-write our semantics as follows:
-\begin{eqnarray*}
-   a
-   &\defs&
-   in \arr a out
-\\ \cskip
-   &\defs&
-   in \arr{ii} out
-\\ C \cseq D
-   &\defs&
-   C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in]
-\\ C + D
-   &\defs&
-   in \arr{ii} \ell_{g1} \lor in \arr{ii} \ell_{g2}
-\\ &\lor&
-   C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]
-\\ C \parallel D
-   &\defs&
-   in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-\\ &\lor&
-   C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\ &\lor&
-   \setof{\ell_{g1:},\ell_{g2:}}
-   \arr{ii}
-   out
-\\ C^*
-   &\defs&
-   in \arr{ii} out
-   \lor
-   in \arr{ii} \ell_g
-\\ &\lor&
-   C[g_{:},\ell_g,in/g,in,out]
-\\ run(C)
-   &\defs&
-   ( ls(\B{out}) * C)[in/ls]
-\end{eqnarray*}
-We note the following substitution laws:
-\begin{eqnarray*}
-  && (E \arr a N)[G,L,M/g,in,out]
-\\&=& (ls(E) \land s' \in \sem a \land ls'=ls\ominus(E|N))[G,L,M/g,in,out]
-\\&=& ls(E)[G,L,M/g,in,out]
-       \land s' \in \sem a
-\\&& {}\land ls'=ls\ominus(E[G,L,M/g,in,out]|N[G,L,M/g,in,out]))
-\\&=& E[G,L,M/g,in,out] \arr a N[G,L,M/g,in,out]
-\\
-\\&& a[G,L,M/g,in,out] = L \arr a M
+   \W(P) &\defs& \true * (\Skip \lor P)
+\\         &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i
 \end{eqnarray*}
 
-\subsection{Finding Bisimulations}
-
-
-Idea: define the desired bisimulations in such a way that
-we can manipulate them with the same kind of substitutions
-as found in the semantics.
-
-\subsubsection{\protect{$a \parallel b = b \parallel a$}}
-
-Consider a simple example: prove that $a \parallel b = b \parallel a$,
+\subsubsection{Label-Set Invariant}
 
 \RLEQNS{
-  && a \parallel b
-\EQ{defn of $\parallel$ }
-\\&&      in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-     \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
-\\ &\lor&
-   a[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   \lor b[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\EQ{defn of $a$ and $b$}
-\\&&      in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-     \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
-\\ &\lor&
-   (in \arr a out)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   \lor (in \arr b out)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\EQ{substitutions, as per above}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-     \lor
-     \ell_{g1} \arr a \ell_{g1:}
-     \lor
-     \ell_{g2} \arr b \ell_{g2:}
-     \lor
-     \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
-\\
-\\&& b \parallel a
-\EQ{Above calculations with $a$ and $b$ swapped}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-     \lor
-     \ell_{g1} \arr b \ell_{g1:}
-     \lor
-     \ell_{g2} \arr a \ell_{g2:}
-     \lor
-     \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out
+   i \in I_\tau &::=& \tau \mid \otimes(i,\ldots,i) \mid \cup (i,\ldots,i)
 }
 
-If we define%
-\footnote{If is a label is not mentioned, it maps to itself}
-the following bijection on labels:
-\[
-  \ell_{g1} \mapsto \ell{g2}
-, \ell_{g1:} \mapsto \ell{g2:}
-, \ell_{g2} \mapsto \ell{g1}
-, \ell_{g2:} \mapsto \ell{g1:}
-\]
-we can show that the two sides are isomorphic modulo that bijection.
-Interestingly, this isomorphism works if we define the following
-generator bijection $g1 \rightleftharpoons g2$.
-
-\subsubsection{\protect{$(a \cseq b)\parallel c = c \parallel (a \cseq b)$}}
-
-Now, a bit more ambitious---consider
-\[ (a \cseq b)\parallel c
-    = c \parallel (a \cseq b)
-\]
-
-LHS:
 \RLEQNS{
-   && (a \cseq b)\parallel c
-\EQ{defn $\parallel$}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
-\\ &&
-   (a \cseq b)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   \lor c[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\EQ{defn $\cseq$}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
-\\ &&
-   (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-\\&& {}\lor c[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\EQ{atomic substitution}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
-\\ &&
-   (in \arr a \ell_g \lor \ell_g \arr b out)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-\\&& {}\lor \ell_{g2} \arr c\ell_{g2:}
-\EQ{substitution}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
-\\ &&
-   \ell_{g1} \arr a \ell_{g1::}
-   \lor \ell_{g1::} \arr b \ell_{g1:}
-   \lor \ell_{g2} \arr c\ell_{g2:}
+   A(E|a|N) \textbf{ sat } I
+   &\defs&
+   E \textbf{ lsat } I \land N \textbf{ lsat } I
 }
 
-RHS:
 \RLEQNS{
-  && c \parallel (a \cseq b)
-\EQ{defn $\parallel$}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
-\\ &&
-   c[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   \lor (a \cseq b)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\EQ{defn $\cseq$}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
-\\ &&
-   c[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out] \lor {}
-\\&& (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\EQ{atomic substitution}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
-\\ &&
-   \ell_{g1} \arr c \ell_{g1:} \lor {}
-\\&& (in \arr a \ell_g \lor \ell_g \arr b out)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\EQ{substitution}
-\\&& in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
-      \lor \setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor {}
-\\ &&
-   \ell_{g1} \arr c \ell_{g1:}
-   \lor \ell_{g2} \arr a \ell_{g2::}
-   \lor \ell_{g2::} \arr b \ell_{g2:}
+   occ &:& \power \Int \fun I_\Int \fun I_\Bool
+\\ occ_L~\ell &\defs& \ell \in L
+\\ occ_L~\otimes(i_1,\ldots,i_n)
+   &\defs&
+   \otimes(occ_L~i_1,\ldots,occ_L~i_n)
+\\ occ_L~\cup(i_1,\ldots,i_n)
+   &\defs&
+   \cup(occ_L~i_1,\ldots,occ_L~i_n)
 }
 
-Reprise LHS:
-\[
-in \arr{ii} \setof{\ell_{g1},\ell_{g2}} \lor
-\setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor
-\ell_{g1} \arr a \ell_{g1::} \lor
-\ell_{g1::} \arr b \ell_{g1:} \lor
-\ell_{g2} \arr c\ell_{g2:}
-\]
-Reprise RHS:
-\[
-in \arr{ii} \setof{\ell_{g1},\ell_{g2}} \lor
-\setof{\ell_{g1:},\ell_{g2:}} \arr{ii} out \lor
-\ell_{g1} \arr c \ell_{g1:} \lor
-\ell_{g2} \arr a \ell_{g2::} \lor
-\ell_{g2::} \arr b \ell_{g2:}
-\]
-Reorder LHS:
-\[
-in \arr{ii} \setof{\ell_{g2},\ell_{g1}} \lor
-\setof{\ell_{g2:},\ell_{g1:}} \arr{ii} out \lor
-\ell_{g2} \arr c\ell_{g2:} \lor
-\ell_{g1} \arr a \ell_{g1::} \lor
-\ell_{g1::} \arr b \ell_{g1:}
-\]
-We immediately see the following bijection: $g1 \leftrightharpoons g2$.
-
-\subsubsection{\protect{$(a \cseq b) \cseq c   = a \cseq (b \cseq c)$}}
-
-Now we look at the following:
-\[
-  (a \cseq b) \cseq c   = a \cseq (b \cseq c)
-\]
-
-LHS:
 \RLEQNS{
-  && (a \cseq b) \cseq c
-\EQ{defn $\cseq$}
-\\&& (a \cseq b)[g_{:1},\ell_g/g,out] \lor c[g_{:2},\ell_g/g,in]
-\EQ{defn $\cseq$}
-\\&& (a[g_{:1},\ell_g/g,out] \lor b[g_{:2},\ell_g/g,in])[g_{:1},\ell_g/g,out]
-     \lor c[g_{:2},\ell_g/g,in]
-\EQ{atomic substitution}
-\\&& (in \arr a out \lor \ell_g \arr b out)[g_{:1},\ell_g/g,out]
-     \lor \ell_g \arr c out
-\EQ{substitution}
-\\&& in \arr a \ell_{g:1} \lor \ell_{g:1} \arr b \ell_g \lor \ell_g \arr c out
+   occChk &:& I_\Bool \fun (\setof{ok,fail}\times \Bool)
+\\ occChk(b) &\defs& (ok,true)
+\\ occChk(\cup(i_1,\ldots,i_n))
+   &\defs&
+   (fail,\_),
+   \textbf{ if }\exists j @ occChk(i_j) = (fail,\_)
+\\ && (ok,b_1 \lor \dots \lor b_n),
+   \textbf{ if }\forall j @ occChk(i_j) = (ok,b_j)
+\\ occChk(\otimes(i_1,\ldots,i_n))
+   &\defs&
+   (fail,\_),
+   \textbf{ if }\exists j @ occChk(i_j) = (fail,\_)
+\\&& (fail,\_) \mbox{ if more than one $(ok,true)$}
+\\&& (ok,false) \mbox{ if all are $(ok,false)$}
+\\&& (ok,true) \mbox{ if  exactly one $(ok,true)$}
 }
 
-% C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in]
-RHS:
+
+
+\subsection{Program Semantics}
+
+\subsubsection{Guarded Atomic Action}
+
 \RLEQNS{
-  && a \cseq (b \cseq c)
-\EQ{defn $\cseq$}
-\\&& a[g_{:1},\ell_g/g,out] \lor (b \cseq c)[g_{:2},\ell_g/g,in]
-\EQ{defn $\cseq$}
-\\&& a[g_{:1},\ell_g/g,out] \lor
-  (b[g_{:1},\ell_g/g,out] \lor c[g_{:2},\ell_g/g,in])[g_{:2},\ell_g/g,in]
-\EQ{atomic substitution}
-\\&& in \arr a \ell_g \lor
-  (in \arr b \ell_g \lor \ell_g \arr c out)[g_{:2},\ell_g/g,in]
-\EQ{substitution}
-\\&& in \arr a \ell_g \lor \ell_g \arr b \ell_{g:2} \lor \ell_{g:2} \arr c out
+ c \pgrd a &\defs&\W(c \land A(in|a|out)) \land [in|out]
 }
 
-We see the following bijection:
-$\ell_{g:1} \leftrightharpoons \ell_{g},
- \ell_{g}   \leftrightharpoons \ell_{g:2}
-$
+\subsubsection{Sequential Composition}
 
-\subsubsection{Bijective Substitutions}
+\RLEQNS{
+   P \cseq Q
+   &\defs&
+   \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+   \land [in|\ell_g|out]
+}
 
-Idea: aren't all our substitutions actually bijections?
-\begin{eqnarray*}
-   \cseq
-   &&
-   [g_{:1},\ell_g/g,out]
-   [g_{:2},\ell_g/g,in]
-\\ +
-   &&
-   [g_{1:},\ell_{g1}/g,in]
-   [g_{2:},\ell_{g2}/g,in]
-\\ \parallel
-   &&
-   [g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   [g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\ {}^*
-   &&
-   [g_{:},\ell_g,in/g,in,out]
-\end{eqnarray*}
-Under reasonable assumptions about the structure and use of everything,
-at least.
+\subsubsection{Parallell Composition}
+
+\RLEQNS{
+   P \parallel Q
+   &\defs&
+   \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
+\\ && \qquad {}\lor
+   P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ && \qquad {}\lor
+   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\\&& {} \land [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]
+}
+
+
+\subsubsection{Nondeterministic Choice}
+
+\RLEQNS{
+   P + Q
+   &\defs&
+   \W(\quad {}\phlor A(in|ii|\ell_{g1})
+\\ && \qquad {} \lor
+                     A(in|ii|\ell_{g2})
+\\ && \qquad {} \lor
+   P[g_{1:},\ell_{g1}/g,in] \lor Q[g_{2:},\ell_{g2}/g,in]~)
+\\&& {} \land [in|\ell_{g1}|\ell_{g2}|out]
+}
+
+\subsubsection{Nondeterministic Loop}
+
+
+\RLEQNS{
+   P^*
+   &\defs&
+   \W(\quad  \phlor A(in|ii|out)
+\\ && \qquad {}\lor A(in|ii|\ell_g)
+\\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
+\\&& {} \land [in|\ell_g|out]
+}
+
+\subsubsection{Conditional Choice}
+
+\RLEQNS{
+   P \dcond c Q
+   &\defs&
+   \W(\quad {}\phlor c \land A(in|ii|\ell_{g1})
+\\ && \qquad {} \lor
+                     \lnot c \land A(in|ii|\ell_{g2})
+\\ && \qquad {} \lor
+   P[g_{1:},\ell_{g1}/g,in] \lor Q[g_{2:},\ell_{g2}/g,in]~)
+\\&& {} \land [in|\ell_{g1}|\ell_{g2}|out]
+}
+
+\subsubsection{Conditional Loop}
+
+
+\RLEQNS{
+   c \ddo P
+   &\defs&
+   \W(\quad  \phlor \lnot c \land A(in|ii|out)
+\\ && \qquad {}\lor c \land A(in|ii|\ell_g)
+\\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
+\\&& {} \land [in|\ell_g|out]
+}
+
+
+
