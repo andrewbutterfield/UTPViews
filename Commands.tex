@@ -12,16 +12,16 @@
 \\ L &::=& \ell_G
 \end{eqnarray*}
 
-\begin{eqnarray*}
-   P &::= & c \pgrd a
-\\   &\mid& \cskip
-\\   &\mid& P \cseq P
-\\   &\mid& P \parallel P
-\\   &\mid& P+P
-\\   &\mid& P^*
-\\   &\mid& P \dcond c P
-\\   &\mid& c \ddo P
-\end{eqnarray*}
+\RLEQNS{
+   P &::= & c \pgrd a     & \mbox{Atomic Action}
+\\   &\mid& \cskip        & \mbox{No state change}
+\\   &\mid& P \cseq P     & \mbox{Sequential Composition}
+\\   &\mid& P \parallel P & \mbox{Parallel Composition}
+\\   &\mid& P+P           & \mbox{Non-deterministic Choice}
+\\   &\mid& P^*           & \mbox{Non-deterministic Iteration}
+\\   &\mid& P \dcond c P  & \mbox{Conditional Choice}
+\\   &\mid& c \ddo P      & \mbox{Conditional Iteration}
+}
 
 \subsection{Domains}
 \begin{eqnarray*}
@@ -84,6 +84,10 @@
 
 \subsubsection{Label-Set Invariant}
 
+We want to be able to specify that certain combinations
+of labels should never appear simultaneoulsy
+in the global label set ($ls$).
+
 \RLEQNS{
    i \in I_\tau &::=& \tau \mid \otimes(i,\ldots,i) \mid \cup (i,\ldots,i)
 }
@@ -95,7 +99,7 @@
 }
 
 \RLEQNS{
-   occ &:& \power \Int \fun I_\Int \fun I_\Bool
+   occ &:& \power \tau \fun I_\tau \fun I_\Bool
 \\ occ_L~\ell &\defs& \ell \in L
 \\ occ_L~\otimes(i_1,\ldots,i_n)
    &\defs&
@@ -107,7 +111,7 @@
 
 \RLEQNS{
    occChk &:& I_\Bool \fun (\setof{ok,fail}\times \Bool)
-\\ occChk(b) &\defs& (ok,true)
+\\ occChk(b) &\defs& (ok,b)
 \\ occChk(\cup(i_1,\ldots,i_n))
    &\defs&
    (fail,\_),
@@ -123,6 +127,69 @@
 \\&& (ok,true) \mbox{ if  exactly one $(ok,true)$}
 }
 
+Shorthand: $\otimes \mapsto |$, $\cup \mapsto ,$
+\RLEQNS{
+  ~ [ a,b,c | d,e | f ]
+   &=&
+   \otimes(\cup(a,b,c),\cup(d,e),f)
+\\ ~[ a | (b|c),(d|e) | f ]
+  &=&
+  \otimes(a,\cup(\otimes(b,c),\otimes(d,e)),f)
+}
+
+\subsubsection{Invariant Examples}
+
+\RLEQNS{
+   ~[in|out]
+   &=&
+   \setof{in} \cap \setof{out} = \emptyset
+\\ &\land&
+  \setof{in} \subseteq ls \implies \setof{out}\cap ls = \emptyset
+\\ &\land&
+  \setof{out} \subseteq ls \implies \setof{in}\cap ls = \emptyset
+\\ ~[in|\ell|out]
+   &=&
+   \setof{in} \cap \setof{\ell} = \emptyset
+\\ &\land&
+   \setof{in} \cap \setof{out} = \emptyset
+\\ &\land&
+   \setof{\ell} \cap \setof{out} = \emptyset
+\\ &\land&
+  \setof{in} \subseteq ls \implies \setof{\ell,out}\cap ls = \emptyset
+\\ &\land&
+  \setof{\ell} \subseteq ls \implies \setof{in,out}\cap ls = \emptyset
+\\ &\land&
+  \setof{out} \subseteq ls \implies \setof{in,\ell}\cap ls = \emptyset
+}
+
+\RLEQNS{
+   ~[ a | (b|c),(d|e) | f ]
+   &=&
+   \setof{a} \cap \setof{b,c,d,e,f} = \emptyset
+\\ &\land&
+   \setof{b,c,d,e} \cap \setof{a,f} = \emptyset
+\\ &\land&
+   \setof{f} \cap \setof{a,b,c,d} = \emptyset
+\\ &\land&
+  \setof{a} \subseteq ls \implies \setof{b,c,d,e,f}\cap ls = \emptyset
+\\ &\land&
+  \setof{b,c,d,e} \subseteq ls \implies \setof{a,f}\cap ls = \emptyset
+\\ &\land&
+  \setof{f} \subseteq ls \implies \setof{a,b,c,d,e}\cap ls = \emptyset
+\\ &\land&
+   \setof{b} \cap \setof{c} = \emptyset
+\\ &\land&
+   \setof{d} \cap \setof{e} = \emptyset
+\\ &\land&
+  \setof{b} \subseteq ls \implies \setof{c}\cap ls = \emptyset
+\\ &\land&
+  \setof{c} \subseteq ls \implies \setof{b}\cap ls = \emptyset
+\\ &\land&
+  \setof{d} \subseteq ls \implies \setof{e}\cap ls = \emptyset
+\\ &\land&
+  \setof{e} \subseteq ls \implies \setof{d}\cap ls = \emptyset
+}
+Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 
 
 \subsection{Program Semantics}

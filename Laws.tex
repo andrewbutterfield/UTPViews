@@ -1,108 +1,46 @@
 \section{Laws}\label{sec:laws}
 
-We expect our language to obey the following laws
-(\textbf{\emph{SCRAPED FROM fPAISEAN hUTCP-TODO}}):
+For now, we define equality and refinement as follows:
+\RLEQNS{
+   P=Q &\defs& [ \exists ls,ls' @ P \equiv Q ]
+\\ P \refinedby Q &\defs& [ \exists ls,ls' @ Q \implies P ] 
+}
 
-\def\E{\mathcal{E}}
-\def\B{\mathcal{B}}
-\def\M{\mathcal{M}}
-\def\bpre{\sqsubseteq_{\M}}
-\def\bequiv{\equiv_{\M}}
-\def\spre{\leq_{\M}}
-\def\sequiv{=_{\M}}
-\def\trans{\rightarrow}
-\def\rtrans{\trans^{*}}
-\def\T{\mathcal{T}}
-\def\ClsTrc{\power^\dagger(\Sigma^+)}
-\def\tclose#1{\setof{{#1}}^{\dagger}}
-\def\TT#1{\T\sem{{#1}}}
-\def\override{\oplus}
-\def\tpre{\sqsubseteq_{\T}}
-\def\tequiv{\equiv_{\T}}
-\def\wtrans{\trans^\omega}
-
-\def\bor{\textbf{ or }}
-
-\def\wdo{\circledast}
-\def\lseq{\mathrel{\mathbf{;\!;}}}
-\def\lcond#1{\mathrel{\blacktriangleleft  {#1}  \blacktriangleright}}
-\def\llawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\langle\!\langle\cdot}$}}}
-\def\rlawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\cdot\rangle\!\rangle}$}}}
-\def\mkelabel#1{\textsf{\llawnamebr{#1}\rlawnamebr}}
-\def\elab#1#2{\mkelabel{#1}\label{#2}}
-\def\elabel#1{\elab{#1}{#1}}
-\def\ecite#1{\mkelabel{#1}}
-\def\eref#1{\mkelabel{#1, p\pageref{#1}}}
 
 \RLEQNS{
-   P \lseq ( Q \lseq R) &=& ( P \lseq Q ) \lseq R
-   & \elab{$\lseq$-assoc}{;;-assoc}
-\\ Idle \lseq P &=& P & \elab{$\lseq$-l-unit}{;;-l-unit}
-\\ P \lseq Idle &=& P & \elab{$\lseq$-Q-unit}{;;-r-unit}
+   P \cseq ( Q \cseq R) &=& ( P \cseq Q ) \cseq R
+   & \elab{$\cseq$-assoc}{;;-assoc}
+\\ \cskip \cseq P &=& P & \elab{$\cseq$-l-unit}{;;-l-unit}
+\\ P \cseq \cskip &=& P & \elab{$\cseq$-Q-unit}{;;-r-unit}
 \\ P \parallel Q &=& Q \parallel P & \elab{$\parallel$-comm}{||-comm}
 \\ P \parallel ( Q \parallel R) &=& ( P \parallel Q ) \parallel R
    & \elab{$\parallel$-assoc}{||-assoc}
-\\ P \lcond{true} Q &=& P & \elab{$\lcond{true}$}{lcond-true}
-\\ P \lcond{false} Q &=& Q & \elab{$\lcond{false}$}{lcond-false}
-\\ c \wdo P &=& (P \lseq c \wdo P) \lcond c Idle
-   & \elab{$\wdo$-unroll}{wdo-unroll}
-}
-
-\def\bnew#1#2{\nu {#1}={#2} @}
-\def\hide{\backslash}
-\def\bskip{skip}
-\def\bseq{\lseq}
-\def\bpar{\parallel}
-\def\bcond#1{\lcond{#1}}
-\def\bdo{\wdo}
-\def\bawait{\mathbin{!}}
-
-Here $=$ and $\sqsubseteq$ correspond to $\tequiv$ and $\tpre$, respectively,
-and assuming that assignment is atomic:
-\RLEQNS{
-   \bskip &=& i:=i
-\\ \bskip \bseq c           & = c = & c \bseq skip
-\\ (c_1 \bseq c_2) \bseq c_3 &=& c_1 \bseq (c_2 \bseq c_3)
-\\ c \bpar \bskip &=& c
-\\ c_1 \bpar c_2 &=& c_2 \bpar c_1
-\\ (c_1 \bpar c_2) \bpar c_3 &=& c_1 \bpar (c_2 \bpar c_3)
-\\ c_1 \bseq (c_2 \bpar c_3) &\sqsubseteq& (c_1 \bseq c_2) \bpar c_3
-\\ c_1 \bseq c_2 &\sqsubseteq& c_1 \bpar c_2
-\\ (c_1 \bcond b c_2) \bseq c_3 &=& (c_1 \bseq c_3) \bcond c (c_2 \bseq c_3)
-\\ c_1 \bcond{b_1 \land b_2} c_2
+\\ P + Q &=& Q+P
+\\ P + ( Q + R) &=& ( P + Q ) + R
+\\ P + Q &\refinedby& P
+\\ P \sqsubseteq Q &\equiv& (P + Q) = Q
+\\ P^* &=& \cskip + P \cseq P^*
+\\ P \dcond{true} Q &=& P & \elab{$\dcond{true}$}{lcond-true}
+\\ P \dcond{false} Q &=& Q & \elab{$\dcond{false}$}{lcond-false}
+\\ (P_1 \dcond c P_2) \cseq P_3 &=& (P_1 \cseq P_3) \dcond c (P_2 \cseq P_3)
+\\ c \ddo P &=& (P \cseq c \ddo P) \dcond c \cskip
+   & \elab{$\ddo$-unroll}{wdo-unroll}
+\\ P_1 \cseq (P_2 \parallel P_3) &\sqsubseteq& (P_1 \cseq P_2) \parallel P_3
+\\ P_1 \cseq P_2 &\sqsubseteq& P_1 \parallel P_2
+\\ P_1 \dcond{c_1 \land c_2} P_2
    &\sqsubseteq&
-   (c_1 \bcond{b_2} c_2) \bcond{b_1} c_2
-\\ b \bdo c &=& (c \bseq b \bdo c) \cond b \bskip
-\\ (b_1 \land b_2) \bawait c &=& b_1 \bawait (b_2 \bawait c)
-\\ false \bawait c &\sqsubseteq& c'
-\\ false \bawait c &=& true \bdo \bskip
+   (P_1 \dcond{c_2} P_2) \dcond{c_1} P_2
 }
-If expression evaluation is deterministic:
-\RLEQNS{
-   i:=e_2[e_1/i] &\sqsubseteq& i:=e_1 \bseq i:=e_2
-}
-If assignment is \emph{not} atomic:
-\RLEQNS{
-   \bskip &\sqsubseteq& i:=i
-}
-If we allow infinite \emph{fair} traces then some of the laws above break/alter as follows:
-\RLEQNS{
-   c_1 \bseq (c_2 \bpar c_3) &\sqsubseteq& (c_1 \bseq c_2) \bpar c_3
-   & \say{only if $c_1$ is loop-free}
-\\ false \bawait c &\neq& true \bdo \bskip
-\\ true \bdo \bskip &\not\sqsubseteq& c'
-}
-A loop for $c_1$ in the first case results in inequality because
-of the fairness assumption which will force some $c_3$ events to occur
-on the rhs, even if $c_1$ is non-terminating,
-whereas the lhs will only ever produce $c_1$'s ever-growing trace.
 
+If we have assignments $x:=e$, then the following apply:
 \RLEQNS{
-   \TT{c_1 \bor c_2} &=& \TT{c_1} \cup \TT{c_2}
-\\ c \sqsubseteq c' &\equiv& (c \bor c') = c'
-\\ i_1:=e_1 \bpar i_2:=e_2
+   \cskip &=& i:=i & \mbox{atomic assignment}
+\\ \cskip &\sqsubseteq& x:=x &\mbox{non-atomic assignment}
+\\ x:=e_2[e_1/x] &\sqsubseteq& x:=e_1 \cseq x:=e_2 & e_i \mbox{ deterministic}
+\\ x_1:=e_1 \parallel x_2:=e_2
    &=&
-   (i_1:=e_1 \bseq i_2:=e_2) \bor (i_2:=e_2 \bseq i_1:=e_1)
+   (x_1:=e_1 \cseq x_2:=e_2) 
+\\ && {} + (x_2:=e_2 \cseq x_1:=e_1)
 }
 The latter holding for atomic assignment.
 

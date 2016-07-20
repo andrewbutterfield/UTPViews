@@ -1,4 +1,10 @@
 % View paper notation macros
+
+\mathcode`\@=\bullet
+
+\def\g#1{g_{#1}}
+
+
 \def\VN#1{\ensuremath{\mathsf{#1}}}
 \def\VT#1{\ensuremath{\mathtt{#1}}}
 
@@ -41,7 +47,18 @@
 \def\setof#1{\{#1\}}
 \def\power{\mathcal{P}}
 \def\Int{\mathbb{Z}}
+\def\Nat{\mathbb{N}}
 \def\Bool{\mathbb{B}}
+\def\Map#1#2{{#1}\pfun{#2}}
+\def\mapof#1{\setof{#1}}
+\def\maplet#1#2{\mapof{{#1}\mapsto{#2}}}
+\def\nul{\setof{}}
+\def\seqof#1{\langle{#1}\rangle}
+\def\nil{\seqof{}}
+\def\mapof#1{\{{#1}\}}
+\def\cat{\mathbin{\frown}}
+\def\dom{\mathop{\mathrm{dom}}}
+\def\rng{\mathop{\mathrm{rng}}}
 
 % UTP macros
 
@@ -102,6 +119,14 @@
 \def\say#1{\textrm{``#1''}}
 \def\EQ#1{\\&=&\say{#1}}
 \def\EOLC#1{\textrm{ --- ``#1''}}
+
+\def\llawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\langle\!\langle\cdot}$}}}
+\def\rlawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\cdot\rangle\!\rangle}$}}}
+\def\mkelabel#1{\textsf{\llawnamebr{#1}\rlawnamebr}}
+\def\elab#1#2{\mkelabel{#1}\label{#2}}
+\def\elabel#1{\elab{#1}{#1}}
+\def\ecite#1{\mkelabel{#1}}
+\def\eref#1{\mkelabel{#1, p\pageref{#1}}}
 
 \def\RLEQNS#1{
   {$$\begin{array}{rcl@{\quad}l}

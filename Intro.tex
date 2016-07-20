@@ -20,7 +20,7 @@ The most abstract is the Command language from \cite{conf/popl/Dinsdale-YoungBGP
  C ::= a \mid \cskip \mid C \cseq C \mid C \parallel C \mid C+C \mid C^*
 \]
 with non-deterministic choice and iteration.
-Note that we have replaced 
+Note that we have replaced
 The language from \cite{DBLP:conf/icfem/WoodcockH02} replaces both
 non-deterministic constructs by deterministic ones depending
 on a condition over shared-state:
@@ -31,7 +31,7 @@ We will also consider Process Modelling Language (PML)\cite{DBLP:journals/infsof
 which is like the Views command language except that atomic actions
 have a state-based guard:
 \[
- M ::= c \pgrd a \mid \cskip \mid M \cseq M \mid M \parallel M \mid M+M \mid M^*
+ M ::= c \pgrd a \mid M \cseq M \mid M \parallel M \mid M+M \mid M^*
 \]
 A key point to note is that the semantics of common constructs is the same
 in every language.
@@ -42,4 +42,19 @@ a universal concurrent programming language:
    \mid P+P\mid P^*
    \mid P \dcond c P \mid c \ddo P
 \]
-where $a$ is simply $\true\pgrd a$.
+where $a$ is simply $true\pgrd a$.
+
+PML maps into $M$ the obvious way,
+with
+\begin{verbatim}
+action A {
+  requires { rr }
+  provides { pr }
+}
+\end{verbatim}
+turning into atomic action
+\[
+rr \subseteq rs ~~\pgrd~~ rs' = rs \cup pr
+\]
+Here the program state (formerly denoted by $s$)
+has turned into $rs:\power Res$, where $Res$ is the type of resources.
