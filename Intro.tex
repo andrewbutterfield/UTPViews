@@ -20,14 +20,23 @@ The most abstract is the Command language from \cite{conf/popl/Dinsdale-YoungBGP
  C ::= a \mid \cskip \mid C \cseq C \mid C \parallel C \mid C+C \mid C^*
 \]
 with non-deterministic choice and iteration.
-Note that we have replaced
+Note that we use $\cseq$ and $+$ for sequential composition
+and non-deterministic choice in the Command language,
+rather than the $;$ and $\sqcap$of UTP,
+because their semantics does not coincide.
+Unlike in the standard theory of Designs as applied to sequential programs,
+concurrent versions of these constructs do not match the relational
+calculus forms.
+
+
 The language from \cite{DBLP:conf/icfem/WoodcockH02} replaces both
 non-deterministic constructs by deterministic ones depending
 on a condition over shared-state:
 \[
  D ::= a \mid \cskip \mid D \cseq D \mid D \parallel D \mid D \dcond c D \mid c \ddo D
 \]
-We will also consider Process Modelling Language (PML)\cite{DBLP:journals/infsof/AtkinsonWN07}
+We will also consider Process Modelling Language
+(PML)\cite{DBLP:journals/infsof/AtkinsonWN07},
 which is like the Views command language except that atomic actions
 have a state-based guard:
 \[
@@ -42,7 +51,7 @@ a universal concurrent programming language:
    \mid P+P\mid P^*
    \mid P \dcond c P \mid c \ddo P
 \]
-where $a$ is simply $true\pgrd a$.
+where $a$ is simply short for $\true\pgrd a$.
 
 PML maps into $M$ the obvious way,
 with

@@ -71,7 +71,7 @@
 \begin{eqnarray*}
    A(E|a|N)
    &\defs&
-   ls(E) \land s' \in \sem a \land ls'=(ls\setminus E) \cup N
+   ls(E) \land s' \in \sem{a} s \land ls'=(ls\setminus E) \cup N
 \end{eqnarray*}
 
 
@@ -197,7 +197,17 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \subsubsection{Guarded Atomic Action}
 
 \RLEQNS{
- c \pgrd a &\defs&\W(c \land A(in|a|out)) \land [in|out]
+ c \pgrd a &\defs& \W(c \land A(in|a|out)) \land [in|out]
+\\ &=& (\Skip \lor c \land  A(in|a|out)) \land [in|out]
+\\ && \mbox{Need to double-check the above in a calculation}
+}
+
+\subsubsection{Skip}
+
+\RLEQNS{
+   ii     &\defs& s'=s
+\\ \cskip &\defs& \true ~\pgrd~ ii
+\\  &=& (\Skip \lor A(in|ii|out)) \land [in|out]
 }
 
 \subsubsection{Sequential Composition}
@@ -273,6 +283,3 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
 \\&& {} \land [in|\ell_g|out]
 }
-
-
-
