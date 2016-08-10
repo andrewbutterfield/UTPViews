@@ -192,14 +192,14 @@ The general composition:
 \\&& ls(E_1 \cup (E_2\setminus A_1)) \land
      (E_2\setminus A_1) \cap R_1 = \emptyset \land {}
 \\&& [a;b] \land {}
-\\&& ls' = (ls \setminus R_1 \cup R_2)
+\\&& ls' = ((ls \setminus R_1) \cup R_2)
            \cup
-           (A_1 \setminus R_2 \cup  A_2)
+           ((A_1 \setminus R_2) \cup  A_2)
 \EQ{defn of $X$}
 \\&& X(E_1 \cup (E_2\setminus A_1)
        |a\seq b
        |R_1 \cup R_2
-       |A_1 \setminus R_2 \cup  A_2)
+       |(A_1 \setminus R_2) \cup  A_2)
        \land (E_2\setminus A_1) \cap R_1 = \emptyset
 }
 Here the `ground' side-condition is
@@ -1031,4 +1031,3 @@ other lines are the disjuncts (poss. several on one line), with $\Skip$ ommitted
 \\ & & A(\ell_{g1}|a|out) \quad A(\ell_{g2}|b|out)
 \\ & & A(in|a|out) \quad A(in|b|out)
 }
-

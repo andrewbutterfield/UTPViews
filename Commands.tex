@@ -5,11 +5,8 @@
 \subsection{Syntax}
 
 \begin{eqnarray*}
-   a &\in& \Atom{}
-\\ g &:& Gen
-\\ \ell &:& Gen \fun Lbl
-\\ G &::=&  g \mid G_{:} \mid G_1 \mid G_2
-\\ L &::=& \ell_G
+   a &:& \mbox{Predicate, alphabet }s,s'
+\\ c &:& \mbox{Predicate, alphabet }s
 \end{eqnarray*}
 
 \RLEQNS{
@@ -26,7 +23,10 @@
 \subsection{Domains}
 \begin{eqnarray*}
    s &\in& \mathcal S
-\\ \sem{-} &:& \Atom{} \fun \mathcal S \fun \mathcal P(\mathcal S)
+\\ g &:& Gen
+\\ \ell &:& Gen \fun Lbl
+\\ G \in Gen &::=&  g \mid G_{:} \mid G_1 \mid G_2
+\\ L \in Lbl &::=& \ell_G
 \end{eqnarray*}
 
 \subsection{Alphabet}
@@ -37,42 +37,64 @@
 \\ g &:& Gen
 \\ in, out &:& Lbl
 \end{eqnarray*}
+We assume a general notion of expressions ($e$)
+and say that an expression $e$ is ``ground''
+if it's free variables are limited to only $g$, $in$ and $out$.
+
+
 
 \subsection{``Standard'' UTP Constructs}
 
-\begin{eqnarray*}
-   P \cond c Q
+\RLEQNS{
+   P \cond C Q
    &\defs&
-   c \land P \lor \lnot c \land Q
+   C \land P \lor \lnot C \land Q
+   & \elabel{UTP-cond-def}
 \\ \Skip
    &\defs&
    s'= s \land ls'=ls
-\\ P ; Q
-   &\defs&
-   \exists s_m,ls_m \bullet P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
-\\ c * P
+   & \elabel{UTP-skip-def}
+\\ P \seq Q
+   &\defs& \exists s_m,ls_m \bullet
+\\ && \qquad P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
+   & \elabel{UTP-seq-def}
+\\ C * P
    &=&
-   P ; c * P \cond c \Skip
-\end{eqnarray*}
+   P ; C * P \cond C \Skip
+   & \elabel{UTP-loop-unroll}
+}
+We also define a specialised form of sequential composition
+to be used when neither component refers to $ls$ or $ls'$,
+and its unit:
+\RLEQNS{
+   P \seq_s Q
+   &\defs&
+   \exists s_m \bullet P[s_m/s'] \land Q[s_m/s]
+   & \elabel{UTP-s-seq-def}
+\\ ii &\defs& s'=s & \elabel{ii-def}
+}
+We often omit the $s$ subscript when its use is clear from context.
+
 
 \subsection{Shorthands}
 
-\begin{eqnarray*}
+\RLEQNS{
    ls(\ell) &\defs& \ell \in ls
 \\ ls(L) &\defs& L \subseteq ls
 \\ ls(\B\ell) &\defs& \ell \notin ls
 \\ ls(\B L) &\defs& L \cap ls = \emptyset
-\end{eqnarray*}
+}
 
 \subsection{Semantic Concepts}
 
 \subsubsection{Basic Action}
 
-\begin{eqnarray*}
+\RLEQNS{
    A(E|a|N)
    &\defs&
-   ls(E) \land s' \in \sem{a} s \land ls'=(ls\setminus E) \cup N
-\end{eqnarray*}
+   ls(E) \land a \land ls'=(ls\setminus E) \cup N
+   & \elabel{A-def}
+}
 
 
 \subsubsection{Wheels-within-Wheels}
@@ -85,7 +107,7 @@
 \subsubsection{Label-Set Invariant}
 
 We want to be able to specify that certain combinations
-of labels should never appear simultaneoulsy
+of labels should never appear simultaneously
 in the global label set ($ls$).
 
 \RLEQNS{
@@ -197,9 +219,8 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \subsubsection{Guarded Atomic Action}
 
 \RLEQNS{
- c \pgrd a &\defs& \W(c \land A(in|a|out)) \land [in|out]
-\\ &=& (\Skip \lor c \land  A(in|a|out)) \land [in|out]
-\\ && \mbox{Need to double-check the above in a calculation}
+ c \pgrd a &\defs& \W(A(in|c \land a|out)) \land [in|out]
+\\ &=& (\Skip \lor A(in|c \land a|out)) \land [in|out]
 }
 
 \subsubsection{Skip}
@@ -282,4 +303,82 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \\ && \qquad {}\lor c \land A(in|ii|\ell_g)
 \\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
 \\&& {} \land [in|\ell_g|out]
+}
+
+\newpage
+\subsection{Semantic Calculations}
+
+All calculation results have the form
+\[ res = I \land (\Skip \lor \bigvee A(\dots)). \]
+For ease of reading,
+we display the invariant $I$ on the first line,
+followed by the list of $A(\dots)$ disjuncts, perhaps several on a line,
+as follows
+\RLEQNS{
+   res &=& I
+\\ && A(\dots)_1 \quad A(\dots)_2 \dots
+}
+We omit parentheses or logical operators.
+In general we try to put all the single atomic steps omn the first line,
+with all the mumblings on lower lines.
+
+\subsubsection{Atomic Actions}
+\RLEQNS{
+   c \pgrd a &=& [in|out]
+\\ && A(in|c \land a|out)
+\\
+\\ ii &=& [in|out]
+\\ && A(in|ii|out)
+}
+
+\subsubsection{Sequential Composition}
+\RLEQNS{
+   a \cseq b
+   &=& [in|\ell_g|out]
+\\ && A(in|a|\ell_g)\quad  A(\ell_g|b|out)
+\\ && A(in|a\seq b|out)
+}
+
+\subsubsection{Non-deterministic Choice}
+\RLEQNS{
+   a + b
+   &=& [in|\ell_{g1}|\ell_{g2}|out]
+\\ &&  A(in|ii|\ell_{g1}) \quad A(in|ii|\ell_{g2})
+       \quad
+       A(\ell_{g1}|a|out) \quad A(\ell_{g2}|b|out)
+\\&& A(in|a|out) \quad A(in|b|out)
+}
+
+\subsubsection{Parallel Composition}
+
+Here $\#n$ denotes mumblings of length $n$.
+\RLEQNS{
+   a \parallel b
+   &=& [in\mid([\ell_{g1}|\ell_{g1:}],[\ell_{g2}|\ell_{g2:}])\mid out]
+\\ &&  A(in|ii|\ell_{g1},\ell_{g2})
+       \quad
+       A(\ell_{g1:},\ell_{g2:}|ii|out)
+       \quad
+       A(\ell_{g1}|a|\ell_{g1:})
+       \quad
+       A(\ell_{g2}|b|\ell_{g2:}) &
+\\ && A(in|a|\ell_{g1:},\ell_{g2})
+      \quad
+      A(\ell_{g1},\ell_{g2}|b;a|\ell_{g1:},\ell_{g2:})
+      \quad
+      A(in|b|\ell_{g2:},\ell_{g1}) & \#2
+\\ && A(\ell_{g1},\ell_{g2}|a ; b|\ell_{g1:},\ell_{g2:})
+      \quad
+      A(\ell_{g2:},\ell_{g1}|a|out)
+      \quad
+      A(\ell_{g1:},\ell_{g2}|b|out) & \#2
+\\ && A(in|b;a|\ell_{g1:},\ell_{g2:})
+      \quad
+      A(in|a;b|\ell_{g1:},\ell_{g2:}) & \#3
+\\ && A(\ell_{g1},\ell_{g2}|b;a|out)
+      \quad
+      A(\ell_{g1},\ell_{g2}|a;b|out) & \#3
+\\ && A(in|b;a|out)
+      \quad
+      A(in|a;b|out) & \#4
 }

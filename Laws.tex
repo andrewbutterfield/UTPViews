@@ -1,24 +1,96 @@
 \section{Laws}\label{sec:laws}
 
+\subsection{Theory Internals}\label{ssec:internals}
+
+We have a problem in that actions defined using $A(\dots)$
+are not closed under standard UTP sequential composition (\eref{UTP-seq-def}).
+We need a more general form,
+where the labels removed are not necessarily
+exactly those that had to be present to enable the action.
+We call this eXtended atomic action $X$ and it is defined as follows:
+\RLEQNS{
+   X(E|a|R|A)
+   &\defs&
+   ls(E) \land s' \in \sem a s \land ls' = (ls \setminus R) \cup A
+   & \elabel{X-def}
+}
+We can then re-define $A$ in terms of $X$:
+\RLEQNS{
+   A(E|a|N)
+   &=&
+   X(E|a|E|N)
+   & \elabel{A-alt-def}
+}
+The key law is one regarding sequentially composing $X$s:
+\RLEQNS{
+   \lefteqn{X(E_1|a|R_1|A_1) ; X(E_2|b|R_2|A_2)} &&& \elabel{X-then-X}
+\\ &=& (E_2\setminus A_1) \cap R_1 = \emptyset
+\\ &\land&
+   X(E_1 \cup (E_2\setminus A_1)
+       |a\seq b
+       |R_1 \cup R_2
+       |(A_1 \setminus R_2) \cup  A_2)
+}
+The condition $(E_2\setminus A_1) \cap R_1 = \emptyset$
+characterises all those cases were the second $X$ is enabled
+immediately after the first $X$ terminates (i.e., without any outside interference).
+
+\subsection{Equality}\label{ssec:equality}
+
+\subsubsection{Hiding Label-Sets}\label{sssec:HL}
+
 For now, we define equality and refinement as follows,
 where we have to ``Hide Labels'':
 \RLEQNS{
-   \HL(P) &\defs& \exists ls,ls' @ P
-\\ P=Q &\defs& [ \HL(P) \equiv \HL(Q) ]
-\\ P \refinedby Q &\defs& [ \HL(Q) \implies \HL(P) ]
+   \HL(P) &\defs& \exists ls,ls' @ P & \elabel{HL-def}
+\\ P=Q &\defs& [ \HL(P) \equiv \HL(Q) ] & \elabel{HL-EQ-def}
+\\ P \refinedby Q &\defs& [ \HL(Q) \implies \HL(P) ] & \elabel{HL-RFBY-def}
 }
+As $ls$ and $ls'$ are no longer free in the result of applying $\HL$,
+we can consider it as removing those two variables from the alphabet.
+
+
+Provided $E$ is ground, then:
+\RLEQNS{
+   \HL(X(E|a|R|A)) &=& s' \in \sem a s
+   & \elabel{HL-X-red}
+}
+Provided $E[G,I,O/g,in,out]$ is ground, then:
+\RLEQNS{
+   \HL(X(E|a|R|A)[G,I,O/g,in,out]) &=& s' \in \sem a s
+   & \elabel{HL-X-sub-red}
+}
+As all the language semantic definitions boil down to a large
+disjunction of $X$ predicates,
+we see that the effect of $\HL$ is not just to remove
+all free occurrences of $ls$ and $ls'$,
+but also has the effect of removing all uses of $g$, $in$ and $out$.
+
 
 We note the following laws regarding $\HL$:
 \RLEQNS{
-   \HL(A \lor B) &=& \HL(A) \lor \HL(B)
-\\ \HL(A \seq B) &=& \HL(A) \seq \HL(B)
-\\ \HL(\W(P)) &=& s'=s \lor \bigvee_{i \in 1\dots} (\HL(P))^i
-\\ \HL(X(E|a|R|A)[G,I,O/g,in,out]) &=& s' \in \sem a s
+   \HL(A \lor B) &=& \HL(A) \lor \HL(B) & \elabel{HL-or-distr}
+\\ \HL(A \seq B) &=& \HL(A) \seq_s \HL(B) & \elabel{HL-seq-s-distr}
+\\ \HL(\W(P)) &=& ii \lor \bigvee_{i \in 1\dots} (\HL(P))^i_s
+   & \elabel{HL-W-distr}
+\\ P^0_s &\defs& ii &\elabel{sseq-power-0}
+\\ P^{n+1}_s &\defs& P \seq_s P^n_s &\elabel{sseq-power-n'}
 }
-The last holds provided $E,R,A,G,I,O$ do not mention $ls,ls'$.
+Here $P^i_s$ is defined in terms of $\seq_s$ rather than $\seq$.
+
+The key seems to be the following law of $\HL$:
+\RLEQNS{
+   \HL(P[G_1,I_1,O_1/g,in,out])
+   &=&
+   \HL(P[G_2,I_2,O_2/g,in,out])
+   & \elabel{HL-subs-indep}
+}
+provided $[I_i | labs(G_i) | O_i]$ for $ i=1,2$.
+True for atomic $P$ by \ecite{HL-X-sub-red}, should be able to show by induction
 
 
 
+\subsubsection{Language Laws}\label{ssec:lang-laws}
 \RLEQNS{
    \cskip \cseq P &=& P & \elab{$\cseq$-l-unit}{;;-l-unit}
 \\ P \cseq \cskip &=& P & \elab{$\cseq$-Q-unit}{;;-r-unit}

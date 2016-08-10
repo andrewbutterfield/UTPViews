@@ -1,0 +1,102 @@
+\section{Proofs}\label{sec:proofs}
+
+
+
+\subsection{Proof of \textsf{HL-X-red}}
+\RLEQNS{
+  && \HL(X(E|a|R|A))
+\EQ{\eref{HL-def}}
+\\&& \exists ls,ls' @ X(E|a|R|A)
+\EQ{\eref{X-def}}
+\\&& \exists ls,ls' @
+     ls(E) \land s' \in \sem a s \land ls' = (ls \setminus R) \cup A
+\EQ{1pt-law, $ls'$, noting that $E$ is ground}
+\\&& \exists ls @
+     ls(E) \land s' \in \sem a s
+\EQ{reduce $ls$ scope}
+\\&& (\exists ls @ ls(E)) \land s' \in \sem a s
+\EQ{witness: $ls=E$}
+\\&& s' \in \sem a s
+}
+
+
+\subsection{Proof of \textsf{HL-X-sub-red}}
+
+We start with a lemma \elabel{X-gnd-subst}:
+\RLEQNS{
+  && X(E|a|R|A)[G,I,O/g,in,out]
+\EQ{\eref{X-def}}
+\\&& (ls(E) \land s' \in \sem a s \land ls' = (ls \setminus R) \cup A)
+     [G,I,O/g,in,out]
+\EQ{substitution}
+\\&& ls(E[G,I,O/g,in,out])
+    \land s' \in \sem a s
+\\ &\land& ls' = (ls \setminus R[G,I,O/g,in,out]) \cup A[G,I,O/g,in,out]
+\EQ{\eref{X-def}}
+\\&& X(E[G,I,O/g,in,out]|a|R[G,I,O/g,in,out]|A[G,I,O/g,in,out])
+}
+
+\RLEQNS{
+  && \HL(X(E|a|R|A)[G,I,O/g,in,out])
+\EQ{\eref{X-gnd-subst}}
+\\&& \HL(X(E[G,I,O/g,in,out]|a|R[G,I,O/g,in,out]|A[G,I,O/g,in,out]))
+\EQ{\eref{HL-X-red}, provided $E[G,I,O/g,in,out]$ is ground.}
+\\&& s' \in \sem a s
+}
+
+
+\subsection{Proof of \textsf{HL-or-distr}}
+\RLEQNS{
+  && \HL(A \lor B)
+\EQ{\eref{HL-def}}
+\\&& \exists ls,ls' @ A \lor B
+\EQ{$\exists$-$\lor$-distr}
+\\&& (\exists ls,ls' @ A) \lor (\exists ls,ls' @ B)
+\EQ{\eref{HL-def}}
+\\&& \HL(A) \lor \HL{B}
+}
+
+
+\subsection{Proof of \textsf{HL-seq-s-distr}}
+\RLEQNS{
+  && \HL(A \seq B)
+\EQ{\eref{HL-def}}
+\\&& \exists ls,ls' @ A \seq B
+\EQ{\eref{UTP-seq-def}}
+\\&& \exists ls,ls' @
+     \exists s_m,ls_m @
+     A[s_m,ls_m/s',ls'] \land B[s_m,ls_m/s,ls]
+\EQ{re-order quantifiers}
+\\&& \exists s_m,ls_m @
+     \exists ls,ls' @
+      A[s_m,ls_m/s',ls'] \land B[s_m,ls_m/s,ls]
+\EQ{$ls'$ not free in $A[s_m,ls_m/s',ls']$}
+\\&& \exists s_m,ls_m @
+     \exists ls @
+      A[s_m,ls_m/s',ls'] \land \exists ls' @B[s_m,ls_m/s,ls]
+\EQ{$ls$ not free in $B[s_m,ls_m/s,ls]$}
+\\&& \exists s_m,ls_m @
+     (\exists ls @ A[s_m,ls_m/s',ls'])
+      \land
+     (\exists ls' @B[s_m,ls_m/s,ls])
+\EQ{pull substitutions outside quantifier}
+\\&& \exists s_m,ls_m @
+     (\exists ls @ A)[s_m,ls_m/s',ls']
+      \land
+     (\exists ls' @B)[s_m,ls_m/s,ls]
+\EQ{\eref{UTP-seq-def}}
+\\&& (\exists ls @ A) \seq (\exists ls' @B)
+}
+
+\RLEQNS{
+  && \HL(A) \seq_s \HL(B)
+\EQ{\eref{HL-def}}
+\\&& (\exists ls,ls' @ A) \seq_s (\exists ls,ls' @ B)
+\EQ{\eref{UTP-s-seq-def}}
+\\&& \exists s_m @
+(\exists ls,ls' @ A)[s_m/s'] \land (\exists ls,ls' @ B)[s_m/s]
+}
+
+We need to explicitly involve the fact that all semantics
+turn into disjunctions of $X$ constructs under ground substitutions
+for $g$, $in$ and $out$.
