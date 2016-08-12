@@ -56,47 +56,71 @@ We start with a lemma \elabel{X-gnd-subst}:
 \\&& \HL(A) \lor \HL{B}
 }
 
+\subsection{Proof of \textsf{HL-I-and-skip}}
+\RLEQNS{
+  && \HL(I \land \Skip)
+\EQ{\eref{UTP-skip-def}}
+\\&& \HL(I \land ls'=ls \land s'=s)
+\EQ{\eref{HL-def}}
+\\&& \exists ls,ls' @ I \land ls'=ls \land s'=s
+\EQ{1-pt, $ls'=ls$}
+\\&& \exists ls @ I[ls/ls'] \land s'=s
+\EQ{$ls'$ not in $I$}
+\\&& \exists ls @ I \land s'=s
+\EQ{shrink scope of $ls$, expand $I$ shorthand (a bit)}
+\\&& (\exists ls @ ls \textbf{ lsat } I) \land s'=s
+\EQ{witness, $ls=\emptyset$}
+\\&& s'=s
+\EQ{\eref{ii-def}}
+\\&& ii
+}
+
+
+\subsection{Proof of \textsf{HL-I-and-X}}
+\RLEQNS{
+  && \HL(I \land X(E|a|R|A) \land S)
+\EQ{\eref{X-def}}
+\\&& \HL(I \land ls(E) \land a \land ls'=(ls\setminus R)\cup A \land S)
+\EQ{\eref{HL-def}}
+\\&& \exists ls,ls' @ I \land ls(E) \land a \land ls'=(ls\setminus R)\cup A \land S)
+\EQ{1-pt, $ls'=(ls\setminus R)\cup A$, noting $E$, $S$ are ground}
+\\&& \exists ls @ I \land ls(E) \land a \land S)
+\EQ{shrink scope of $ls$}
+\\&& (\exists ls @ I \land ls(E)) \land a \land S)
+\EQ{witness $ls=E$, assuming that $E \textbf{ lsat } I$}
+\\&& a \land S
+}
 
 \subsection{Proof of \textsf{HL-seq-s-distr}}
+
+We start with the lhs, in which $A(a_i)$ is shorthand for $A(E_i|a_i|N_i)$,
+and similarly for $A(b_j)$, and $X(a_i\seq_s b_j)$.
 \RLEQNS{
-  && \HL(A \seq B)
-\EQ{\eref{HL-def}}
-\\&& \exists ls,ls' @ A \seq B
-\EQ{\eref{UTP-seq-def}}
-\\&& \exists ls,ls' @
-     \exists s_m,ls_m @
-     A[s_m,ls_m/s',ls'] \land B[s_m,ls_m/s,ls]
-\EQ{re-order quantifiers}
-\\&& \exists s_m,ls_m @
-     \exists ls,ls' @
-      A[s_m,ls_m/s',ls'] \land B[s_m,ls_m/s,ls]
-\EQ{$ls'$ not free in $A[s_m,ls_m/s',ls']$}
-\\&& \exists s_m,ls_m @
-     \exists ls @
-      A[s_m,ls_m/s',ls'] \land \exists ls' @B[s_m,ls_m/s,ls]
-\EQ{$ls$ not free in $B[s_m,ls_m/s,ls]$}
-\\&& \exists s_m,ls_m @
-     (\exists ls @ A[s_m,ls_m/s',ls'])
-      \land
-     (\exists ls' @B[s_m,ls_m/s,ls])
-\EQ{pull substitutions outside quantifier}
-\\&& \exists s_m,ls_m @
-     (\exists ls @ A)[s_m,ls_m/s',ls']
-      \land
-     (\exists ls' @B)[s_m,ls_m/s,ls]
-\EQ{\eref{UTP-seq-def}}
-\\&& (\exists ls @ A) \seq (\exists ls' @B)
+  && \HL(P \seq Q)
+\EQ{expand into normal form}
+\\&& \HL\left(~I \land (\Skip \lor \bigvee A(a_i))
+                \seq
+               J \land (\Skip \lor \bigvee A(b_j))~\right)
+\EQ{\eref{nf-seq}}
+\\&& \HL\left(~I \land J \land (\Skip \lor \bigvee (A(a_i) \seq A(b_j)))~\right)
+\EQ{\ecite{and-or-distr}}
+\\&& \HL\left(~I \land J \land \Skip
+\lor \bigvee (I \land J \land  (A(a_i) \seq A(b_j)))~\right)
+\EQ{\eref{HL-or-distr}}
+\\&& \HL(~I \land J \land \Skip)
+\lor \bigvee \HL(I \land J \land  (A(a_i) \seq A(b_j)))
+\EQ{\eref{HL-I-and-skip}}
+\\&& I \land J \land ii
+\lor \bigvee \HL(I \land J \land  (A(a_i) \seq A(b_j)))
+\EQ{Assume $A(a_i) \seq A(b_j) = X(a_i\seq_s b_j) \land S_{ij}$}
+\\&& I \land J \land ii
+\lor \bigvee \HL(I \land J \land  X(a_i\seq_s b_j) \land S_{ij})
+\EQ{\eref{HL-I-and-X}}
+\\&& I \land J \land ii
+\lor \bigvee (I \land J \land (a_i\seq_s b_j) \land S_{ij})
 }
 
+Now, the rhs:
 \RLEQNS{
-  && \HL(A) \seq_s \HL(B)
-\EQ{\eref{HL-def}}
-\\&& (\exists ls,ls' @ A) \seq_s (\exists ls,ls' @ B)
-\EQ{\eref{UTP-s-seq-def}}
-\\&& \exists s_m @
-(\exists ls,ls' @ A)[s_m/s'] \land (\exists ls,ls' @ B)[s_m/s]
+  && \HL(P) \seq_s \HL(Q)
 }
-
-We need to explicitly involve the fact that all semantics
-turn into disjunctions of $X$ constructs under ground substitutions
-for $g$, $in$ and $out$.

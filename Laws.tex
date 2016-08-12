@@ -33,7 +33,8 @@ The key law is one regarding sequentially composing $X$s:
 }
 The condition $(E_2\setminus A_1) \cap R_1 = \emptyset$
 characterises all those cases were the second $X$ is enabled
-immediately after the first $X$ terminates (i.e., without any outside interference).
+immediately after the first $X$ terminates
+(i.e., without any outside interference).
 
 \subsection{Equality}\label{ssec:equality}
 
@@ -52,25 +53,55 @@ we can consider it as removing those two variables from the alphabet.
 
 Provided $E$ is ground, then:
 \RLEQNS{
-   \HL(X(E|a|R|A)) &=& s' \in \sem a s
+   \HL(X(E|a|R|A)) &=& a
    & \elabel{HL-X-red}
+\\ \HL(A(E|a|N)) &=& a
+   & \elabel{HL-A-red}
 }
 Provided $E[G,I,O/g,in,out]$ is ground, then:
 \RLEQNS{
-   \HL(X(E|a|R|A)[G,I,O/g,in,out]) &=& s' \in \sem a s
+   \HL(X(E|a|R|A)[G,I,O/g,in,out]) &=& a
    & \elabel{HL-X-sub-red}
+\\ \HL(A(E|a|N)[G,I,O/g,in,out]) &=& a
+   & \elabel{HL-A-sub-red}
 }
 As all the language semantic definitions boil down to a large
-disjunction of $X$ predicates,
+disjunction of $X$ or $A$ predicates and substitutions satisfying
+the two groundedness side-conditions above,
 we see that the effect of $\HL$ is not just to remove
 all free occurrences of $ls$ and $ls'$,
 but also has the effect of removing all uses of $g$, $in$ and $out$.
+All that remains is the underlying action on program state.
+
+Considering invariants in the mix, assuming $E$ is ground
+and that $E \textbf{ lsat } I$:
+\RLEQNS{
+   \HL(I \land \Skip) &=&  ii & \elabel{HL-I-and-skip}
+\\ \HL(I \land X(E|a|R|A) \land S)
+   &=& a \land S
+   & \elabel{HL-I-and-X}
+}
+Here $S$ is a predicate over ground label-set expressions.
+We intend to use this law on $X$-components calculated in the
+context of invariant $I$, so we always expect $E$ to satisfy $I$.
+
+Assume that $P$ has a normal form as follows,
+where $A(a_i)$ is shorthand for $A(E_i|a_i|N_i)$:
+\[
+   I \land \left( \Skip \lor \bigvee A(a_i) \right)
+\]
+then
+\RLEQNS{
+  \HL(P) &=& ii \lor \bigvee a_i
+}
+
+
 
 
 We note the following laws regarding $\HL$:
 \RLEQNS{
    \HL(A \lor B) &=& \HL(A) \lor \HL(B) & \elabel{HL-or-distr}
-\\ \HL(A \seq B) &=& \HL(A) \seq_s \HL(B) & \elabel{HL-seq-s-distr}
+\\ \HL(P \seq Q) &=& \HL(P) \seq_s \HL(Q) & \elabel{HL-seq-s-distr}
 \\ \HL(\W(P)) &=& ii \lor \bigvee_{i \in 1\dots} (\HL(P))^i_s
    & \elabel{HL-W-distr}
 \\ P^0_s &\defs& ii &\elabel{sseq-power-0}
@@ -78,17 +109,18 @@ We note the following laws regarding $\HL$:
 }
 Here $P^i_s$ is defined in terms of $\seq_s$ rather than $\seq$.
 
-The key seems to be the following law of $\HL$:
+The key to proving the language laws is the following law of $\HL$
+that captures its independence under any \emph{valid} substitution.
 \RLEQNS{
    \HL(P[G_1,I_1,O_1/g,in,out])
    &=&
    \HL(P[G_2,I_2,O_2/g,in,out])
    & \elabel{HL-subs-indep}
 }
-provided $[I_i | labs(G_i) | O_i]$ for $ i=1,2$.
-True for atomic $P$ by \ecite{HL-X-sub-red}, should be able to show by induction
-
-
+Such substitutions are \emph{valid} provided they satisfy the invariant
+$[I_i | labs(G_i) | O_i]$ for $ i=1,2$.
+This excludes pathological substitutions that mix up input, output
+and internal labels, which would alter the resulting normal form.
 
 \subsubsection{Language Laws}\label{ssec:lang-laws}
 \RLEQNS{

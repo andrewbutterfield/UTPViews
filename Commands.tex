@@ -10,7 +10,7 @@
 \end{eqnarray*}
 
 \RLEQNS{
-   P &::= & c \pgrd a     & \mbox{Atomic Action}
+   P &::= & a             & \mbox{Atomic Action}
 \\   &\mid& \cskip        & \mbox{No state change}
 \\   &\mid& P \cseq P     & \mbox{Sequential Composition}
 \\   &\mid& P \parallel P & \mbox{Parallel Composition}
@@ -109,17 +109,37 @@ We often omit the $s$ subscript when its use is clear from context.
 We want to be able to specify that certain combinations
 of labels should never appear simultaneously
 in the global label set ($ls$).
+We do this by defining a label-set invariant $I$
+which has alphabet $ls,in,out,g$.
 
+We start by defining a general abstract way of specifying
+sets with valid combinations
+of values drawn from a parameter type $\tau$.
 \RLEQNS{
-   i \in I_\tau &::=& \tau \mid \otimes(i,\ldots,i) \mid \cup (i,\ldots,i)
+   i \in I_\tau &::=& \tau   &  \mbox{can contain this value}
+\\ &\mid& \otimes(i,\ldots,i) & \mbox{at most one of these allowed to contain}
+\\ &\mid& \cup (i,\ldots,i) & \mbox{any of these allowed to contain}
 }
 
+We define what it means for an atomic action invocation
+to satisfy an invariant parameterised on the label type ($Lbl$).
 \RLEQNS{
-   A(E|a|N) \textbf{ sat } I
+  ls \textbf{ lsat } I \land A(E|a|N) &\implies& ls' \textbf{ lsat } I
+}
+We can re-formulate this as a following equivalent test:
+\RLEQNS{
+   A(E|a|N) \textbf{ sat } I_{Lbl}
    &\defs&
-   E \textbf{ lsat } I \land N \textbf{ lsat } I
+   E \textbf{ lsat } I_{Lbl} \land N \textbf{ lsat } I_{Lbl}
 }
-
+In effect we identify the occurrences of labels within this $I$-structure,
+and then check the multiplicity constraints:
+\RLEQNS{
+   L \textbf{ lsat } I_{Lbl} &\defs& res=ok
+\\ \textbf{where} && (res,\_) = occChk (occ_L I_{Lbl})
+}
+The $occ$ function takes a set $L$ of $\tau$ and an $I_\tau$ and returns a $I_\Bool$
+that records if the corresponding element of $\tau$ is present in $L$.
 \RLEQNS{
    occ &:& \power \tau \fun I_\tau \fun I_\Bool
 \\ occ_L~\ell &\defs& \ell \in L
@@ -130,7 +150,11 @@ in the global label set ($ls$).
    &\defs&
    \cup(occ_L~i_1,\ldots,occ_L~i_n)
 }
-
+The $occChk$ function pattern matches across the boolean values to see if
+constraints are satisfied.
+The first component of the result is an overall ok/fail indicator,
+while the second boolean component indicates if values are present
+in any component.
 \RLEQNS{
    occChk &:& I_\Bool \fun (\setof{ok,fail}\times \Bool)
 \\ occChk(b) &\defs& (ok,b)
@@ -148,6 +172,12 @@ in the global label set ($ls$).
 \\&& (ok,false) \mbox{ if all are $(ok,false)$}
 \\&& (ok,true) \mbox{ if  exactly one $(ok,true)$}
 }
+We note, as a consequence of the above definitions, that
+\RLEQNS{
+  \emptyset &  \textbf{lsat} &  I & \elabel{emp-lsat-I}
+}
+for any label-set invariant $I$.
+
 
 Shorthand: $\otimes \mapsto |$, $\cup \mapsto ,$
 \RLEQNS{
@@ -161,15 +191,19 @@ Shorthand: $\otimes \mapsto |$, $\cup \mapsto ,$
 
 \subsubsection{Invariant Examples}
 
+The following examples show how various instances of $I$
+get expanded when we consider the assertion
+\[ ls \textbf{ lsat } I \]
+
 \RLEQNS{
-   ~[in|out]
+   ls \textbf{ lsat } [in|out]
    &=&
    \setof{in} \cap \setof{out} = \emptyset
 \\ &\land&
   \setof{in} \subseteq ls \implies \setof{out}\cap ls = \emptyset
 \\ &\land&
   \setof{out} \subseteq ls \implies \setof{in}\cap ls = \emptyset
-\\ ~[in|\ell|out]
+\\ ls \textbf{ lsat } [in|\ell|out]
    &=&
    \setof{in} \cap \setof{\ell} = \emptyset
 \\ &\land&
@@ -185,7 +219,7 @@ Shorthand: $\otimes \mapsto |$, $\cup \mapsto ,$
 }
 
 \RLEQNS{
-   ~[ a | (b|c),(d|e) | f ]
+   ls \textbf{ lsat } [ a | (b|c),(d|e) | f ]
    &=&
    \setof{a} \cap \setof{b,c,d,e,f} = \emptyset
 \\ &\land&
@@ -214,21 +248,39 @@ Shorthand: $\otimes \mapsto |$, $\cup \mapsto ,$
 Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 
 
+\newpage
 \subsection{Program Semantics}
 
-\subsubsection{Guarded Atomic Action}
+In this semantics, we interpret any invariant
+written as $I = [\dots|\dots|\dots]$
+as shorthand for $ls \textbf{ lsat } I$.
+
+\subsubsection{Atomic Action}
 
 \RLEQNS{
- c \pgrd a &\defs& \W(A(in|c \land a|out)) \land [in|out]
-\\ &=& (\Skip \lor A(in|c \land a|out)) \land [in|out]
+  a &\defs& [in|out] \land \W(A(in|a|out)) & \elabel{sem:atomic}
+\\ &=&  [in|out] \land (\Skip \lor A(in|a|out))
 }
+
+
+\subsubsection{Guarded Atomic Action}
+In effect there is no real difference between $c \pgrd a$
+and $\true \pgrd (c \land a)$,
+so in fact we don't need guarded actions as basic.
+This is an advantage of treating the atomic action as a relational predicate
+on state.
+
+\RLEQNS{
+ c \pgrd a &\defs& c \land a \mbox{ ---interpreted as atomic action} &\elabel{sem:pgrd}
+}
+
 
 \subsubsection{Skip}
 
 \RLEQNS{
    ii     &\defs& s'=s
-\\ \cskip &\defs& \true ~\pgrd~ ii
-\\  &=& (\Skip \lor A(in|ii|out)) \land [in|out]
+\\ \cskip &\defs& ii \mbox{ ---interpreted as atomic action} &\elabel{sem:skip}
+\\  &=&  [in|out] \land (\Skip \lor A(in|ii|out))
 }
 
 \subsubsection{Sequential Composition}
@@ -236,22 +288,24 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \RLEQNS{
    P \cseq Q
    &\defs&
-   \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
-   \land [in|\ell_g|out]
+   [in|\ell_g|out]\land \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+   & \elabel{sem:seq}
 }
 
-\subsubsection{Parallell Composition}
+\subsubsection{Parallel Composition}
 
 \RLEQNS{
    P \parallel Q
    &\defs&
-   \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
+   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+   & \elabel{sem:par}
+\\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
 \\ && \qquad {}\lor
    P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-   \lor Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ && \qquad {}\lor
+    Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
 \\ && \qquad {}\lor
    A(\ell_{g1:},\ell_{g2:}|ii|out)~)
-\\&& {} \land [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]
 }
 
 
@@ -260,12 +314,15 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \RLEQNS{
    P + Q
    &\defs&
-   \W(\quad {}\phlor A(in|ii|\ell_{g1})
+   [in|\ell_{g1}|\ell_{g2}|out] \land {}
+   & \elabel{sem:NDC}
+\\ && \W(\quad {}\phlor A(in|ii|\ell_{g1})
 \\ && \qquad {} \lor
                      A(in|ii|\ell_{g2})
 \\ && \qquad {} \lor
-   P[g_{1:},\ell_{g1}/g,in] \lor Q[g_{2:},\ell_{g2}/g,in]~)
-\\&& {} \land [in|\ell_{g1}|\ell_{g2}|out]
+   P[g_{1:},\ell_{g1}/g,in]
+\\ && \qquad {} \lor
+   Q[g_{2:},\ell_{g2}/g,in]~)
 }
 
 \subsubsection{Nondeterministic Loop}
@@ -274,10 +331,11 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \RLEQNS{
    P^*
    &\defs&
-   \W(\quad  \phlor A(in|ii|out)
+   [in|\ell_g|out] \land {}
+   & \elabel{sem:star}
+\\ && \W(\quad  \phlor A(in|ii|out)
 \\ && \qquad {}\lor A(in|ii|\ell_g)
 \\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
-\\&& {} \land [in|\ell_g|out]
 }
 
 \subsubsection{Conditional Choice}
@@ -285,12 +343,15 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \RLEQNS{
    P \dcond c Q
    &\defs&
-   \W(\quad {}\phlor c \land A(in|ii|\ell_{g1})
+   [in|\ell_{g1}|\ell_{g2}|out] \land {}
+   & \elabel{sem:cond}
+\\ && \W(\quad {}\phlor A(in|c \land ii|\ell_{g1})
 \\ && \qquad {} \lor
-                     \lnot c \land A(in|ii|\ell_{g2})
+                     A(in|\lnot c \land ii|\ell_{g2})
 \\ && \qquad {} \lor
-   P[g_{1:},\ell_{g1}/g,in] \lor Q[g_{2:},\ell_{g2}/g,in]~)
-\\&& {} \land [in|\ell_{g1}|\ell_{g2}|out]
+   P[g_{1:},\ell_{g1}/g,in]
+\\ && \qquad {} \lor
+   Q[g_{2:},\ell_{g2}/g,in]~)
 }
 
 \subsubsection{Conditional Loop}
@@ -299,35 +360,96 @@ Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
 \RLEQNS{
    c \ddo P
    &\defs&
-   \W(\quad  \phlor \lnot c \land A(in|ii|out)
-\\ && \qquad {}\lor c \land A(in|ii|\ell_g)
+   [in|\ell_g|out] \land {}
+   & \elabel{sem:iter}
+\\ && \W(\quad  \phlor A(in|\lnot c \land ii|out)
+\\ && \qquad {}\lor A(in|c \land ii|\ell_g)
 \\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
-\\&& {} \land [in|\ell_g|out]
 }
+
 
 \newpage
 \subsection{Semantic Calculations}
 
-All calculation results have the form
-\[ res = I \land (\Skip \lor \bigvee A(\dots)). \]
+\subsubsection{Normal Form}
+
+All the semantics above have an invariant $I$,
+zero or more atomic actions ($A_i$),
+plus zero or more language sub-component predicates ($P_j$)
+assembled into a predicate of the form:
+\[
+  I
+  \land
+  \W( A_1 \lor \dots \lor A_m
+     \lor
+     P_1\sigma_1 \lor \dots \lor P_n\sigma_n )
+\]
+where each $\sigma_i = [G_i,I_i,O_i/g,in,out]$,
+with all $G_i$, $I_i$ and $O_i$ being ground
+and satisfying the invariant $[I_i|labs(G_i)|O_i]$.
+Given that we have
+\[
+  \W(P) = \bigvee_{i \in 0\dots} \Skip \seq P^i
+\]
+we find that two key outcomes result:
+\begin{enumerate}
+  \item
+    Every program can be transformed,
+    in principle at least,
+    to the form
+    \[
+     I \land \left( \Skip \lor \bigvee_{i \in 0\dots}  A(E_i|a_i|N_i) \right)
+    \]
+    for suitable choices of $E_i$, $a_i$ and $N_i$.
+    In particular, we find that the $E_i$ all satisfy the relevant
+    label-set invariants.
+    The invariant $I$ here is the conjunction of all the invariants
+    from each level down, under the relevant substitutions.
+  \item
+    For any complete program that does not use iteration constructs,
+    this expansion is finite.
+\end{enumerate}
+This can be sown by an inductive argument over the language syntax,
+noting that the sequential composition of two such forms
+can itself be transformed into such a form.
+In effect this defines a \emph{normal form} for our semantics.
+
+It is important to stress that these normal forms depend crucially
+on the relevant label-set invariants holding throughout.
+
+An important law we shall require is that the UTP sequential
+composition of two normal forms can itself be expressed
+as such a normal form:
+\RLEQNS{
+   I \land (\Skip\lor\bigvee A_i) \seq J \land (\Skip\lor\bigvee B_j)
+   &=&
+   I \land J \land (\Skip\lor\bigvee (A_i \seq B_j))
+   &\elabel{nf-seq}
+}
+This is an easy result of the fact that $\seq$ distributes through $\lor$,
+and $\Skip$ is a unit for it as well.
+
+
+We now present calculations of normal forms for every language
+construct, given atomic sub-components.
 For ease of reading,
 we display the invariant $I$ on the first line,
 followed by the list of $A(\dots)$ disjuncts, perhaps several on a line,
 as follows
 \RLEQNS{
    res &=& I
-\\ && A(\dots)_1 \quad A(\dots)_2 \dots
+\\ && A(E_1|a_1|N_1) \quad A(E_1|a_2|N_2)) \quad \dots
 }
 We omit parentheses or logical operators.
-In general we try to put all the single atomic steps omn the first line,
+In general we try to put all the single atomic steps on the first line,
 with all the mumblings on lower lines.
 
 \subsubsection{Atomic Actions}
 \RLEQNS{
-   c \pgrd a &=& [in|out]
-\\ && A(in|c \land a|out)
+   a &=& [in|out]
+\\ && A(in|a|out)
 \\
-\\ ii &=& [in|out]
+\\ \cskip &=& [in|out]
 \\ && A(in|ii|out)
 }
 
@@ -350,7 +472,6 @@ with all the mumblings on lower lines.
 }
 
 \subsubsection{Parallel Composition}
-
 Here $\#n$ denotes mumblings of length $n$.
 \RLEQNS{
    a \parallel b
@@ -381,4 +502,36 @@ Here $\#n$ denotes mumblings of length $n$.
 \\ && A(in|b;a|out)
       \quad
       A(in|a;b|out) & \#4
+}
+
+\subsubsection{Non-deterministic Iteration}
+The actions that denote a terminating
+run with zero or more complete iterations
+are \textbf{emboldended} below.
+\RLEQNS{
+   a^*
+   &=& [in|\ell_g|out]
+\\ &&  \mathbf{A(in|ii|out)} \quad A(in|ii|\ell_g) \quad A(\ell_g|a|in)
+\\ &&  A(\ell_g|a|out) \quad A(\ell_g|a|\ell_g) \quad A(in|a|in)         &\#2
+\\ &&  \mathbf{A(in|a|out)} \quad A(in|a|\ell_g) \quad A(\ell_g|a^2|in)  &\#3
+\\ &&  A(\ell_g|a^2|out) \quad A(\ell_g|a^2|\ell_g) \quad A(in|a^2|in)   &\#4
+\\ &&  \mathbf{A(in|a^2|out)} \quad A(in|a^2|\ell_g) \quad A(\ell_g|a^3|in) &\#5
+\\ &&  A(\ell_g|a^3|out) \quad A(\ell_g|a^3|\ell_g) \quad A(in|a^3|in) &\#6
+\\ && \vdots & \#7\dots
+}
+An obvious recurrent pattern (based on mumbling depth) has emerged:
+\RLEQNS{
+   &&  \mathbf{A(in|a^n|out)} \quad A(in|a^n|\ell_g) \quad A(\ell_g|a^{n+1}|in) &\#2n+1
+\\ &&  A(\ell_g|a^{n+1}|out) \quad A(\ell_g|a^{n+1}|\ell_g) \quad A(in|a^{n+1}|in) &\#2n+2
+}
+We can also identify a pattern based on number of $a$s performed:
+\RLEQNS{
+   \alpha_0 && \mathbf{A(in|ii|out)} \quad A(in|ii|\ell_g)
+\\ \alpha_1 && A(\ell_g|a|in) \quad A(\ell_g|a|out) \quad A(\ell_g|a|\ell_g) \quad A(in|a|in)
+\\          && \mathbf{A(in|a|out)} \quad A(in|a|\ell_g)
+\\ \alpha_2 && A(\ell_g|a^2|in) \quad A(\ell_g|a^2|out) \quad A(\ell_g|a^2|\ell_g) \quad A(in|a^2|in)
+\\          && \mathbf{A(in|a^2|out)} \quad A(in|a^2|\ell_g)
+\\
+\\ \alpha_n && A(\ell_g|a^n|in) \quad A(\ell_g|a^n|out) \quad A(\ell_g|a^n|\ell_g) \quad A(in|a^n|in)
+\\          && \mathbf{A(in|a^n|out)} \quad A(in|a^n|\ell_g)
 }
