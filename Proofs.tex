@@ -82,6 +82,11 @@ that generalises to the use of ground substitutions $\sigma$:
 \EQ{witness, $ls=\emptyset$, substitution irrelevant}
 \\&& \true
 }
+It also works if we have a conjunction of invariants:
+\RLEQNS{
+  \exists ls @ (I \land J)\sigma &=& \true
+}
+The one witness satisfies all such invariants.
 
 
 \subsection{Proof of \textsf{HL-I-and-X}}
@@ -163,14 +168,138 @@ so our result is immediate.
 
 \subsubsection{\textsf{HL-subs-indep}, Inductive Hypothesis}
 
-For each inductive step case below we assume:
+For each inductive step case below we assume,
+for \emph{arbitrary} $\sigma_1$, $\sigma_2$.
 \RLEQNS{
    \HL(P\sigma_1) &=& \HL(P\sigma_2) & \elabel{HL-subs-indep-hyp-P}
 \\ \HL(Q\sigma_1) &=& \HL(Q\sigma_2) & \elabel{HL-subs-indep-hyp-Q}
+}
+We also assume the following normal forms,
+where we distribute the invariant in.
+\RLEQNS{
+   P &=& I \land \Skip \lor \bigvee_j (I \land  A(a_j))
+   & \elabel{HL-subs-indep-nf-P}
+\\ Q &=& J \land \Skip \lor \bigvee_k  (J \land  A(b_k))
+   & \elabel{HL-subs-indep-nf-Q}
+}
+An important lemma is one that states that these ground substitutions
+distribute through UTP sequential composition:
+\RLEQNS{
+  (P \seq Q)\sigma &=& P\sigma \seq Q\sigma & \elabel{gnd-subs-seq-distr}
 }
 
 \subsubsection{\textsf{HL-subs-indep}, Step: Sequence}
 
 \RLEQNS{
-  && \HL((P \cseq Q)\sigma_1)
+  && \HL((P \cseq Q)\sigma)
+\EQ{\eref{sem:seq}}
+\\&& \HL(([in|\ell_g|out]\land \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in]))\sigma)
+\EQ{\eref{W-as-NDC}}
+\\&& \HL(([in|\ell_g|out]
+          \land
+          (\Skip
+           \lor
+           \bigvee_i (P[g_{:1},\ell_g/g,out]
+                      \lor
+                      Q[g_{:2},\ell_g/g,in])^i))\sigma)
+\EQ{substitution, noting \eref{gnd-subs-seq-distr}}
+\\&& \HL([in|\ell_g|out]\sigma
+          \land
+          (\Skip\sigma
+           \lor
+           \bigvee_i (P[g_{:1},\ell_g/g,out]\sigma
+                      \lor
+                      Q[g_{:2},\ell_g/g,in]\sigma)^i))
+\EQ{\eref{gnd-sub-skip}, $\land$-$\lor$-distr}
+\\&& \HL( [in|\ell_g|out]\sigma \land \Skip
+          \lor
+          [in|\ell_g|out]\sigma \land
+            \bigvee_i (P[g_{:1},\ell_g/g,out]\sigma
+                      \lor
+                      Q[g_{:2},\ell_g/g,in]\sigma)^i)
+\EQ{\eref{HL-or-distr}}
+\\&& \HL( [in|\ell_g|out]\sigma \land \Skip)
+          \lor
+     \HL([in|\ell_g|out]\sigma \land
+            \bigvee_i (P[g_{:1},\ell_g/g,out]\sigma
+                      \lor
+                      Q[g_{:2},\ell_g/g,in]\sigma)^i)
+\EQ{\eref{HL-I-and-skip}, substitution, subst. composition}
+\\&& \say{$\sigma_1 = [g_{:1},\ell_g/g,out]\sigma$}
+\\&& \say{$\sigma_2 = [g_{:2},\ell_g/g,in]\sigma$}
+\\&& ii \lor
+     \HL([I|\ell_G|O] \land
+            \bigvee_i (P\sigma_1
+                      \lor
+                      Q\sigma_2)^i)
+\EQ{normal forms}
+\\&& ii \lor
+     \HL([I|\ell_G|O] \land
+            \bigvee_i ((I \land \Skip \lor \bigvee_j (I \land  A(a_j)))\sigma_1
+                      \lor
+                      (J \land \Skip \lor \bigvee_k (J \land  A(b_k)))\sigma_2)^i)
+\EQ{substitution, \eref{gnd-sub-skip}}
+\\&& ii \lor
+     \HL([I|\ell_G|O]
+\\ && {} \land
+            \bigvee_i ( I\sigma_1 \land \Skip \lor \bigvee_j (I\sigma_1 \land  A(a_j)\sigma_1)
+                        \lor
+                        J\sigma_2 \land \Skip \lor \bigvee_k (J\sigma_2 \land  A(b_k)\sigma_2))^i)
+\EQ{$\land$-$\lor$-distr}
+\\&& ii \lor
+     \HL(\bigvee_i (
+         [I|\ell_G|O] \land I\sigma_1 \land \Skip
+         \lor
+         \bigvee_j ([I|\ell_G|O] \land I\sigma_1 \land  A(a_j)\sigma_1)
+\\&& \qquad\qquad\, {}\lor [I|\ell_G|O] \land J\sigma_2 \land \Skip
+           \lor \bigvee_k ([I|\ell_G|O] \land J\sigma_2 \land  A(b_k)\sigma_2)
+           )^i)
+\EQ{HL-or-distr}
+\\&& ii \lor
+    \bigvee_i (
+          \HL([I|\ell_G|O] \land I\sigma_1 \land \Skip)
+         \lor
+         \bigvee_j  \HL([I|\ell_G|O] \land I\sigma_1 \land  A(a_j)\sigma_1)
+\\&& \qquad\qquad\, {}\lor  \HL([I|\ell_G|O] \land J\sigma_2 \land \Skip)
+           \lor \bigvee_k  \HL([I|\ell_G|O] \land J\sigma_2 \land  A(b_k)\sigma_2)
+           )^i
+\EQ{\eref{HL-I-and-skip},\eref{HL-I-and-A}, with invariant conjuncts}
+\\&& ii \lor
+    \bigvee_i (
+          ii
+         \lor
+         \bigvee_j  a_j
+\lor  ii
+           \lor \bigvee_k  b_k
+           )^i
+\EQ{tidy-up (not strictly necessary, but nice)}
+\\&& ii \lor (\bigvee_j  a_j \lor \bigvee_k  b_k)^i
 }
+We see that $\HL((P\cseq Q)\sigma)$ is independent of $\sigma$,
+provided $P$ and $Q$ have normal forms.
+So we don't need induction here.
+It is needed to show that our definitions do have these normal forms, though.
+
+\subsection{Lemma \textsf{gnd-subs-seq-distr}}
+
+\RLEQNS{
+  && (P\seq Q)\sigma
+\EQ{\eref{UTP-seq-def}}
+\\&& (\exists s_m,ls_m @
+       P[s_m,ls_m/s',ls']
+       \land
+       Q[s_m,ls_m/s,ls])\sigma
+\EQ{$\sigma$ does not mention $s_m$, $ls_m$}
+\\&& \exists s_m,ls_m @
+       P[s_m,ls_m/s',ls']\sigma
+       \land
+       Q[s_m,ls_m/s,ls]\sigma
+\EQ{$\sigma$ is ground, does not mention $s,s',ls,ls'$}
+\\&& \exists s_m,ls_m @
+       (P\sigma)[s_m,ls_m/s',ls']
+       \land
+       (Q\sigma)[s_m,ls_m/s,ls]
+\EQ{\eref{UTP-seq-def}}
+\\&& (P\sigma) \seq (Q\sigma)
+}
+In particular, this means that $(P^i)\sigma = (P\sigma)^i$.

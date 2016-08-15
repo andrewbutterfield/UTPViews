@@ -99,10 +99,10 @@ We often omit the $s$ subscript when its use is clear from context.
 
 \subsubsection{Wheels-within-Wheels}
 
-\begin{eqnarray*}
-   \W(P) &\defs& \true * (\Skip \lor P)
-\\         &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i
-\end{eqnarray*}
+\RLEQNS{
+   \W(P) &\defs& \true * (\Skip \lor P) &\elabel{W-as-loop}
+\\       &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
+}
 
 \subsubsection{Label-Set Invariant}
 
