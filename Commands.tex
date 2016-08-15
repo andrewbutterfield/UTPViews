@@ -374,6 +374,49 @@ on state.
 }
 
 
+\subsubsection{Semantic Substitutions List}
+
+It can be informative to see the invariants grouped with
+the relevant actions and substitutions.
+\RLEQNS{
+   ~[in|out]
+   && A(in|a|out)
+\\ && id
+\\
+\\ ~[in|\ell_g|out]
+   && [g_{:1},\ell_g/g,out]
+\\ && [g_{:2},\ell_g/g,in]
+\\
+\\ ~[in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]
+   && A(in|ii|\ell_{g1},\ell_{g2})
+\\ && A(\ell_{g1:},\ell_{g2:}|ii|out)
+\\ && [g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\ && [g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\
+\\ ~[in|\ell_{g1}|\ell_{g2}|out]
+   && A(in|ii|\ell_{g1})
+\\ && A(in|ii|\ell_{g2})
+\\ && [g_{1:},\ell_{g1}/g,in]
+\\ && [g_{2:},\ell_{g2}/g,in]
+\\
+\\ ~[in|\ell_g|out]
+   && A(in|ii|out)
+\\ && A(in|ii|\ell_g)
+\\ && P[g_{:},\ell_g,in/g,in,out]
+\\
+\\ ~[in|\ell_{g1}|\ell_{g2}|out]
+   && A(in|c \land ii|\ell_{g1})
+\\ && A(in|\lnot c \land ii|\ell_{g2})
+\\ && [g_{1:},\ell_{g1}/g,in]
+\\ && [g_{2:},\ell_{g2}/g,in]
+\\
+\\ ~[in|\ell_g|out]
+\\ && A(in|\lnot c \land ii|out)
+\\ && A(in|c \land ii|\ell_g)
+\\ && [g_{:},\ell_g,in/g,in,out]
+}
+
+
 \newpage
 \subsection{Semantic Calculations}
 
