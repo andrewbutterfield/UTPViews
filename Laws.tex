@@ -49,7 +49,10 @@ where we have to ``Hide Labels'':
 }
 As $ls$ and $ls'$ are no longer free in the result of applying $\HL$,
 we can consider it as removing those two variables from the alphabet.
-
+The following law is an immediate consequence of the definition:
+\RLEQNS{
+   \HL(A \lor B) &=& \HL(A) \lor \HL(B) & \elabel{HL-or-distr}
+}
 
 Provided $E$ is ground, then:
 \RLEQNS{
@@ -71,7 +74,7 @@ the two groundedness side-conditions above,
 we see that the effect of $\HL$ is not just to remove
 all free occurrences of $ls$ and $ls'$,
 but also has the effect of removing all uses of $g$, $in$ and $out$.
-All that remains is the underlying action on program state.
+All that remains are the underlying actions on program state.
 
 Considering invariants in the mix, assuming $E$ is ground
 and that $E \textbf{ lsat } I$:
@@ -80,6 +83,9 @@ and that $E \textbf{ lsat } I$:
 \\ \HL(I \land X(E|a|R|A) \land S)
    &=& a \land S
    & \elabel{HL-I-and-X}
+\\ \HL(I \land A(E|a|N))
+   &=& a
+   & \elabel{HL-I-and-A}
 }
 Here $S$ is a predicate over ground label-set expressions.
 We intend to use this law on $X$-components calculated in the
@@ -93,21 +99,9 @@ where $A(a_i)$ is shorthand for $A(E_i|a_i|N_i)$:
 then
 \RLEQNS{
   \HL(P) &=& ii \lor \bigvee a_i
+  & \elabel{HL-nf}
 }
 
-
-
-
-We note the following laws regarding $\HL$:
-\RLEQNS{
-   \HL(A \lor B) &=& \HL(A) \lor \HL(B) & \elabel{HL-or-distr}
-\\ \HL(P \seq Q) &=& \HL(P) \seq_s \HL(Q) & \elabel{HL-seq-s-distr}
-\\ \HL(\W(P)) &=& ii \lor \bigvee_{i \in 1\dots} (\HL(P))^i_s
-   & \elabel{HL-W-distr}
-\\ P^0_s &\defs& ii &\elabel{sseq-power-0}
-\\ P^{n+1}_s &\defs& P \seq_s P^n_s &\elabel{sseq-power-n'}
-}
-Here $P^i_s$ is defined in terms of $\seq_s$ rather than $\seq$.
 
 The key to proving the language laws is the following law of $\HL$
 that captures its independence under any \emph{valid} substitution.
@@ -118,7 +112,7 @@ that captures its independence under any \emph{valid} substitution.
    & \elabel{HL-subs-indep}
 }
 Such substitutions are \emph{valid} provided they satisfy the invariant
-$[I_i | labs(G_i) | O_i]$ for $ i=1,2$.
+$(I_i | labs(G_i) | O_i)$ for $i=1,2$.
 This excludes pathological substitutions that mix up input, output
 and internal labels, which would alter the resulting normal form.
 

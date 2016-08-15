@@ -44,7 +44,6 @@ We start with a lemma \elabel{X-gnd-subst}:
 \\&& s' \in \sem a s
 }
 
-
 \subsection{Proof of \textsf{HL-or-distr}}
 \RLEQNS{
   && \HL(A \lor B)
@@ -74,6 +73,15 @@ We start with a lemma \elabel{X-gnd-subst}:
 \EQ{\eref{ii-def}}
 \\&& ii
 }
+We note that we can deduce the following lemma,
+that generalises to the use of ground substitutions $\sigma$:
+\RLEQNS{
+  && \exists ls @ I\sigma
+\EQ{expand $I$ shorthand (a bit)}
+\\&& (\exists ls @ ls \textbf{ lsat } I\sigma)
+\EQ{witness, $ls=\emptyset$, substitution irrelevant}
+\\&& \true
+}
 
 
 \subsection{Proof of \textsf{HL-I-and-X}}
@@ -91,36 +99,78 @@ We start with a lemma \elabel{X-gnd-subst}:
 \\&& a \land S
 }
 
-\subsection{Proof of \textsf{HL-seq-s-distr}}
+\subsection{Proof of \textsf{HL-I-and-A}}
 
-We start with the lhs, in which $A(a_i)$ is shorthand for $A(E_i|a_i|N_i)$,
-and similarly for $A(b_j)$, and $X(a_i\seq_s b_j)$.
+Law \ecite{HL-I-and-A} is an easy consequence of \ecite{HL-I-and-X},
+with $R=E$, $A=N$ and $S=\true$.
+
+\subsection{Proof of \textsf{HL-nf}}
+
+
 \RLEQNS{
-  && \HL(P \seq Q)
-\EQ{expand into normal form}
-\\&& \HL\left(~I \land (\Skip \lor \bigvee A(a_i))
-                \seq
-               J \land (\Skip \lor \bigvee A(b_j))~\right)
-\EQ{\eref{nf-seq}}
-\\&& \HL\left(~I \land J \land (\Skip \lor \bigvee (A(a_i) \seq A(b_j)))~\right)
-\EQ{\ecite{and-or-distr}}
-\\&& \HL\left(~I \land J \land \Skip
-\lor \bigvee (I \land J \land  (A(a_i) \seq A(b_j)))~\right)
+  && \HL\left (I \land \left( \Skip \lor \bigvee A(a_i) \right) \right)
+\EQ{$\land$-$\lor$-distr}
+\\&& \HL\left( I \land \Skip \lor \bigvee (I \land A(a_i)) \right)
 \EQ{\eref{HL-or-distr}}
-\\&& \HL(~I \land J \land \Skip)
-\lor \bigvee \HL(I \land J \land  (A(a_i) \seq A(b_j)))
-\EQ{\eref{HL-I-and-skip}}
-\\&& I \land J \land ii
-\lor \bigvee \HL(I \land J \land  (A(a_i) \seq A(b_j)))
-\EQ{Assume $A(a_i) \seq A(b_j) = X(a_i\seq_s b_j) \land S_{ij}$}
-\\&& I \land J \land ii
-\lor \bigvee \HL(I \land J \land  X(a_i\seq_s b_j) \land S_{ij})
-\EQ{\eref{HL-I-and-X}}
-\\&& I \land J \land ii
-\lor \bigvee (I \land J \land (a_i\seq_s b_j) \land S_{ij})
+\\&& \HL(I \land \Skip) \lor \bigvee \HL(I \land A(a_i))
+\EQ{\eref{HL-I-and-skip} and \eref{HL-I-and-A}}
+\\&& ii \lor \bigvee a_i
 }
 
-Now, the rhs:
+\subsection{Proof of \textsf{HL-subs-indep}}
+
+We want to prove $\HL(P\sigma_1)=\HL(P\sigma_2)$, where
+\begin{itemize}
+  \item $P$ is a predicate that can be put in normal form.
+  \item $\sigma_i$ is a substitution of the form $[G_i,I_i,O_i/g,in,out]$.
+  \item $G_i$, $I_i$ and $O_i$ are ground.
+\end{itemize}
+We note the following lemmas that hold given such substitutions
+(easy proofs as exercise):
 \RLEQNS{
-  && \HL(P) \seq_s \HL(Q)
+   \Skip\sigma    &=& \Skip                & \elabel{gnd-sub-skip}
+\\ A(E|a|N)\sigma &=& A(E\sigma|a|N\sigma) & \elabel{gnd-sub-A}
+}
+
+We do this proof by induction over the UTCP syntax.
+
+\subsubsection{\textsf{HL-subs-indep}, Base Case}
+
+Here $\sigma=[G,I,O/g,in,out]$.
+\RLEQNS{
+  && \HL(a\sigma)
+\EQ{\eref{nf-atomic}}
+\\&& \HL(([in|out] \land (\Skip \lor A(in|a|out)))\sigma)
+\EQ{$\land$-$\lor$-distr}
+\\&& \HL(([in|out] \land \Skip \lor [in|out] \land A(in|a|out)))\sigma)
+\EQ{substitution, using $\eref{gnd-sub-skip}$ and  $\eref{gnd-sub-A}$}
+\\&& \HL([in\sigma|out\sigma] \land \Skip
+         \lor
+         [in\sigma|out\sigma] \land A(in\sigma|a|out\sigma)))
+\EQ{Apply $\sigma$}
+\\&& \HL([I|O] \land \Skip
+         \lor
+         [I|O] \land A(I|a|O)))
+\EQ{\eref{HL-or-distr}}
+\\&& \HL([I|O] \land \Skip)
+         \lor
+         \HL([I|O] \land A(I|a|O)))
+\EQ{\eref{HL-I-and-skip} and \eref{HL-I-and-A}}
+\\&& ii \lor a
+}
+We have $\HL(a\sigma) = ii \lor a$ for arbitrary ground $\sigma$,
+so our result is immediate.
+
+\subsubsection{\textsf{HL-subs-indep}, Inductive Hypothesis}
+
+For each inductive step case below we assume:
+\RLEQNS{
+   \HL(P\sigma_1) &=& \HL(P\sigma_2) & \elabel{HL-subs-indep-hyp-P}
+\\ \HL(Q\sigma_1) &=& \HL(Q\sigma_2) & \elabel{HL-subs-indep-hyp-Q}
+}
+
+\subsubsection{\textsf{HL-subs-indep}, Step: Sequence}
+
+\RLEQNS{
+  && \HL((P \cseq Q)\sigma_1)
 }

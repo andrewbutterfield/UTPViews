@@ -188,12 +188,17 @@ Shorthand: $\otimes \mapsto |$, $\cup \mapsto ,$
   &=&
   \otimes(a,\cup(\otimes(b,c),\otimes(d,e)),f)
 }
+We also have a shorthand that just denotes
+the non-intersecting nature of the arguments.
+E.g.,
+$\setof{A|B|C}$ asserts that $A$, $B$ and $C$ are mutually disjoint,
+without any reference to $ls$ or any other set.
 
 \subsubsection{Invariant Examples}
 
 The following examples show how various instances of $I$
-get expanded when we consider the assertion
-\[ ls \textbf{ lsat } I \]
+get expanded when we consider the assertion:
+$ls \textbf{ lsat } I $.
 
 \RLEQNS{
    ls \textbf{ lsat } [in|out]
@@ -260,6 +265,7 @@ as shorthand for $ls \textbf{ lsat } I$.
 \RLEQNS{
   a &\defs& [in|out] \land \W(A(in|a|out)) & \elabel{sem:atomic}
 \\ &=&  [in|out] \land (\Skip \lor A(in|a|out))
+        & \elabel{nf-atomic}
 }
 
 
