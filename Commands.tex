@@ -21,13 +21,51 @@
 }
 
 \subsection{Domains}
-\begin{eqnarray*}
+\RLEQNS{
    s &\in& \mathcal S
-\\ g &:& Gen
+\\ g &:& Gen = \setof g  & \mbox{only one variable!}
 \\ \ell &:& Gen \fun Lbl
-\\ G \in Gen &::=&  g \mid G_{:} \mid G_1 \mid G_2
-\\ L \in Lbl &::=& \ell_G
-\end{eqnarray*}
+\\ G \in Gen &::=&  g     & \mbox{the ``root'' generator}
+\\           &\mid& G_{:} & \mbox{resulting generator after label produced}
+\\           &\mid& G_1   & \mbox{first generator after generator split}
+\\           &\mid& G_2   & \mbox{second generator after generator split}
+\\ L \in Lbl &::=& \ell_G & \mbox{label produced by generator}
+}
+Note that our generator expression language has only one variable, $g$,
+which denotes the ``root'' generator.
+All generator expressions have the form $g$ followed by zero
+or more uses of $:$, $1$ and $2$.
+We say the  ``root'' generator because this notion is local to a
+particular context, and we can relativise things by replacing $g$
+by an arbitrary $G$ expression.
+We define the notion of the set of labels produced by a generator,
+which must satisfy the following laws:
+\RLEQNS{
+   labs &:& Gen \fun \power Lbl
+\\ labs(G) &=& \setof{\ell_G} \cup labs(G_{:}) \cup labs(G_1) \cup labs(G_2)
+  &\elabel{labs-def}
+\\ \ell_G &\notin& labs(G_{:})
+   &\elabel{labs-unique}
+\\ \emptyset &=& labs(G_1) \cap labs(G_2)
+  &\elabel{labs-split-disjoint}
+}
+The conceptually simplest model of such a generator
+is one where labels are simply the strings of $:$, $1$ and $2$
+that designate how its generator was produced from the root.
+With this model we also get the following law:
+For any generator expression $G$,
+the following four sets are mutually disjoint:
+\[
+  \setof{\ell_G}
+  \quad
+  labs(G_{:})
+  \quad
+  labs(G_1)
+  \quad
+  labs(G_2)
+  \qquad
+  \elabel{labs-fully-disjoint}
+\]
 
 \subsection{Alphabet}
 
@@ -41,6 +79,12 @@ We assume a general notion of expressions ($e$)
 and say that an expression $e$ is ``ground''
 if it's free variables are limited to only $g$, $in$ and $out$.
 
+We have a general healthiness condition (Disjoint Labels) which asserts
+that the labels associated with $in$, $out$ and $g$
+are different:
+\RLEQNS{
+  \DL(P) &=& P \land in \neq out \land \setof{in,out} \cap labs(g) = \emptyset
+}
 
 
 \subsection{``Standard'' UTP Constructs}
@@ -73,6 +117,8 @@ and its unit:
    & \elabel{UTP-s-seq-def}
 \\ ii &\defs& s'=s & \elabel{ii-def}
 }
+Note that if neither predicate mentions $ls$ or $ls'$
+then the effect of $\seq$ and $\seq_s$ is the same.
 We often omit the $s$ subscript when its use is clear from context.
 
 
@@ -103,6 +149,11 @@ We often omit the $s$ subscript when its use is clear from context.
    \W(P) &\defs& \true * (\Skip \lor P) &\elabel{W-as-loop}
 \\       &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
 }
+We note explicitly here that, in effect,
+our semantic model is based on unbounded non-determinism.
+However an interesting result for iteration-free programs
+is that there is a finite $k$ such that $P^k = \false$,
+in which case the non-determinism is bounded.
 
 \subsubsection{Label-Set Invariant}
 
@@ -178,16 +229,17 @@ We note, as a consequence of the above definitions, that
 }
 for any label-set invariant $I$.
 
-
-Shorthand: $\otimes \mapsto |$, $\cup \mapsto ,$
+We introduce a shorthand for invariants illustrated as follows.
 \RLEQNS{
   ~ [ a,b,c | d,e | f ]
    &=&
-   \otimes(\cup(a,b,c),\cup(d,e),f)
+   ls \textbf{ lsat } \otimes(\cup(a,b,c),\cup(d,e),f)
 \\ ~[ a | (b|c),(d|e) | f ]
   &=&
-  \otimes(a,\cup(\otimes(b,c),\otimes(d,e)),f)
+  ls \textbf{ lsat } \otimes(a,\cup(\otimes(b,c),\otimes(d,e)),f)
 }
+In effect we make the involvement of $ls$ implicit,
+and use bar ($|$) and comma ($,$) to replace $\otimes$ and $\cup$ respectively.
 We also have a shorthand that just denotes
 the non-intersecting nature of the arguments.
 E.g.,
@@ -196,35 +248,32 @@ without any reference to $ls$ or any other set.
 
 \subsubsection{Invariant Examples}
 
-The following examples show how various instances of $I$
-get expanded when we consider the assertion:
-$ls \textbf{ lsat } I $.
-
+The following examples show how various instances of $ls \textbf{ lsat } I$
+get expanded:
 \RLEQNS{
-   ls \textbf{ lsat } [in|out]
+   ~[in|out]
    &=&
    \setof{in} \cap \setof{out} = \emptyset
 \\ &\land&
   \setof{in} \subseteq ls \implies \setof{out}\cap ls = \emptyset
 \\ &\land&
   \setof{out} \subseteq ls \implies \setof{in}\cap ls = \emptyset
-\\ ls \textbf{ lsat } [in|\ell|out]
+\\
+\\ ~[in|\ell|out]
    &=&
-   \setof{in} \cap \setof{\ell} = \emptyset
+   \setof{in} \cap \setof{\ell,out} = \emptyset
 \\ &\land&
-   \setof{in} \cap \setof{out} = \emptyset
+   \setof{\ell} \cap \setof{in,out} = \emptyset
 \\ &\land&
-   \setof{\ell} \cap \setof{out} = \emptyset
+   \setof{out} \cap \setof{in,\ell} = \emptyset
 \\ &\land&
   \setof{in} \subseteq ls \implies \setof{\ell,out}\cap ls = \emptyset
 \\ &\land&
   \setof{\ell} \subseteq ls \implies \setof{in,out}\cap ls = \emptyset
 \\ &\land&
   \setof{out} \subseteq ls \implies \setof{in,\ell}\cap ls = \emptyset
-}
-
-\RLEQNS{
-   ls \textbf{ lsat } [ a | (b|c),(d|e) | f ]
+\\
+\\ ~[ a | (b|c),(d|e) | f ]
    &=&
    \setof{a} \cap \setof{b,c,d,e,f} = \emptyset
 \\ &\land&
@@ -251,14 +300,12 @@ $ls \textbf{ lsat } I $.
   \setof{e} \subseteq ls \implies \setof{d}\cap ls = \emptyset
 }
 Here one of $b$ or $c$ may occur in $ls$ along with one of  $d$ or $e$.
-
+In this theory,
+we use the label generators to ensure that the disjointness
+conditions of the invariants are always true, by construction.
 
 \newpage
 \subsection{Program Semantics}
-
-In this semantics, we interpret any invariant
-written as $I = [\dots|\dots|\dots]$
-as shorthand for $ls \textbf{ lsat } I$.
 
 \subsubsection{Atomic Action}
 

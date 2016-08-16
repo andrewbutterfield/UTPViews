@@ -22,8 +22,8 @@ The most abstract is the Command language from \cite{conf/popl/Dinsdale-YoungBGP
 with non-deterministic choice and iteration.
 Note that we use $\cseq$ and $+$ for sequential composition
 and non-deterministic choice in the Command language,
-rather than the $;$ and $\sqcap$of UTP,
-because their semantics does not coincide.
+rather than the $;$ and $\sqcap$ of UTP,
+because their semantics do not coincide.
 Unlike in the standard theory of Designs as applied to sequential programs,
 concurrent versions of these constructs do not match the relational
 calculus forms.
@@ -44,14 +44,17 @@ have a state-based guard:
 \]
 A key point to note is that the semantics of common constructs is the same
 in every language.
+We also note that for $M$ we can merge the guard with the state-change,
+as a conjuction, so $c \pgrd a$ in $M$ corresponds to an atomic
+action of the form $c \land a$ in $D$.
 Given this observation we shall define a single semantics over
 a universal concurrent programming language:
 \[
- P ::= c \pgrd a \mid \cskip \mid P \cseq P  \mid P \parallel P
+ P ::= a \mid \cskip \mid P \cseq P  \mid P \parallel P
    \mid P+P\mid P^*
    \mid P \dcond c P \mid c \ddo P
 \]
-where $a$ is simply short for $\true\pgrd a$.
+where $c \pgrd a$ is simply sugar for $c \land a$.
 
 PML maps into $M$ the obvious way,
 with
