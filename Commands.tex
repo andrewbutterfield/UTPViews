@@ -135,6 +135,12 @@ We often omit the $s$ subscript when its use is clear from context.
 
 \subsubsection{Basic Action}
 
+Basic Action $A(E|a|N)$ is enabled when all the labels in $E$
+are present in the global label-set
+and atomic action $a$ does not evaluate to $\false$
+in the current program state.
+If so enabled,  it performs action $a$, removes the labels in $E$
+from the label-set, and adds in those in $N$.
 \RLEQNS{
    A(E|a|N)
    &\defs&
@@ -145,15 +151,43 @@ We often omit the $s$ subscript when its use is clear from context.
 
 \subsubsection{Wheels-within-Wheels}
 
+The key intuition behind this compositional semantics was to take the
+$run$ function of the action-system based semantic model used in UTPP,
+and drive it inwards to every level of the program.
+The original $run$ can be defined in the context of this theory as
+\[
+  run(P) = ls := \setof{in} ; \lnot (out \in ls) * P
+\]
+However this failed to keep atomic components ``live''.
+They could never be re-executed,
+as would be required if they were within an iteration.
+Instead it was realised that every construct (atomic and composite)
+would have to be within an infinite loop,
+with the body being a non-determinsitic choice
+between the predicate, or doing a \emph{stuttering} step ($\Skip$).
 \RLEQNS{
    \W(P) &\defs& \true * (\Skip \lor P) &\elabel{W-as-loop}
-\\       &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
 }
 We note explicitly here that, in effect,
 our semantic model is based on unbounded non-determinism.
-However an interesting result for iteration-free programs
-is that there is a finite $k$ such that $P^k = \false$,
+This bold step turns out to be remarkably effective,
+with some quite counter-intuitive outcomes.
+For example, for iteration-free programs
+we find that there is a finite $k$ such that $P^k = \false$,
 in which case the non-determinism is bounded.
+We get these finite results that seem very similar
+to the results obtained by using $run$ above.
+Using $run$ results in predicates that cannot be composed
+to get composite behaviour.
+However, using $\W$ results in a slight variation,
+which is composable!
+What turns out to be crucial
+to this outcome is the explicit stuttering option in the infinite loop.
+One key calculational advantage of this is that we can rewrite
+the rhs of the definition of $\W$ as:
+\RLEQNS{
+   \W(P) &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
+}
 
 \subsubsection{Label-Set Invariant}
 
@@ -461,173 +495,4 @@ the relevant actions and substitutions.
 \\ && A(in|\lnot c \land ii|out)
 \\ && A(in|c \land ii|\ell_g)
 \\ && [g_{:},\ell_g,in/g,in,out]
-}
-
-
-\newpage
-\subsection{Semantic Calculations}
-
-\subsubsection{Normal Form}
-
-All the semantics above have an invariant $I$,
-zero or more atomic actions ($A_i$),
-plus zero or more language sub-component predicates ($P_j$)
-assembled into a predicate of the form:
-\[
-  I
-  \land
-  \W( A_1 \lor \dots \lor A_m
-     \lor
-     P_1\sigma_1 \lor \dots \lor P_n\sigma_n )
-\]
-where each $\sigma_i = [G_i,I_i,O_i/g,in,out]$,
-with all $G_i$, $I_i$ and $O_i$ being ground
-and satisfying the invariant $[I_i|labs(G_i)|O_i]$.
-Given that we have
-\[
-  \W(P) = \bigvee_{i \in 0\dots} \Skip \seq P^i
-\]
-we find that two key outcomes result:
-\begin{enumerate}
-  \item
-    Every program can be transformed,
-    in principle at least,
-    to the form
-    \[
-     I \land \left( \Skip \lor \bigvee_{i \in 0\dots}  A(E_i|a_i|N_i) \right)
-    \]
-    for suitable choices of $E_i$, $a_i$ and $N_i$.
-    In particular, we find that the $E_i$ all satisfy the relevant
-    label-set invariants.
-    The invariant $I$ here is the conjunction of all the invariants
-    from each level down, under the relevant substitutions.
-  \item
-    For any complete program that does not use iteration constructs,
-    this expansion is finite.
-\end{enumerate}
-This can be sown by an inductive argument over the language syntax,
-noting that the sequential composition of two such forms
-can itself be transformed into such a form.
-In effect this defines a \emph{normal form} for our semantics.
-
-It is important to stress that these normal forms depend crucially
-on the relevant label-set invariants holding throughout.
-
-An important law we shall require is that the UTP sequential
-composition of two normal forms can itself be expressed
-as such a normal form:
-\RLEQNS{
-   I \land (\Skip\lor\bigvee A_i) \seq J \land (\Skip\lor\bigvee B_j)
-   &=&
-   I \land J \land (\Skip\lor\bigvee (A_i \seq B_j))
-   &\elabel{nf-seq}
-}
-This is an easy result of the fact that $\seq$ distributes through $\lor$,
-and $\Skip$ is a unit for it as well.
-
-
-We now present calculations of normal forms for every language
-construct, given atomic sub-components.
-For ease of reading,
-we display the invariant $I$ on the first line,
-followed by the list of $A(\dots)$ disjuncts, perhaps several on a line,
-as follows
-\RLEQNS{
-   res &=& I
-\\ && A(E_1|a_1|N_1) \quad A(E_1|a_2|N_2)) \quad \dots
-}
-We omit parentheses or logical operators.
-In general we try to put all the single atomic steps on the first line,
-with all the mumblings on lower lines.
-
-\subsubsection{Atomic Actions}
-\RLEQNS{
-   a &=& [in|out]
-\\ && A(in|a|out)
-\\
-\\ \cskip &=& [in|out]
-\\ && A(in|ii|out)
-}
-
-\subsubsection{Sequential Composition}
-\RLEQNS{
-   a \cseq b
-   &=& [in|\ell_g|out]
-\\ && A(in|a|\ell_g)\quad  A(\ell_g|b|out)
-\\ && A(in|a\seq b|out)
-}
-
-\subsubsection{Non-deterministic Choice}
-\RLEQNS{
-   a + b
-   &=& [in|\ell_{g1}|\ell_{g2}|out]
-\\ &&  A(in|ii|\ell_{g1}) \quad A(in|ii|\ell_{g2})
-       \quad
-       A(\ell_{g1}|a|out) \quad A(\ell_{g2}|b|out)
-\\&& A(in|a|out) \quad A(in|b|out)
-}
-
-\subsubsection{Parallel Composition}
-Here $\#n$ denotes mumblings of length $n$.
-\RLEQNS{
-   a \parallel b
-   &=& [in\mid([\ell_{g1}|\ell_{g1:}],[\ell_{g2}|\ell_{g2:}])\mid out]
-\\ &&  A(in|ii|\ell_{g1},\ell_{g2})
-       \quad
-       A(\ell_{g1:},\ell_{g2:}|ii|out)
-       \quad
-       A(\ell_{g1}|a|\ell_{g1:})
-       \quad
-       A(\ell_{g2}|b|\ell_{g2:}) &
-\\ && A(in|a|\ell_{g1:},\ell_{g2})
-      \quad
-      A(\ell_{g1},\ell_{g2}|b;a|\ell_{g1:},\ell_{g2:})
-      \quad
-      A(in|b|\ell_{g2:},\ell_{g1}) & \#2
-\\ && A(\ell_{g1},\ell_{g2}|a ; b|\ell_{g1:},\ell_{g2:})
-      \quad
-      A(\ell_{g2:},\ell_{g1}|a|out)
-      \quad
-      A(\ell_{g1:},\ell_{g2}|b|out) & \#2
-\\ && A(in|b;a|\ell_{g1:},\ell_{g2:})
-      \quad
-      A(in|a;b|\ell_{g1:},\ell_{g2:}) & \#3
-\\ && A(\ell_{g1},\ell_{g2}|b;a|out)
-      \quad
-      A(\ell_{g1},\ell_{g2}|a;b|out) & \#3
-\\ && A(in|b;a|out)
-      \quad
-      A(in|a;b|out) & \#4
-}
-
-\subsubsection{Non-deterministic Iteration}
-The actions that denote a terminating
-run with zero or more complete iterations
-are \textbf{emboldended} below.
-\RLEQNS{
-   a^*
-   &=& [in|\ell_g|out]
-\\ &&  \mathbf{A(in|ii|out)} \quad A(in|ii|\ell_g) \quad A(\ell_g|a|in)
-\\ &&  A(\ell_g|a|out) \quad A(\ell_g|a|\ell_g) \quad A(in|a|in)         &\#2
-\\ &&  \mathbf{A(in|a|out)} \quad A(in|a|\ell_g) \quad A(\ell_g|a^2|in)  &\#3
-\\ &&  A(\ell_g|a^2|out) \quad A(\ell_g|a^2|\ell_g) \quad A(in|a^2|in)   &\#4
-\\ &&  \mathbf{A(in|a^2|out)} \quad A(in|a^2|\ell_g) \quad A(\ell_g|a^3|in) &\#5
-\\ &&  A(\ell_g|a^3|out) \quad A(\ell_g|a^3|\ell_g) \quad A(in|a^3|in) &\#6
-\\ && \vdots & \#7\dots
-}
-An obvious recurrent pattern (based on mumbling depth) has emerged:
-\RLEQNS{
-   &&  \mathbf{A(in|a^n|out)} \quad A(in|a^n|\ell_g) \quad A(\ell_g|a^{n+1}|in) &\#2n+1
-\\ &&  A(\ell_g|a^{n+1}|out) \quad A(\ell_g|a^{n+1}|\ell_g) \quad A(in|a^{n+1}|in) &\#2n+2
-}
-We can also identify a pattern based on number of $a$s performed:
-\RLEQNS{
-   \alpha_0 && \mathbf{A(in|ii|out)} \quad A(in|ii|\ell_g)
-\\ \alpha_1 && A(\ell_g|a|in) \quad A(\ell_g|a|out) \quad A(\ell_g|a|\ell_g) \quad A(in|a|in)
-\\          && \mathbf{A(in|a|out)} \quad A(in|a|\ell_g)
-\\ \alpha_2 && A(\ell_g|a^2|in) \quad A(\ell_g|a^2|out) \quad A(\ell_g|a^2|\ell_g) \quad A(in|a^2|in)
-\\          && \mathbf{A(in|a^2|out)} \quad A(in|a^2|\ell_g)
-\\
-\\ \alpha_n && A(\ell_g|a^n|in) \quad A(\ell_g|a^n|out) \quad A(\ell_g|a^n|\ell_g) \quad A(in|a^n|in)
-\\          && \mathbf{A(in|a^n|out)} \quad A(in|a^n|\ell_g)
 }

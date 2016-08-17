@@ -1,5 +1,21 @@
 \section{Proofs}\label{sec:proofs}
 
+\subsection{Proof of \textsf{UTCP-NF}}
+
+An easy inductive argument shows that we have a normal
+form where $A(E_i|a_i|N_i)$
+is replaced by $X(E_i|a_i|R_i|A_i)$
+where both $E_i$ and $A_i$ satisfy the invariant.
+However,
+in order to recover the $A$-form, we
+need to show that the invariant allows us to replace $R_i$
+by $E_i$.
+\RLEQNS{
+   P
+   &=&
+   I_{P^*} \land \left( \Skip \lor \bigvee_{i \in 0\dots}  A(E_i|a_i|N_i) \right)
+   & \elabel{UTCP-NF}
+}
 
 
 \subsection{Proof of \textsf{HL-X-red}}
