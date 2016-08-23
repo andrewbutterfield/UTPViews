@@ -17,21 +17,26 @@ and we define:
 \\ R_{n_0} &\defs& \setof{in}
 \\ A_{n_0} &\defs& \setof{out}
 \\ S_{n_0} &\defs& \true
-\\ \Skip &=& X(E_{n_0}|a_{n_0}|R_{n_0}|A_{n_0}) \land S_{n_0}
 }
-So, we can simplify the normal form to
+then we have:
+\RLEQNS{
+   \Skip &=& X(E_{n_0}|a_{n_0}|R_{n_0}|A_{n_0}) \land S_{n_0}
+}
+So, we can simplify the normal form to the more uniform:
 \[
 \bigvee_n (I_{P^*} \land X(E_n|a_n|R_n|A_n) \land S_n)
 \]
 The invariant $I_{P*}$ can be distributed in or out of the indexed disjunction
 and we will switch between these two forms at will.
-We shall use $X_n$ to denote $ I_{P*} \land X(E_n|a_n|R_n|A_n)$ for brevity.
+For brevity, ee shall use $X_n$ to denote $ I_{P*} \land X(E_n|a_n|R_n|A_n)$,
+or just $X(E_n|a_n|R_n|A_n)$, as appropriate in context.
 
 So we want to show for all programs $P$
 that
 \[
  P = \bigvee_n X_n
 \]
+for $n$ drawn from some index-set, and appropriate $X_n$.
 We do so by induction over the program syntax.
 
 \subsubsection{Proof of \textsf{UTCP-NF}, Base Case}
@@ -47,12 +52,13 @@ We do so by induction over the program syntax.
 }
 So, we have the following correspondence:
 \RLEQNS{
-   I_a &=& [in|out]
+   I_{a^*} &=& [in|out]
 \\ E_{n_1} &=& \setof{in}
 \\ a_{n_1} &=& a
 \\ R_{n_1} &=& \setof{in}
 \\ A_{n_1} &=& \setof{out}
-\\ a &=& \bigvee_{n\in n_0,n_1}  X_n
+\\ a &=& X_{n_0} \lor X_{n_1}
+\\ &=& \bigvee_{n\in \setof{n_0,n_1}}  X_n
 }
 
 \subsubsection{Proof of \textsf{UTCP-NF}, Inductive Step}
@@ -75,27 +81,27 @@ We start with $i=2$
 \EQ{Defn. of $P^2$}
 \\&& ((\bigvee_p Y_p) \lor (\bigvee_q Z_q))\seq ((\bigvee_p Y_p) \lor (\bigvee_q Z_q))
 \EQ{$\lor$-$\seq$-distr}
-\\&&     (\bigvee_p Y_p) \seq (\bigvee_p Y_p)
-\\&\lor& (\bigvee_p Y_p) \seq (\bigvee_q Z_q)
-\\&\lor& (\bigvee_q Z_q) \seq (\bigvee_p Y_p)
-\\&\lor& (\bigvee_q Z_q) \seq (\bigvee_q Z_q)
+\\&&     (\bigvee_p Y_p) \!\seq\! (\bigvee_p Y_p)
+   \lor (\bigvee_p Y_p) \!\seq\! (\bigvee_q Z_q)
+   \lor (\bigvee_q Z_q) \!\seq\! (\bigvee_p Y_p)
+   \lor (\bigvee_q Z_q) \!\seq\! (\bigvee_q Z_q)
 \EQ{$\lor$-$\seq$-distr}
-\\&&     \bigvee_{p_a,p_b} (Y_{p_a} \seq  Y_{p_b})
-\\&\lor& \bigvee_{p,q}     (Y_p \seq  Z_q)
-\\&\lor& \bigvee_{q,p}     (Z_q \seq Y_p)
-\\&\lor& \bigvee_{q_a,q_b} (Z_{q_a} \seq Z_{q_b})
+\\&&     \bigvee_{p_a,p_b} (Y_{p_a} \!\seq\!  Y_{p_b})
+   \lor \bigvee_{p,q}     (Y_p \!\seq\!  Z_q)
+   \lor \bigvee_{q,p}     (Z_q \!\seq\! Y_p)
+   \lor \bigvee_{q_a,q_b} (Z_{q_a} \!\seq\! Z_{q_b})
 \EQ{term $Y_{p_0} \seq Z_{q_0}$ occurs, so pull out explicitly}
 \\&&     Y_{p_0} \seq Z_{q_0}
-\\&\lor& \bigvee_{p_a,p_b} (Y_{p_a} \seq  Y_{p_b})
-\\&\lor& \bigvee_{p,q}     (Y_p \seq  Z_q)
-\\&\lor& \bigvee_{q,p}     (Z_q \seq Y_p)
-\\&\lor& \bigvee_{q_a,q_b} (Z_{q_a} \seq Z_{q_b})
-\EQ{$\Skip\seq\Skip = \Skip$}
+\\&\lor&\bigvee_{p_a,p_b} (Y_{p_a} \!\seq\!  Y_{p_b})
+   \lor \bigvee_{p,q}     (Y_p \!\seq\!  Z_q)
+   \lor \bigvee_{q,p}     (Z_q \!\seq\! Y_p)
+   \lor \bigvee_{q_a,q_b} (Z_{q_a} \!\seq\! Z_{q_b})
+\EQ{$\Skip \seq \Skip = \Skip$}
 \\&&     \Skip
-\\&\lor& \bigvee_{p_a,p_b} (Y_{p_a} \seq  Y_{p_b})
-\\&\lor& \bigvee_{p,q}     (Y_p \seq  Z_q)
-\\&\lor& \bigvee_{q,p}     (Z_q \seq Y_p)
-\\&\lor& \bigvee_{q_a,q_b} (Z_{q_a} \seq Z_{q_b})
+   \lor \bigvee_{p_a,p_b} (Y_{p_a} \!\seq\!  Y_{p_b})
+   \lor \bigvee_{p,q}     (Y_p \!\seq\!  Z_q)
+   \lor \bigvee_{q,p}     (Z_q \!\seq\! Y_p)
+   \lor \bigvee_{q_a,q_b} (Z_{q_a} \!\seq\! Z_{q_b})
 \EQ{\eref{X-then-X}, with $f$ being an injective index function}
 \\&&     \Skip
 \\&\lor& \bigvee_{p_a,p_b} X_m \textbf{ where } m = f(p_a,p_b)
@@ -135,8 +141,26 @@ This can be collapsed down to one big disjunction:
 We just need to show the details for each construct,
 and check what happens to the invariants.
 
+\subsubsection{Proof of \textsf{UTCP-NF}, Parallel Case}
+
+We now look at the parallel case in more detail.
+We want to show that $P \parallel Q$ has a normal form
+if $P$ and $Q$ do.
+\RLEQNS{
+  && P \parallel Q
+\EQ{\eref{sem:par}}
+\\&& [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+\\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
+\\ && \qquad {}\lor
+   P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\ && \qquad {}\lor
+    Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ && \qquad {}\lor
+   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+}
 
 
+\newpage
 \subsection{Proof of \textsf{HL-X-red}}
 \RLEQNS{
   && \HL(X(E|a|R|A))
@@ -154,7 +178,7 @@ and check what happens to the invariants.
 \\&& s' \in \sem a s
 }
 
-
+\newpage
 \subsection{Proof of \textsf{HL-X-sub-red}}
 
 We start with a lemma \elabel{X-gnd-subst}:
@@ -179,6 +203,7 @@ We start with a lemma \elabel{X-gnd-subst}:
 \\&& s' \in \sem a s
 }
 
+\newpage
 \subsection{Proof of \textsf{HL-or-distr}}
 \RLEQNS{
   && \HL(A \lor B)
@@ -190,6 +215,7 @@ We start with a lemma \elabel{X-gnd-subst}:
 \\&& \HL(A) \lor \HL{B}
 }
 
+\newpage
 \subsection{Proof of \textsf{HL-I-and-skip}}
 \RLEQNS{
   && \HL(I \land \Skip)
@@ -224,6 +250,7 @@ It also works if we have a conjunction of invariants:
 The one witness satisfies all such invariants.
 
 
+\newpage
 \subsection{Proof of \textsf{HL-I-and-X}}
 \RLEQNS{
   && \HL(I \land X(E|a|R|A) \land S)
@@ -244,6 +271,7 @@ The one witness satisfies all such invariants.
 Law \ecite{HL-I-and-A} is an easy consequence of \ecite{HL-I-and-X},
 with $R=E$, $A=N$ and $S=\true$.
 
+\newpage
 \subsection{Proof of \textsf{HL-nf}}
 
 
@@ -257,6 +285,7 @@ with $R=E$, $A=N$ and $S=\true$.
 \\&& ii \lor \bigvee a_i
 }
 
+\newpage
 \subsection{Proof of \textsf{HL-subs-indep}}
 
 We want to prove $\HL(P\sigma_1)=\HL(P\sigma_2)$, where
@@ -301,6 +330,7 @@ Here $\sigma=[G,I,O/g,in,out]$.
 We have $\HL(a\sigma) = ii \lor a$ for arbitrary ground $\sigma$,
 so our result is immediate.
 
+\newpage
 \subsubsection{\textsf{HL-subs-indep}, Inductive Hypothesis}
 
 For each inductive step case below we assume,
@@ -415,6 +445,7 @@ provided $P$ and $Q$ have normal forms.
 So we don't need induction here.
 It is needed to show that our definitions do have these normal forms, though.
 
+\newpage
 \subsection{Lemma \textsf{gnd-subs-seq-distr}}
 
 \RLEQNS{
