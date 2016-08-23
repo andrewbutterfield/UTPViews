@@ -162,17 +162,34 @@ However this failed to keep atomic components ``live''.
 They could never be re-executed,
 as would be required if they were within an iteration.
 Instead it was realised that every construct (atomic and composite)
-would have to be within an infinite loop,
-with the body being a non-determinsitic choice
-between the predicate, or doing a \emph{stuttering} step ($\Skip$).
+would have to be within an infinite loop.
 \RLEQNS{
-   \W(P) &\defs& \true * (\Skip \lor P) &\elabel{W-as-loop}
+   \W(P) &\defs& \true * P &\elabel{W-as-loop}
 }
-We note explicitly here that, in effect,
-our semantic model is based on unbounded non-determinism.
 This bold step turns out to be remarkably effective,
 with some quite counter-intuitive outcomes.
-For example, for iteration-free programs
+However it does depend on a specific tweak to the
+definition of an atomic action.
+In effect we define an atomic action
+as placing a basic action inside such a loop,
+but within a non-deterministic choice between it
+and a \emph{stuttering} step, denoted by UTP skip:
+\RLEQNS{
+  atm(a) &\defs& \W(\Skip \lor A(in|a|out))
+}
+A result of this is that this stuttering step gets
+propagated up to enclosing composites,
+so in effect we see $\W(C)=\W(\Skip\lor C)$
+where $C$ is any predicate denoting the semantics of a command.
+One key calculational advantage of this is that we can rewrite
+the rhs of the definition of $\W$ as:
+\RLEQNS{
+   \W(P) &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
+}%
+We note explicitly here that, in effect,
+our semantic model is based on unbounded non-determinism.
+
+However, for iteration-free programs
 we find that there is a finite $k$ such that $P^k = \false$,
 in which case the non-determinism is bounded.
 We get these finite results that seem very similar
@@ -183,11 +200,6 @@ However, using $\W$ results in a slight variation,
 which is composable!
 What turns out to be crucial
 to this outcome is the explicit stuttering option in the infinite loop.
-One key calculational advantage of this is that we can rewrite
-the rhs of the definition of $\W$ as:
-\RLEQNS{
-   \W(P) &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
-}
 
 \subsubsection{Label-Set Invariant}
 
@@ -344,7 +356,7 @@ conditions of the invariants are always true, by construction.
 \subsubsection{Atomic Action}
 
 \RLEQNS{
-  a &\defs& [in|out] \land \W(A(in|a|out)) & \elabel{sem:atomic}
+  a &\defs& [in|out] \land \W(\Skip \lor A(in|a|out)) & \elabel{sem:atomic}
 \\ &=&  [in|out] \land (\Skip \lor A(in|a|out))
         & \elabel{nf-atomic}
 }
