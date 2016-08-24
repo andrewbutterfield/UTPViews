@@ -31,7 +31,8 @@ So, we can simplify the normal form to the more uniform:
 \bigvee_n (I_{P_n} \land X(E_n|a_n|R_n|A_n) \land S_n)
 \]
 where $I_{P_n} = I_P \land I_n$.
-For brevity, we shall use $X_n$ to denote $ I_{P*} \land X(E_n|a_n|R_n|A_n)$,
+For brevity, we shall use $X_n$ to denote
+$I_{P_n} \land X(E_n|a_n|R_n|A_n) \land S_n$,
 or just $X(E_n|a_n|R_n|A_n)$, as appropriate in context.
 
 So we want to show for all programs $P$
@@ -169,8 +170,8 @@ if $P$ and $Q$ do.
     (\bigvee_q Z_q)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
 \\ && \qquad {}\lor
    A(\ell_{g1:},\ell_{g2:}|ii|out)~)
-\EQ{substitution}
-\\&& [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+\EQ{substitution, $I_\parallel$ abbreviates invariant}
+\\&& I_\parallel \land {}
 \\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
 \\ && \qquad {}\lor
    (\bigvee_p Y_p[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out])
@@ -178,25 +179,15 @@ if $P$ and $Q$ do.
     (\bigvee_q Z_q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out])
 \\ && \qquad {}\lor
    A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\EQ{push invariant in, fuse disjuncts and re-index}
+\\&& \W(\bigvee_r X_r)
+\\&& \textbf{where}\\&& X_{r_1} = I_\parallel \land A(in|ii|\ell_{g1},\ell_{g2})
+\\&& X_{r_2} = I_\parallel \land A(\ell_{g1:},\ell_{g2:}|ii|out)
+\\&& X_r \textbf{ ranges over all } I_\parallel \land Y_p, I_\parallel \land Z_q \textbf{ otherwise}
 \EQ{\eref{W-prog-stutters}}
-\\&& [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
-\\&& \W(\quad\phlor \Skip
-\\ && \qquad {}\lor A(in|ii|\ell_{g1},\ell_{g2})
-\\ && \qquad {}\lor
-   (\bigvee_p Y_p[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out])
-\\ && \qquad {}\lor
-    (\bigvee_q Z_q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out])
-\\ && \qquad {}\lor
-   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\\&& \W(\Skip \lor\bigvee_r X_r)
 }
-We pause here, and note that the $Y_p$ and $Z_q$ terms contain
-conjunctions of $X$-actions with invariants:
-\RLEQNS{
-   Y_p &=&  I_{P^*} \land X(E_p|a_p|R_p|A_p)
-\\ Z_q &=&  I_{Q^*} \land X(E_q|a_q|R_q|A_q)
-}
-What we want to do is to pull these out
-and push them to the top.
+
 
 
 \newpage

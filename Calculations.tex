@@ -72,10 +72,10 @@ We argue by induction over program syntax.
 What we shall demonstrate is that, for all commands $C$
 with a definition $C = \W(P)$, for $P$ related to $C$ as appropriate,
 that the following predicates are all equal:
-\[
-  \W(P) =  \W(\Skip \lor P) = \Skip \lor \W(P)
-  \qquad \elabel{W-prog-stutters}
-\]
+\RLEQNS{
+  \W(\Skip \lor P) \quad = & \W(P)& = \quad \Skip \lor \W(P)
+ & \elabel{W-prog-stutters}
+}
 The base case is easy, here $c$ is $\catom a$,
 and $P$ is $\Skip \lor A(in|a|out)$:
 \RLEQNS{
