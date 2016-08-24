@@ -4,15 +4,17 @@
 
 We take the normal form
 \[
-  I_{P^*} \land \Skip
-  \lor
-  \bigvee_n  (I_{P^*} \land X(E_n|a_n|R_n|A_n) \land S_n)
+  I_P \land \Skip
+      \lor
+      \bigvee_{n \in 0\dots}
+      (I_P \land I_n \land X(E_n|a_n|R_n|A_n) \land S_n)
 \]
 and  assume that the values ranged over by index $n$
 include a ``zero'' value $n_0$,
 and we define:
 \RLEQNS{
-   E_{n_0} &\defs& \setof{in}
+   I_{n_0} &\defs& \true
+\\ E_{n_0} &\defs& \setof{in}
 \\ a_{n_0} &\defs& ii
 \\ R_{n_0} &\defs& \setof{in}
 \\ A_{n_0} &\defs& \setof{out}
@@ -20,15 +22,16 @@ and we define:
 }
 then we have:
 \RLEQNS{
-   \Skip &=& X(E_{n_0}|a_{n_0}|R_{n_0}|A_{n_0}) \land S_{n_0}
+   I_P \land \Skip
+   &=&
+   I_P \land I_{n_0} \land X(E_{n_0}|a_{n_0}|R_{n_0}|A_{n_0}) \land S_{n_0}
 }
 So, we can simplify the normal form to the more uniform:
 \[
-\bigvee_n (I_{P^*} \land X(E_n|a_n|R_n|A_n) \land S_n)
+\bigvee_n (I_{P_n} \land X(E_n|a_n|R_n|A_n) \land S_n)
 \]
-The invariant $I_{P*}$ can be distributed in or out of the indexed disjunction
-and we will switch between these two forms at will.
-For brevity, ee shall use $X_n$ to denote $ I_{P*} \land X(E_n|a_n|R_n|A_n)$,
+where $I_{P_n} = I_P \land I_n$.
+For brevity, we shall use $X_n$ to denote $ I_{P*} \land X(E_n|a_n|R_n|A_n)$,
 or just $X(E_n|a_n|R_n|A_n)$, as appropriate in context.
 
 So we want to show for all programs $P$
@@ -157,7 +160,43 @@ if $P$ and $Q$ do.
     Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
 \\ && \qquad {}\lor
    A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\EQ{\eref{UTCP-NF-hyp-P}, \eref{UTCP-NF-hyp-Q}}
+\\&& [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+\\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
+\\ && \qquad {}\lor
+   (\bigvee_p Y_p)[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\ && \qquad {}\lor
+    (\bigvee_q Z_q)[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ && \qquad {}\lor
+   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\EQ{substitution}
+\\&& [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+\\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
+\\ && \qquad {}\lor
+   (\bigvee_p Y_p[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out])
+\\ && \qquad {}\lor
+    (\bigvee_q Z_q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out])
+\\ && \qquad {}\lor
+   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\EQ{\eref{W-prog-stutters}}
+\\&& [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+\\&& \W(\quad\phlor \Skip
+\\ && \qquad {}\lor A(in|ii|\ell_{g1},\ell_{g2})
+\\ && \qquad {}\lor
+   (\bigvee_p Y_p[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out])
+\\ && \qquad {}\lor
+    (\bigvee_q Z_q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out])
+\\ && \qquad {}\lor
+   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
 }
+We pause here, and note that the $Y_p$ and $Z_q$ terms contain
+conjunctions of $X$-actions with invariants:
+\RLEQNS{
+   Y_p &=&  I_{P^*} \land X(E_p|a_p|R_p|A_p)
+\\ Z_q &=&  I_{Q^*} \land X(E_q|a_q|R_q|A_q)
+}
+What we want to do is to pull these out
+and push them to the top.
 
 
 \newpage

@@ -36,7 +36,7 @@ characterises all those cases were the second $X$ is enabled
 immediately after the first $X$ terminates
 (i.e., without any outside interference).
 
-\subsection{Normal Form}
+\subsection{Normal Form}\label{sec:normal-form}
 
 All the semantics above have an invariant $I_P$,
 zero or more atomic actions ($A_i$),
@@ -52,7 +52,88 @@ assembled into a predicate of the form:
 where each $\sigma_i = [G_i,I_i,O_i/g,in,out]$,
 with all $G_i$, $I_i$ and $O_i$ being ground
 and satisfying the invariant $[I_i|labs(G_i)|O_i]$.
-Given that we have
+
+\subsubsection{Stuttering Propagates Up}
+
+We shall first demonstrate that the stuttering $\Skip$
+introduced in the atomic action semantics
+propagates up into the program composites,
+so that, for example, we could have defined sequential composition
+as:
+\RLEQNS{
+   P \cseq Q
+   &\defs&
+   [in|\ell_g|out]\land
+   \W(\Skip \lor P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+   & \elabel{sem:seq-alt}
+}
+We argue by induction over program syntax.
+
+What we shall demonstrate is that, for all commands $C$
+with a definition $C = \W(P)$, for $P$ related to $C$ as appropriate,
+that the following predicates are all equal:
+\[
+  \W(P) =  \W(\Skip \lor P) = \Skip \lor \W(P)
+  \qquad \elabel{W-prog-stutters}
+\]
+The base case is easy, here $c$ is $\catom a$,
+and $P$ is $\Skip \lor A(in|a|out)$:
+\RLEQNS{
+  && \W(\Skip \lor (\Skip \lor A(in|a|out)))
+\EQ{$\lor$-assoc, $\lor$-idem}
+\\&& \W(\Skip \lor A(in|a|out))
+\EQ{\eref{sem:atomic}}
+\\&& \catom a
+}
+For the inductive step we assume the hypothesis
+for command $C$ and its semantics predicate  $C = \W(P)$,
+that:
+\RLEQNS{
+   \W(P) &=& \W(\Skip \lor P) &\elabel{hyp:P-stutters}
+}
+We now make use of the following deduction:
+\RLEQNS{
+  && \W(\Skip \lor Q)
+\EQ{loop unrolling}
+\\&& (\Skip\lor Q)\seq(\Skip\lor Q)\seq(\Skip\lor Q)\seq(\Skip\lor Q)\seq\dots
+\EQ{$\lor$-$\seq$-distr, diagonalisation, removing identical terms}
+\\&& \bigvee_{i \in \Nat} \Skip\seq Q^i & \elabel{W-stutter-is-NDC}
+}
+An immediate consequence of this is that
+\RLEQNS{
+  \W(\Skip \lor Q) &=& \Skip \lor \W(\Skip\lor Q) & \elabel{W-exposes-II}
+}
+We now show that the same holds for a composite $F(C,\ldots)$
+that directly includes $P$, or rather its semantics $C$
+, along with some other stuff.
+Inspection of all the semantic definitions reveals
+that the form of the semantics of $F$ is the following,
+where $\sigma$ is a ground substitution:
+\RLEQNS{
+   F(C,\ldots) &=& \W(C\sigma \lor \ldots)
+}
+We now can easily show that we get stuttering here also:
+\RLEQNS{
+  && \W(C\sigma \lor \dots)
+\EQ{$C$ is meaning of $P$}
+\\&& \W(\W(P)\sigma \lor \dots)
+\EQ{\eref{hyp:P-stutters}}
+\\&& \W(\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{\eref{W-exposes-II}}
+\\&& \W((\Skip\lor\W(\Skip \lor P))\sigma \lor \dots)
+\EQ{substitution}
+\\&& \W(\Skip\sigma\lor\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{Lemma $\Skip\sigma=\Skip$}
+\\&& \W(\Skip\lor\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{reverse first two steps above}
+\\&& \W(\Skip\lor C\sigma \lor \dots)
+}
+
+\subsubsection{Nondeterministic Iteration}
+
+Given that we have,
+for predicates $P$ used in program semantic definitions,
+that
 \[
   \W(P) = \bigvee_{i \in 0\dots} \Skip \seq P^i
 \]
@@ -63,16 +144,14 @@ we find that two key outcomes result:
     in principle at least,
     to the form
     \[
-      I_{P^*} \land \Skip
+      I_P \land \Skip
       \lor
-      \bigvee_{n \in 0\dots}  (I_{P^*} \land X(E_n|a_n|R_n|A_n) \land S_n)
+      \bigvee_{n \in 0\dots}  (I_P \land I_n \land X(E_n|a_n|R_n|A_n) \land S_n)
     \]
-    for suitable choices of $E_n$, $a_n$, $R_n$, $A_n$ and $S_n$,
+    for suitable choices of $I_n$, $E_n$, $a_n$, $R_n$, $A_n$ and $S_n$,
     depending on $P$.
     In particular, we find that the $E_n$ and $A_n$ all satisfy the relevant
     label-set invariants.
-    The invariant $I_{P^*}$ here is the conjunction of all the invariants
-    from each level down, under the relevant substitutions.
     Note, calculations show that
     the $S_i$ are ground and so either reduce to $\true$ or $\false$.
     However we shall leave them in the normal form as their presence
@@ -80,14 +159,18 @@ we find that two key outcomes result:
     and we don't want to have to prove this.
   \item
     For any complete program that does not use iteration constructs,
-    this expansion is finite.
+    this expansion is finite, and the term $X(E_n|a_n|R_n|A_n) \land S_n$
+    can be be simplified to one of the form $A(E_n|a_n|A_n)$.
+    We do not prove this, but note that we have observed it as a result
+    of test calculations and these lead us to believe it is true in general.
 \end{enumerate}
 \RLEQNS{
    P
    &=&
-   I_{P^*} \land \Skip
+   I_P \land \Skip
       \lor
-      \bigvee_{n \in 0\dots}  (I_{P^*} \land X(E_n|a_n|R_n|A_n) \land S_n)
+      \bigvee_{n \in 0\dots}
+      (I_P \land I_n \land X(E_n|a_n|R_n|A_n) \land S_n)
    & \elabel{UTCP-NF}
 }
 This can be shown by an inductive argument over the language syntax,
@@ -124,6 +207,8 @@ as follows
 We omit parentheses or logical operators.
 In general we try to put all the single atomic steps on the first line,
 with all the mumblings on lower lines.
+Here we also just write $a$ instead of $\catom a$,
+for brevity.
 
 \subsubsection{Atomic Actions}
 \RLEQNS{

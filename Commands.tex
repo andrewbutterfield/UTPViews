@@ -10,7 +10,7 @@
 \end{eqnarray*}
 
 \RLEQNS{
-   P &::= & a             & \mbox{Atomic Action}
+   P &::= & \catom a      & \mbox{Atomic Action}
 \\   &\mid& \cskip        & \mbox{No state change}
 \\   &\mid& P \cseq P     & \mbox{Sequential Composition}
 \\   &\mid& P \parallel P & \mbox{Parallel Composition}
@@ -175,12 +175,13 @@ as placing a basic action inside such a loop,
 but within a non-deterministic choice between it
 and a \emph{stuttering} step, denoted by UTP skip:
 \RLEQNS{
-  atm(a) &\defs& \W(\Skip \lor A(in|a|out))
+  \catom a &\defs& \W(\Skip \lor A(in|a|out))
 }
 A result of this is that this stuttering step gets
 propagated up to enclosing composites,
 so in effect we see $\W(C)=\W(\Skip\lor C)$
 where $C$ is any predicate denoting the semantics of a command.
+We give more details about this in the section on calculation (\S\ref{sec:calc}).
 One key calculational advantage of this is that we can rewrite
 the rhs of the definition of $\W$ as:
 \RLEQNS{
@@ -356,7 +357,8 @@ conditions of the invariants are always true, by construction.
 \subsubsection{Atomic Action}
 
 \RLEQNS{
-  a &\defs& [in|out] \land \W(\Skip \lor A(in|a|out)) & \elabel{sem:atomic}
+  \catom a
+  &\defs& [in|out] \land \W(\Skip \lor A(in|a|out)) & \elabel{sem:atomic}
 \\ &=&  [in|out] \land (\Skip \lor A(in|a|out))
         & \elabel{nf-atomic}
 }
@@ -370,7 +372,7 @@ This is an advantage of treating the atomic action as a relational predicate
 on state.
 
 \RLEQNS{
- c \pgrd a &\defs& c \land a \mbox{ ---interpreted as atomic action} &\elabel{sem:pgrd}
+ c \pgrd a &\defs& \catom{c \land a}  &\elabel{sem:pgrd}
 }
 
 
@@ -378,7 +380,7 @@ on state.
 
 \RLEQNS{
    ii     &\defs& s'=s
-\\ \cskip &\defs& ii \mbox{ ---interpreted as atomic action} &\elabel{sem:skip}
+\\ \cskip &\defs& \catom{ii}  &\elabel{sem:skip}
 \\  &=&  [in|out] \land (\Skip \lor A(in|ii|out))
 }
 
