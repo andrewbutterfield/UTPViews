@@ -180,12 +180,14 @@ if $P$ and $Q$ do.
 \\ && \qquad {}\lor
    A(\ell_{g1:},\ell_{g2:}|ii|out)~)
 \EQ{push invariant in, fuse disjuncts and re-index}
-\\&& \W(\bigvee_r X_r)
+\\&& \W(\bigvee_r X_r), \quad r \in r_1,r_2,\dots
 \\&& \textbf{where}\\&& X_{r_1} = I_\parallel \land A(in|ii|\ell_{g1},\ell_{g2})
 \\&& X_{r_2} = I_\parallel \land A(\ell_{g1:},\ell_{g2:}|ii|out)
 \\&& X_r \textbf{ ranges over all } I_\parallel \land Y_p, I_\parallel \land Z_q \textbf{ otherwise}
 \EQ{\eref{W-prog-stutters}}
-\\&& \W(\Skip \lor\bigvee_r X_r)
+\\&& \W(\Skip \lor\bigvee_r X_r), \quad r \in r_1,r_2,\dots
+\EQ{\eref{W-as-NDC}}
+\\&& \bigvee_{i \in 0,\dots} \Skip \seq (\bigvee_r X_r)^i
 }
 
 
