@@ -463,7 +463,29 @@ LHS:
 \\ && \qquad\qquad {}\lor
    \bigvee_p (Y_p\gamma_1)
 \\ && \qquad\qquad {}\lor
-    \bigvee_p (Z_q\gamma_2)
+    \bigvee_q (Z_q\gamma_2)
 \\ && \qquad\qquad {}\lor
    A(\ell_{g1:},\ell_{g2:}|ii|out)~)^i~)~)
 }
+We pause to note that $Y_{p_0} I_P \land \Skip$
+and $Z_{q_0} = I_Q \land \Skip$.
+So the $(\dots)^i$ term collapses into a big disjunction
+of $X$s.
+Some of these $X$s will result from sequential compositions
+of several $Y_p\gamma_1$ and $Z_q\gamma_2$, for possibly
+many different $p$ and $q$ indices.
+Consider such an arbitrary $X_n$, other than terms of the form $I\land\Skip$.
+It will be the result of sequentially composing one or more $Y_p\gamma_1$,
+$Z_q\gamma_q$, $A(in|ii|\ell_{g1},\ell_{g2})$ and $A(\ell_{g1:},\ell_{g2:}|ii|out)$.
+We need to show that we can get exactly the same overall results
+if we swap $\gamma_1$ and $\gamma_2$.
+
+We can abstract such a composition as a sequence of indices,
+where we use indices $a_s$ and $a_m$ to denote the control flow actions.
+So sequence $a_s,p_1,q_3,p_1$
+denotes the composition
+\[
+A(in|ii|\ell_{g1},\ell_{g2}) ; Y_{p_1}\gamma_1 ; Z_{q_3}\gamma_2 ; Y_{p_1}\gamma_1.
+\]
+We need to show that nothing changes if we swap these two gammas,
+but that other gammas can break things.
