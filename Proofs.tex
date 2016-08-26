@@ -489,3 +489,14 @@ A(in|ii|\ell_{g1},\ell_{g2}) ; Y_{p_1}\gamma_1 ; Z_{q_3}\gamma_2 ; Y_{p_1}\gamma
 \]
 We need to show that nothing changes if we swap these two gammas,
 but that other gammas can break things.
+
+\subsection{STOP PRESS}
+
+The key property we may need to prove the laws is the following:
+
+For any program $P$, during its execution:
+\begin{itemize}
+  \item the only labels it removes from $ls$ are in $\setof{in} \cup labs(g)$
+  \item the only labels it adds to $ls$ are in $labs(g) \cup{out}$
+\end{itemize}
+This should be provable by induction.
