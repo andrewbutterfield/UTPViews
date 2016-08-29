@@ -413,6 +413,76 @@ In particular, this means that $(P^i)\sigma = (P\sigma)^i$.
 
 
 \newpage
+\subsection{Proof of \textsf{;;-l-unit}}
+
+We shall start with an easy proof to smoke out initial issues
+\[
+  \cskip \cseq P = P
+\]
+This is the same as
+\[
+  \HL(\cskip \cseq P) = \HL(P)
+\]
+
+We start with the LHS:
+\RLEQNS{
+  && \HL(\cskip \cseq P)
+\EQ{\eref{sem:seq}}
+\\&& \HL( [in|\ell_g|out]
+           \land ( \cskip[\g{:1},\ell_g/g,out]
+                   \lor
+                   P[\g{:2},\ell_g/g,in]
+                 )
+        )
+\EQ{\eref{NF-skip}}
+\\&& \HL( [in|\ell_g|out]
+           \land ( ([in|out] \land A(in|ii|out))[\g{:1},\ell_g/g,out]
+                   \lor
+                   P[\g{:2},\ell_g/g,in]
+                 )
+        )
+\EQ{substitution}
+\\&& \HL( [in|\ell_g|out]
+           \land ( ([in|\ell_g] \land A(in|ii|\ell_g))
+                   \lor
+                   P[\g{:2},\ell_g/g,in]
+                 )
+     )
+\EQ{$\land$-$\lor$-distr}
+\\&& \HL( [in|\ell_g|out] \land [in|\ell_g] \land A(in|ii|\ell_g)
+           \lor
+          [in|\ell_g|out] \land P[\g{:2},\ell_g/g,in]
+        )
+\EQ{$[in|\ell_g|out] \implies [in|\ell_g]$}
+\\&& \HL( [in|\ell_g|out] \land A(in|ii|\ell_g)
+           \lor
+          [in|\ell_g|out] \land P[\g{:2},\ell_g/g,in]
+        )
+\EQ{\eref{HL-or-distr}}
+\\&& \HL( [in|\ell_g|out] \land A(in|ii|\ell_g) )
+     \lor
+     \HL( [in|\ell_g|out] \land P[\g{:2},\ell_g/g,in] )
+\EQ{\eref{HL-I-and-A}}
+\\&& ii
+     \lor
+     \HL( [in|\ell_g|out] \land P[\g{:2},\ell_g/g,in] )
+\EQ{Normal form for $P$, substitution, $\land$-$\lor$-distr}
+\\&& ii
+     \lor
+     \HL( \bigvee_p ([in|\ell_g|out] \land X_p[\g{:2},\ell_g/g,in] ))
+\EQ{\eref{HL-or-distr}}
+\\&& ii
+     \lor
+     \bigvee_p \HL( [in|\ell_g|out] \land X_p[\g{:2},\ell_g/g,in] )
+}
+Useful Lemmas:
+\RLEQNS{
+  \HL(P) &=& ii \lor \HL(P)
+\\ \HL(X\gamma_1) &=& \HL(X\gamma_2)
+}
+
+
+\newpage
 \subsection{Proof: Parallel is commutative}
 
 \RLEQNS{
