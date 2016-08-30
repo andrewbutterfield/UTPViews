@@ -510,3 +510,73 @@ the relevant actions and substitutions.
 \\ && A(in|c \land ii|\ell_g)
 \\ && [g_{:},\ell_g,in/g,in,out]
 }
+
+\newpage
+\subsubsection{Nested Invariants}
+
+For each composite,
+we show how its component substitutions affect their invariants
+and any entailment relationships that arise.
+We don't show the conditional variants of choice and iteration
+because their invariants and substitutions are the same as those
+in the corresponding non-deterministic constructs.
+
+Semantics Reminder:
+\RLEQNS{
+  \catom a
+  &\defs& [in|out] \land \W(\Skip \lor A(in|a|out))
+\\ P \cseq Q
+   &\defs&
+   [in|\ell_g|out]\land \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+\\ P \parallel Q
+   &\defs&
+   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+\\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
+\\ && \qquad {}\lor
+   P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\ && \qquad {}\lor
+    Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ && \qquad {}\lor
+   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\\ P + Q
+   &\defs&
+   [in|\ell_{g1}|\ell_{g2}|out] \land {}
+\\ && \W(\quad {}\phlor A(in|ii|\ell_{g1})
+\\ && \qquad {} \lor
+                     A(in|ii|\ell_{g2})
+\\ && \qquad {} \lor
+   P[g_{1:},\ell_{g1}/g,in]
+\\ && \qquad {} \lor
+   Q[g_{2:},\ell_{g2}/g,in]~)
+\\ P^*
+   &\defs&
+   [in|\ell_g|out] \land {}
+\\ && \W(\quad  \phlor A(in|ii|out)
+\\ && \qquad {}\lor A(in|ii|\ell_g)
+\\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
+}
+
+
+\paragraph{Sequential Composition}
+
+\begin{description}
+  \item[Invariant]
+    $[in|\ell_g|out]$
+  \item[Substitutions]
+    $[g_{:1},\ell_g/g,out]$ and $[g_{:2},\ell_g/g,in]$
+  \item[Component Invariants]
+    $$\begin{array}{|l|c|c|}
+    \hline
+      \mbox{Type} & \mbox{as }P & \mbox{as }Q
+    \\\hline
+      \catom\_ & [in|\ell_g] & [\ell_g|out]
+    \\\hline
+       \_\cseq\_& [in|\ell_{g:1}|\ell_g] & [\ell_g|\ell_{g:2}|out]
+    \\\hline
+       \_\parallel\_
+       & [in|(\ell_{g:11}|\ell_{g:11:}),(\ell_{g:12}|\ell_{g:12:})|\ell_g]
+       & [\ell_g|(\ell_{g:21}|\ell_{g:21:}),(\ell_{g:22}|\ell_{g:22:})|out]
+    \\\hline
+    \end{array}$$
+\end{description}
+Hmmm \dots, no simple relationship is emerging.
