@@ -1,29 +1,65 @@
-\section{Commands}\label{sec:commands}
+\section{Denotations}\label{sec:denote}
+
+\subsection{Overview}
+
+
+Concurrent programs are a mix of control constructs ($\cseq,\parallel,+,\dots$)
+and atomic actions $a$ that modify \emph{program state} $s$.
+This is all that is visible to the programmer.
 
 
 
-\subsection{Syntax}
+Our denotational UTP semantics
+is inspired by that done for UTPP\cite{DBLP:conf/icfem/WoodcockH02},
+itself based on a UTP theory of \emph{action systems}.
+First, we add a new state component, not visible in the program text,
+which is a set of labels ($ls$).
+These labels are used to orchestrate the flow of control.
+Given an atomic action $a$ that only knows about program state $s$,
+we use notation $\catom a$ to describe a lifted version
+of $a$ that takes account of the contents of the label-set $ls$.
+In effect a lifted atomic state action is disabled until
+a particular label is present in that set.
+A disabled action does not modify the state any way
+and simply monitors the label-set.
+Once an action observes the presence/arrival of its label,
+it then becomes active.
+An active lifted action atomically modifies the extended state as follows:
+\begin{itemize}
+  \item It makes the changes to $s$ as determined by its underlying action.
+  \item It removes the enabling label for the label-set.
+  \item It adds in appropriate ``continuation'' labels to $ls$.
+\end{itemize}
+In \cite{DBLP:conf/icfem/WoodcockH02},
+the language syntax required explicit (starting) labels
+for every atomic state change action,
+and these are used as lifted action enablers.
+The continuation labels were taken to the the enabling labels
+of whatever other actions occurred immediately after, in the program.
+This means that the resulting semantics is not compositional.
 
-\begin{eqnarray*}
-   a &:& \mbox{Predicate, alphabet }s,s'
-\\ c &:& \mbox{Predicate, alphabet }s
-\end{eqnarray*}
+The approach we adopt is to adopt the notion of \emph{label generators}
+to create the labels, so ensuring they are unique,
+but in such a way as make the generation a compositional process.
+In addition we explicitly associate two labels with every program construct:
+one that marks the entry into/start of the construct,
+and another that indicates the exit.
+
+\subsubsection{On Notation}
+
+We make liberal use of a number of shorthand notations,
+largely to reduce expression size and clutter.
+Typically these reduce the use of infix operators,
+and in one notable case, collapse large conjunctions
+of implications into a simple form with string visual cues.
+Each shorthand is introduced by a subsection similar to this one.
+
+\subsection{Label Generation}
+
+INTRODUCE
 
 \RLEQNS{
-   P &::= & \catom a      & \mbox{Atomic Action}
-\\   &\mid& \cskip        & \mbox{No state change}
-\\   &\mid& P \cseq P     & \mbox{Sequential Composition}
-\\   &\mid& P \parallel P & \mbox{Parallel Composition}
-\\   &\mid& P+P           & \mbox{Non-deterministic Choice}
-\\   &\mid& P^*           & \mbox{Non-deterministic Iteration}
-\\   &\mid& P \dcond c P  & \mbox{Conditional Choice}
-\\   &\mid& c \ddo P      & \mbox{Conditional Iteration}
-}
-
-\subsection{Domains}
-\RLEQNS{
-   s &\in& \mathcal S
-\\ g &:& Gen = \setof g  & \mbox{only one variable!}
+   g &:& Gen = \setof g  & \mbox{only one variable!}
 \\ \ell &:& Gen \fun Lbl
 \\ G \in Gen &::=&  g     & \mbox{the ``root'' generator}
 \\           &\mid& G_{:} & \mbox{resulting generator after label produced}
@@ -67,7 +103,12 @@ the following four sets are mutually disjoint:
   \elabel{labs-fully-disjoint}
 \]
 
-\subsection{Alphabet}
+\includegraphics{images/new-label}
+
+\includegraphics{images/split-gen}
+
+
+\subsection{Observation Variables}
 
 \begin{eqnarray*}
    s, s' &:& \mathcal S
@@ -79,130 +120,9 @@ We assume a general notion of expressions ($e$)
 and say that an expression $e$ is ``ground''
 if it's free variables are limited to only $g$, $in$ and $out$.
 
-We have a general healthiness condition (Disjoint Labels) which asserts
-that the labels associated with $in$, $out$ and $g$
-are different:
-\RLEQNS{
-  \DL(P) &=& P \land in \neq out \land \setof{in,out} \cap labs(g) = \emptyset
-}
 
+\subsection{Label-Set Invariants}
 
-\subsection{``Standard'' UTP Constructs}
-
-\RLEQNS{
-   P \cond C Q
-   &\defs&
-   C \land P \lor \lnot C \land Q
-   & \elabel{UTP-cond-def}
-\\ \Skip
-   &\defs&
-   s'= s \land ls'=ls
-   & \elabel{UTP-skip-def}
-\\ P \seq Q
-   &\defs& \exists s_m,ls_m \bullet
-\\ && \qquad P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
-   & \elabel{UTP-seq-def}
-\\ C * P
-   &=&
-   P ; C * P \cond C \Skip
-   & \elabel{UTP-loop-unroll}
-}
-We also define a specialised form of sequential composition
-to be used when neither component refers to $ls$ or $ls'$,
-and its unit:
-\RLEQNS{
-   P \seq_s Q
-   &\defs&
-   \exists s_m \bullet P[s_m/s'] \land Q[s_m/s]
-   & \elabel{UTP-s-seq-def}
-\\ ii &\defs& s'=s & \elabel{ii-def}
-}
-Note that if neither predicate mentions $ls$ or $ls'$
-then the effect of $\seq$ and $\seq_s$ is the same.
-We often omit the $s$ subscript when its use is clear from context.
-
-
-\subsection{Shorthands}
-
-\RLEQNS{
-   ls(\ell) &\defs& \ell \in ls
-\\ ls(L) &\defs& L \subseteq ls
-\\ ls(\B\ell) &\defs& \ell \notin ls
-\\ ls(\B L) &\defs& L \cap ls = \emptyset
-}
-
-\subsection{Semantic Concepts}
-
-\subsubsection{Basic Action}
-
-Basic Action $A(E|a|N)$ is enabled when all the labels in $E$
-are present in the global label-set
-and atomic action $a$ does not evaluate to $\false$
-in the current program state.
-If so enabled,  it performs action $a$, removes the labels in $E$
-from the label-set, and adds in those in $N$.
-\RLEQNS{
-   A(E|a|N)
-   &\defs&
-   ls(E) \land a \land ls'=(ls\setminus E) \cup N
-   & \elabel{A-def}
-}
-
-
-\subsubsection{Wheels-within-Wheels}
-
-The key intuition behind this compositional semantics was to take the
-$run$ function of the action-system based semantic model used in UTPP,
-and drive it inwards to every level of the program.
-The original $run$ can be defined in the context of this theory as
-\[
-  run(P) = ls := \setof{in} ; \lnot (out \in ls) * P
-\]
-However this failed to keep atomic components ``live''.
-They could never be re-executed,
-as would be required if they were within an iteration.
-Instead it was realised that every construct (atomic and composite)
-would have to be within an infinite loop.
-\RLEQNS{
-   \W(P) &\defs& \true * P &\elabel{W-as-loop}
-}
-This bold step turns out to be remarkably effective,
-with some quite counter-intuitive outcomes.
-However it does depend on a specific tweak to the
-definition of an atomic action.
-In effect we define an atomic action
-as placing a basic action inside such a loop,
-but within a non-deterministic choice between it
-and a \emph{stuttering} step, denoted by UTP skip:
-\RLEQNS{
-  \catom a &\defs& \W(\Skip \lor A(in|a|out))
-}
-A result of this is that this stuttering step gets
-propagated up to enclosing composites,
-so in effect we see $\W(C)=\W(\Skip\lor C)$
-where $C$ is any predicate denoting the semantics of a command.
-We give more details about this in the section on calculation (\S\ref{sec:calc}).
-One key calculational advantage of this is that we can rewrite
-the rhs of the definition of $\W$ as:
-\RLEQNS{
-   \W(P) &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
-}%
-We note explicitly here that, in effect,
-our semantic model is based on unbounded non-determinism.
-
-However, for iteration-free programs
-we find that there is a finite $k$ such that $P^k = \false$,
-in which case the non-determinism is bounded.
-We get these finite results that seem very similar
-to the results obtained by using $run$ above.
-Using $run$ results in predicates that cannot be composed
-to get composite behaviour.
-However, using $\W$ results in a slight variation,
-which is composable!
-What turns out to be crucial
-to this outcome is the explicit stuttering option in the infinite loop.
-
-\subsubsection{Label-Set Invariant}
 
 We want to be able to specify that certain combinations
 of labels should never appear simultaneously
@@ -351,9 +271,143 @@ In this theory,
 we use the label generators to ensure that the disjointness
 conditions of the invariants are always true, by construction.
 
-\newpage
-\subsection{Program Semantics}
+\subsubsection{Notation}
 
+\RLEQNS{
+   ls(\ell) &\defs& \ell \in ls
+\\ ls(L) &\defs& L \subseteq ls
+\\ ls(\B\ell) &\defs& \ell \notin ls
+\\ ls(\B L) &\defs& L \cap ls = \emptyset
+}
+
+
+
+\subsection{``Standard'' UTP Predicates}
+
+INTRODUCE
+
+\RLEQNS{
+   P \cond C Q
+   &\defs&
+   C \land P \lor \lnot C \land Q
+   & \elabel{UTP-cond-def}
+\\ \Skip
+   &\defs&
+   s'= s \land ls'=ls
+   & \elabel{UTP-skip-def}
+\\ P \seq Q
+   &\defs& \exists s_m,ls_m \bullet
+\\ && \qquad P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
+   & \elabel{UTP-seq-def}
+\\ C * P
+   &=&
+   P ; C * P \cond C \Skip
+   & \elabel{UTP-loop-unroll}
+}
+We also define a specialised form of sequential composition
+to be used when neither component refers to $ls$ or $ls'$,
+and its unit:
+\RLEQNS{
+   P \seq_s Q
+   &\defs&
+   \exists s_m \bullet P[s_m/s'] \land Q[s_m/s]
+   & \elabel{UTP-s-seq-def}
+\\ ii &\defs& s'=s & \elabel{ii-def}
+}
+Note that if neither predicate mentions $ls$ or $ls'$
+then the effect of $\seq$ and $\seq_s$ is the same.
+We often omit the $s$ subscript when its use is clear from context.
+
+\subsection{Healthiness Conditions}
+
+We have a general healthiness condition (Disjoint Labels) which asserts
+that the labels associated with $in$, $out$ and $g$
+are different:
+\RLEQNS{
+  \DL(P) &=& P \land in \neq out \land \setof{in,out} \cap labs(g) = \emptyset
+}
+
+\subsubsection{Wheels-within-Wheels}
+
+The key intuition behind this compositional semantics was to take the
+$run$ function of the action-system based semantic model used in UTPP,
+and drive it inwards to every level of the program.
+The original $run$ can be defined in the context of this theory as
+\[
+  run(P) = ls := \setof{in} ; \lnot (out \in ls) * P
+\]
+However this failed to keep atomic components ``live''.
+They could never be re-executed,
+as would be required if they were within an iteration.
+Instead it was realised that every construct (atomic and composite)
+would have to be within an infinite loop.
+\RLEQNS{
+   \W(P) &\defs& \true * P &\elabel{W-as-loop}
+}
+This bold step turns out to be remarkably effective,
+with some quite counter-intuitive outcomes.
+However it does depend on a specific tweak to the
+definition of an atomic action.
+In effect we define an atomic action
+as placing a basic action inside such a loop,
+but within a non-deterministic choice between it
+and a \emph{stuttering} step, denoted by UTP skip:
+\RLEQNS{
+  \catom a &\defs& \W(\Skip \lor A(in|a|out))
+}
+A result of this is that this stuttering step gets
+propagated up to enclosing composites,
+so in effect we see $\W(C)=\W(\Skip\lor C)$
+where $C$ is any predicate denoting the semantics of a command.
+We give more details about this in the section on calculation (\S\ref{sec:calc}).
+One key calculational advantage of this is that we can rewrite
+the rhs of the definition of $\W$ as:
+\RLEQNS{
+   \W(P) &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
+}%
+We note explicitly here that, in effect,
+our semantic model is based on unbounded non-determinism.
+
+However, for iteration-free programs
+we find that there is a finite $k$ such that $P^k = \false$,
+in which case the non-determinism is bounded.
+We get these finite results that seem very similar
+to the results obtained by using $run$ above.
+Using $run$ results in predicates that cannot be composed
+to get composite behaviour.
+However, using $\W$ results in a slight variation,
+which is composable!
+What turns out to be crucial
+to this outcome is the explicit stuttering option in the infinite loop.
+
+\subsection{UTP Denotational Semantics}
+
+INTRODUCE
+
+We present each construct individually,
+with full diagrams for each \dots
+
+
+
+\subsubsection{Basic Action}
+
+Basic Action $A(E|a|N)$ is enabled when all the labels in $E$
+are present in the global label-set
+and atomic action $a$ does not evaluate to $\false$
+in the current program state.
+If so enabled,  it performs action $a$, removes the labels in $E$
+from the label-set, and adds in those in $N$.
+\RLEQNS{
+   A(E|a|N)
+   &\defs&
+   ls(E) \land a \land ls'=(ls\setminus E) \cup N
+   & \elabel{A-def}
+}
+
+
+
+
+\newpage
 \subsubsection{Atomic Action}
 
 \RLEQNS{
@@ -362,6 +416,7 @@ conditions of the invariants are always true, by construction.
 \\ &=&  [in|out] \land (\Skip \lor A(in|a|out))
         & \elabel{nf-atomic}
 }
+\includegraphics{images/atomic-action}
 
 
 \subsubsection{Guarded Atomic Action}
@@ -384,6 +439,7 @@ on state.
 \\  &=&  [in|out] \land (\Skip \lor A(in|ii|out))
 }
 
+\newpage
 \subsubsection{Sequential Composition}
 
 \RLEQNS{
@@ -392,7 +448,9 @@ on state.
    [in|\ell_g|out]\land \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
    & \elabel{sem:seq}
 }
+\includegraphics{images/seq-comp-actual}
 
+\newpage
 \subsubsection{Parallel Composition}
 
 \RLEQNS{
@@ -409,7 +467,12 @@ on state.
    A(\ell_{g1:},\ell_{g2:}|ii|out)~)
 }
 
+\includegraphics{images/parallel-label-gen}
 
+\includegraphics{images/par-comp-actual}
+
+
+\newpage
 \subsubsection{Nondeterministic Choice}
 
 \RLEQNS{
@@ -439,6 +502,7 @@ on state.
 \\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
 }
 
+\newpage
 \subsubsection{Conditional Choice}
 
 \RLEQNS{
@@ -455,6 +519,9 @@ on state.
    Q[g_{2:},\ell_{g2}/g,in]~)
 }
 
+\includegraphics{images/conditional-actual}
+
+\newpage
 \subsubsection{Conditional Loop}
 
 
@@ -468,6 +535,14 @@ on state.
 \\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
 }
 
+\includegraphics{images/iteration-actual}
+
+\newpage
+\subsection{Miscellaneous}
+
+Most of this stuff should end up,
+if required,
+in a Proofs/Justification appendix.
 
 \subsubsection{Semantic Substitutions List}
 
@@ -511,7 +586,6 @@ the relevant actions and substitutions.
 \\ && [g_{:},\ell_g,in/g,in,out]
 }
 
-\newpage
 \subsubsection{Nested Invariants}
 
 For each composite,

@@ -1,0 +1,20 @@
+\section{Syntax}\label{sec:syntax}
+
+
+
+
+\begin{eqnarray*}
+   a &:& \mbox{Predicate, alphabet }s,s'
+\\ c &:& \mbox{Predicate, alphabet }s
+\end{eqnarray*}
+
+\RLEQNS{
+   P &::= & \catom a      & \mbox{Atomic Action}
+\\   &\mid& \cskip        & \mbox{No state change}
+\\   &\mid& P \cseq P     & \mbox{Sequential Composition}
+\\   &\mid& P \parallel P & \mbox{Parallel Composition}
+\\   &\mid& P+P           & \mbox{Non-deterministic Choice}
+\\   &\mid& P^*           & \mbox{Non-deterministic Iteration}
+\\   &\mid& P \dcond c P  & \mbox{Conditional Choice}
+\\   &\mid& c \ddo P      & \mbox{Conditional Iteration}
+}
