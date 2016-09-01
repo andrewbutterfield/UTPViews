@@ -55,79 +55,14 @@ and satisfying the invariant $[I_i|labs(G_i)|O_i]$.
 
 \subsubsection{Stuttering Propagates Up}
 
-We shall first demonstrate that the stuttering $\Skip$
-introduced in the atomic action semantics
-propagates up into the program composites,
-so that, for example, we could have defined sequential composition
-as:
+We show that for any predicate $P$ resulting from the
+semantics applied to a program,
+that the stuttering on such a predicate propagates up:
 \RLEQNS{
-   P \cseq Q
-   &\defs&
-   [in|\ell_g|out]\land
-   \W(\Skip \lor P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
-   & \elabel{sem:seq-alt}
+   P &=& \Skip \lor P
 }
-We argue by induction over program syntax.
 
-What we shall demonstrate is that, for all commands $C$
-with a definition $C = \W(P)$, for $P$ related to $C$ as appropriate,
-that the following predicates are all equal:
-\RLEQNS{
-  \W(\Skip \lor P) \quad = & \W(P)& = \quad \Skip \lor \W(P)
- & \elabel{W-prog-stutters}
-}
-The base case is easy, here $c$ is $\catom a$,
-and $P$ is $\Skip \lor A(in|a|out)$:
-\RLEQNS{
-  && \W(\Skip \lor (\Skip \lor A(in|a|out)))
-\EQ{$\lor$-assoc, $\lor$-idem}
-\\&& \W(\Skip \lor A(in|a|out))
-\EQ{\eref{sem:atomic}}
-\\&& \catom a
-}
-For the inductive step we assume the hypothesis
-for command $C$ and its semantics predicate  $C = \W(P)$,
-that:
-\RLEQNS{
-   \W(P) &=& \W(\Skip \lor P) &\elabel{hyp:P-stutters}
-}
-We now make use of the following deduction:
-\RLEQNS{
-  && \W(\Skip \lor Q)
-\EQ{loop unrolling}
-\\&& (\Skip\lor Q)\seq(\Skip\lor Q)\seq(\Skip\lor Q)\seq(\Skip\lor Q)\seq\dots
-\EQ{$\lor$-$\seq$-distr, diagonalisation, removing identical terms}
-\\&& \bigvee_{i \in \Nat} \Skip\seq Q^i & \elabel{W-stutter-is-NDC}
-}
-An immediate consequence of this is that
-\RLEQNS{
-  \W(\Skip \lor Q) &=& \Skip \lor \W(\Skip\lor Q) & \elabel{W-exposes-II}
-}
-We now show that the same holds for a composite $F(C,\ldots)$
-that directly includes $P$, or rather its semantics $C$
-, along with some other stuff.
-Inspection of all the semantic definitions reveals
-that the form of the semantics of $F$ is the following,
-where $\sigma$ is a ground substitution:
-\RLEQNS{
-   F(C,\ldots) &=& \W(C\sigma \lor \ldots)
-}
-We now can easily show that we get stuttering here also:
-\RLEQNS{
-  && \W(C\sigma \lor \dots)
-\EQ{$C$ is meaning of $P$}
-\\&& \W(\W(P)\sigma \lor \dots)
-\EQ{\eref{hyp:P-stutters}}
-\\&& \W(\W(\Skip \lor P)\sigma \lor \dots)
-\EQ{\eref{W-exposes-II}}
-\\&& \W((\Skip\lor\W(\Skip \lor P))\sigma \lor \dots)
-\EQ{substitution}
-\\&& \W(\Skip\sigma\lor\W(\Skip \lor P)\sigma \lor \dots)
-\EQ{Lemma $\Skip\sigma=\Skip$}
-\\&& \W(\Skip\lor\W(\Skip \lor P)\sigma \lor \dots)
-\EQ{reverse first two steps above}
-\\&& \W(\Skip\lor C\sigma \lor \dots)
-}
+
 
 \subsubsection{Nondeterministic Iteration}
 
@@ -137,7 +72,7 @@ that
 \[
   \W(P) = \bigvee_{i \in 0\dots} \Skip \seq P^i
 \]
-we find that two key outcomes result:
+we find that the following outcomes result:
 \begin{enumerate}
   \item
     Every program $P$ can be transformed,
@@ -152,14 +87,14 @@ we find that two key outcomes result:
     depending on $P$.
     In particular, we find that the $E_n$ and $A_n$ all satisfy the relevant
     label-set invariants.
-    Note, calculations show that
-    the $S_i$ are ground and so either reduce to $\true$ or $\false$.
-    However we shall leave them in the normal form as their presence
-    does not effect our later results,
-    and we don't want to have to prove this.
   \item
     For any complete program that does not use iteration constructs,
-    this expansion is finite, and the term $X(E_n|a_n|R_n|A_n) \land S_n$
+    this expansion is finite.
+  \item
+    For any complete program the $S_n$
+    term in $X(E_n|a_n|R_n|A_n) \land S_n$
+    is a ground-expression, and is statically decidable as $\true$ or $\false$.
+    If $\true$, we find that the above term
     can be be simplified to one of the form $A(E_n|a_n|A_n)$.
     We do not prove this, but note that we have observed it as a result
     of test calculations and these lead us to believe it is true in general.
@@ -300,4 +235,93 @@ We can also identify a pattern based on number of $a$s performed:
 \\
 \\ \alpha_n && A(\ell_g|a^n|in) \quad A(\ell_g|a^n|out) \quad A(\ell_g|a^n|\ell_g) \quad A(in|a^n|in)
 \\          && \mathbf{A(in|a^n|out)} \quad A(in|a^n|\ell_g)
+}
+
+
+\newpage
+\subsection{Essential Properties?}
+
+\RLEQNS{
+   X(E|a|R|A)\gamma &=& X(E\gamma|a|R\gamma|A\gamma)
+}
+Add in X-then-X and related properties.
+
+\newpage
+\subsection{Miscellaneous}
+
+More stuff for proofs section.
+
+
+We shall first demonstrate that the stuttering $\Skip$
+introduced in the atomic action semantics
+propagates up into the program composites,
+so that, for example, we could have defined sequential composition
+as:
+\RLEQNS{
+   P \cseq Q
+   &\defs&
+   [in|\ell_g|out]\land
+   \W(\Skip \lor P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+   & \elabel{sem:seq-alt}
+}
+We argue by induction over program syntax.
+
+What we shall demonstrate is that, for all commands $C$
+with a definition $C = \W(P)$, for $P$ related to $C$ as appropriate,
+that the following predicates are all equal:
+\RLEQNS{
+  \W(\Skip \lor P) \quad = & \W(P)& = \quad \Skip \lor \W(P)
+ & \elabel{W-prog-stutters}
+}
+The base case is easy, here $c$ is $\catom a$,
+and $P$ is $\Skip \lor A(in|a|out)$:
+\RLEQNS{
+  && \W(\Skip \lor (\Skip \lor A(in|a|out)))
+\EQ{$\lor$-assoc, $\lor$-idem}
+\\&& \W(\Skip \lor A(in|a|out))
+\EQ{\eref{sem:atomic}}
+\\&& \catom a
+}
+For the inductive step we assume the hypothesis
+for command $C$ and its semantics predicate  $C = \W(P)$,
+that:
+\RLEQNS{
+   \W(P) &=& \W(\Skip \lor P) &\elabel{hyp:P-stutters}
+}
+We now make use of the following deduction:
+\RLEQNS{
+  && \W(\Skip \lor Q)
+\EQ{loop unrolling}
+\\&& (\Skip\lor Q)\seq(\Skip\lor Q)\seq(\Skip\lor Q)\seq(\Skip\lor Q)\seq\dots
+\EQ{$\lor$-$\seq$-distr, diagonalisation, removing identical terms}
+\\&& \bigvee_{i \in \Nat} \Skip\seq Q^i & \elabel{W-stutter-is-NDC}
+}
+An immediate consequence of this is that
+\RLEQNS{
+  \W(\Skip \lor Q) &=& \Skip \lor \W(\Skip\lor Q) & \elabel{W-exposes-II}
+}
+We now show that the same holds for a composite $F(C,\ldots)$
+that directly includes $P$, or rather its semantics $C$
+, along with some other stuff.
+Inspection of all the semantic definitions reveals
+that the form of the semantics of $F$ is the following,
+where $\sigma$ is a ground substitution:
+\RLEQNS{
+   F(C,\ldots) &=& \W(C\sigma \lor \ldots)
+}
+We now can easily show that we get stuttering here also:
+\RLEQNS{
+  && \W(C\sigma \lor \dots)
+\EQ{$C$ is meaning of $P$}
+\\&& \W(\W(P)\sigma \lor \dots)
+\EQ{\eref{hyp:P-stutters}}
+\\&& \W(\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{\eref{W-exposes-II}}
+\\&& \W((\Skip\lor\W(\Skip \lor P))\sigma \lor \dots)
+\EQ{substitution}
+\\&& \W(\Skip\sigma\lor\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{Lemma $\Skip\sigma=\Skip$}
+\\&& \W(\Skip\lor\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{reverse first two steps above}
+\\&& \W(\Skip\lor C\sigma \lor \dots)
 }

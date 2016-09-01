@@ -1,5 +1,44 @@
 \section{Laws}\label{sec:algebra}
 
+\subsection{Language Laws}\label{sec:lang-laws}
+
+\RLEQNS{
+   \cskip \cseq P &=& P & \elab{$\cseq$-l-unit}{;;-l-unit}
+\\ P \cseq \cskip &=& P & \elab{$\cseq$-Q-unit}{;;-r-unit}
+\\ P \cseq ( Q \cseq R) &=& ( P \cseq Q ) \cseq R
+   & \elab{$\cseq$-assoc}{;;-assoc}
+\\ P \parallel Q &=& Q \parallel P & \elab{$\parallel$-comm}{||-comm}
+\\ P \parallel ( Q \parallel R) &=& ( P \parallel Q ) \parallel R
+   & \elab{$\parallel$-assoc}{||-assoc}
+\\ P + Q &=& Q+P
+\\ P + ( Q + R) &=& ( P + Q ) + R
+\\ P + Q &\refinedby& P
+\\ P \sqsubseteq Q &\equiv& (P + Q) = Q
+\\ P^* &=& \cskip + P \cseq P^*
+\\ P \dcond{true} Q &=& P & \elab{$\dcond{true}$}{lcond-true}
+\\ P \dcond{false} Q &=& Q & \elab{$\dcond{false}$}{lcond-false}
+\\ (P_1 \dcond c P_2) \cseq P_3 &=& (P_1 \cseq P_3) \dcond c (P_2 \cseq P_3)
+\\ c \ddo P &=& (P \cseq c \ddo P) \dcond c \cskip
+   & \elab{$\ddo$-unroll}{wdo-unroll}
+\\ P_1 \cseq (P_2 \parallel P_3) &\sqsubseteq& (P_1 \cseq P_2) \parallel P_3
+\\ P_1 \cseq P_2 &\sqsubseteq& P_1 \parallel P_2
+\\ P_1 \dcond{c_1 \land c_2} P_2
+   &\sqsubseteq&
+   (P_1 \dcond{c_2} P_2) \dcond{c_1} P_2
+}
+
+If we have assignments $x:=e$, then the following apply:
+\RLEQNS{
+   \cskip &=& i:=i & \mbox{atomic assignment}
+\\ \cskip &\sqsubseteq& x:=x &\mbox{non-atomic assignment}
+\\ x:=e_2[e_1/x] &\sqsubseteq& x:=e_1 \cseq x:=e_2 & e_i \mbox{ deterministic}
+\\ x_1:=e_1 \parallel x_2:=e_2
+   &=&
+   (x_1:=e_1 \cseq x_2:=e_2)
+\\ && {} + (x_2:=e_2 \cseq x_1:=e_1)
+}
+The latter holding for atomic assignment.
+
 
 \subsection{Equality}\label{ssec:equality}
 
@@ -56,6 +95,11 @@ Here $S$ is a predicate over ground label-set expressions.
 We intend to use this law on $X$-components calculated in the
 context of invariant $I$, so we always expect $E$ to satisfy $I$.
 
+\subsubsection{Essential Properties?}
+
+\subsection{Miscellaenous}
+
+
 Assume that $P$ has a normal form as follows,
 where $A(a_i)$ is shorthand for $A(E_i|a_i|N_i)$:
 \[
@@ -86,41 +130,3 @@ Such substitutions are \emph{valid} provided they satisfy the invariant
 $(I_i | labs(G_i) | O_i)$ for $i=1,2$.
 This excludes pathological substitutions that mix up input, output
 and internal labels, which would alter the resulting normal form.
-
-\subsubsection{Language Laws}\label{ssec:lang-laws}
-\RLEQNS{
-   \cskip \cseq P &=& P & \elab{$\cseq$-l-unit}{;;-l-unit}
-\\ P \cseq \cskip &=& P & \elab{$\cseq$-Q-unit}{;;-r-unit}
-\\ P \cseq ( Q \cseq R) &=& ( P \cseq Q ) \cseq R
-   & \elab{$\cseq$-assoc}{;;-assoc}
-\\ P \parallel Q &=& Q \parallel P & \elab{$\parallel$-comm}{||-comm}
-\\ P \parallel ( Q \parallel R) &=& ( P \parallel Q ) \parallel R
-   & \elab{$\parallel$-assoc}{||-assoc}
-\\ P + Q &=& Q+P
-\\ P + ( Q + R) &=& ( P + Q ) + R
-\\ P + Q &\refinedby& P
-\\ P \sqsubseteq Q &\equiv& (P + Q) = Q
-\\ P^* &=& \cskip + P \cseq P^*
-\\ P \dcond{true} Q &=& P & \elab{$\dcond{true}$}{lcond-true}
-\\ P \dcond{false} Q &=& Q & \elab{$\dcond{false}$}{lcond-false}
-\\ (P_1 \dcond c P_2) \cseq P_3 &=& (P_1 \cseq P_3) \dcond c (P_2 \cseq P_3)
-\\ c \ddo P &=& (P \cseq c \ddo P) \dcond c \cskip
-   & \elab{$\ddo$-unroll}{wdo-unroll}
-\\ P_1 \cseq (P_2 \parallel P_3) &\sqsubseteq& (P_1 \cseq P_2) \parallel P_3
-\\ P_1 \cseq P_2 &\sqsubseteq& P_1 \parallel P_2
-\\ P_1 \dcond{c_1 \land c_2} P_2
-   &\sqsubseteq&
-   (P_1 \dcond{c_2} P_2) \dcond{c_1} P_2
-}
-
-If we have assignments $x:=e$, then the following apply:
-\RLEQNS{
-   \cskip &=& i:=i & \mbox{atomic assignment}
-\\ \cskip &\sqsubseteq& x:=x &\mbox{non-atomic assignment}
-\\ x:=e_2[e_1/x] &\sqsubseteq& x:=e_1 \cseq x:=e_2 & e_i \mbox{ deterministic}
-\\ x_1:=e_1 \parallel x_2:=e_2
-   &=&
-   (x_1:=e_1 \cseq x_2:=e_2)
-\\ && {} + (x_2:=e_2 \cseq x_1:=e_1)
-}
-The latter holding for atomic assignment.

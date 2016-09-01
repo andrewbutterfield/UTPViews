@@ -24,10 +24,10 @@ A disabled action does not modify the state any way
 and simply monitors the label-set.
 Once an action observes the presence/arrival of its label,
 it then becomes active.
-An active lifted action atomically modifies the extended state as follows:
+An active lifted action $\catom a$ atomically modifies the extended state as follows:
 \begin{itemize}
-  \item It makes the changes to $s$ as determined by its underlying action.
-  \item It removes the enabling label for the label-set.
+  \item It makes the changes to $s$ as determined by its underlying action $a$.
+  \item It removes the enabling label from the label-set.
   \item It adds in appropriate ``continuation'' labels to $ls$.
 \end{itemize}
 In \cite{DBLP:conf/icfem/WoodcockH02},
@@ -42,7 +42,7 @@ The approach we adopt is to adopt the notion of \emph{label generators}
 to create the labels, so ensuring they are unique,
 but in such a way as make the generation a compositional process.
 In addition we explicitly associate two labels with every program construct:
-one that marks the entry into/start of the construct,
+one that marks the entry into the construct,
 and another that indicates the exit.
 
 \subsubsection{On Notation}
@@ -320,6 +320,8 @@ We often omit the $s$ subscript when its use is clear from context.
 
 \subsection{Healthiness Conditions}
 
+\subsubsection{Disjoint Lables}
+
 We have a general healthiness condition (Disjoint Labels) which asserts
 that the labels associated with $in$, $out$ and $g$
 are different:
@@ -437,6 +439,7 @@ on state.
    ii     &\defs& s'=s
 \\ \cskip &\defs& \catom{ii}  &\elabel{sem:skip}
 \\  &=&  [in|out] \land (\Skip \lor A(in|ii|out))
+    &\elabel{nf-skip}
 }
 
 \newpage
@@ -536,6 +539,46 @@ on state.
 }
 
 \includegraphics{images/iteration-actual}
+
+\newpage
+\subsection{Essential Properties?}
+
+Looking forward we will want some key algebraic properties:
+\RLEQNS{
+   ~[S_1|\dots|S_n]
+   &=&
+   [S_{\rho(1)}|\dots|S_{\rho(n)}]
+\\ && \rho \textrm{ a permutation of } 1\dots n
+\\ ~[S_1|\dots|S_i|S_{i+1}|\dots|S_n]
+   &\implies&
+   [S_1|\dots|S_i]
+   ,\quad i > 1 &\elabel{I-subsumption}
+\\ ~[S_1|\dots|S_n]\gamma &=& [S_1\gamma|\dots|S_n\gamma]
+   & \elabel{I-gamma-subst}
+\\ A(E|a|N)\gamma &=& A(E\gamma|a|N\gamma)
+\\ A(E|a|N) \textbf{ sat } I
+   &=&
+   A(E|a|N)\gamma \textbf{ sat } I\gamma
+   , \quad \mbox{arbitrary }\gamma
+\\ ((ls\setminus R)\cup A)(S)
+   &=&
+   ls(F(R,A,S)) \land P(R,A,S)
+\\ \Skip \seq P &=~P~=& P \seq \Skip
+\\ (P\seq Q)\gamma &=& P\gamma \seq Q\gamma
+\\ \Skip\gamma &=& \Skip
+\\ \DL(P) && \textrm{monotonic in } P
+\\ \DL(\DL(P)) &=& \DL(P)
+\\ \DL(P\gamma) &=& P\gamma
+\\ \W(P)  && \textrm{monotonic in } P
+\\ \W(\W(P)) &=& \W(P) & ?
+\\ \W(\W(\Skip \lor P)) &=& \W(\Skip \lor P)
+\\ \W(\Skip \lor P) &=& \bigvee_{i \in 0,\dots} \Skip \seq P^i
+   & \elabel{W-as-NDC}
+\\ \W(P)\gamma &=& \W(P\gamma) & \elabel{W-gamma-subst}
+\\ \W(\Skip \lor P) &=& \Skip \lor \W(\Skip \lor P)
+\\ I \land \W(P) &=& \W(I \land P) & \elabel{I-W-distr}
+}
+
 
 \newpage
 \subsection{Miscellaneous}

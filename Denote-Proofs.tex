@@ -1,0 +1,159 @@
+\section{Denotation Proofs}\label{sec:proofs}
+
+For now we take each law and expand lhs and rhs as far as is practical.
+
+
+\subsection{Proof of Law ;;-l-unit}
+\RLEQNS{
+   \cskip \cseq P &=& P & \eref{;;-l-unit}
+}
+LHS:
+\RLEQNS{
+  && \cskip \cseq P
+\EQ{\eref{sem:seq},\eref{nf-skip}}
+\\&& [in|\ell_g|out]
+     \land
+     \W(~
+         ([in|out] \land (\Skip \lor A(in|ii|out)))[g_{:1},\ell_g/g,out]
+         \lor
+         P[g_{:2},\ell_g/g,in]
+     ~)
+\EQ{Substitution, \eref{I-gamma-subst},\eref{W-gamma-subst}}
+\\&& [in|\ell_g|out]
+     \land
+     \W(~
+         ([in|\ell_g] \land (\Skip \lor A(in|ii|\ell_g)))
+         \lor
+         P[g_{:2},\ell_g/g,in]
+     ~)
+\EQ{$\land$-$\lor$-distr, \eref{I-W-distr}}
+\\&&\W(~
+         [in|\ell_g|out] \land [in|\ell_g] \land \Skip
+\\&&\qquad \lor {}
+         [in|\ell_g|out] \land [in|\ell_g] \land A(in|ii|\ell_g)
+\\&&\qquad \lor {}
+         [in|\ell_g|out] \land P[g_{:2},\ell_g/g,in]
+     ~)
+\EQ{\eref{I-subsumption}}
+\\&&\W(~
+         [in|\ell_g|out] \land \Skip
+\\&&\qquad \lor {}
+         [in|\ell_g|out]  \land A(in|ii|\ell_g)
+\\&&\qquad \lor {}
+         [in|\ell_g|out] \land P[g_{:2},\ell_g/g,in]
+     ~)
+\EQ{$\land$-$\lor$-distr, \eref{I-W-distr}}
+\\&&[in|\ell_g|out]
+     \land
+     \W(~
+         \Skip
+         \lor
+         A(in|ii|\ell_g)
+         \lor
+         P[g_{:2},\ell_g/g,in]
+     ~)
+\EQ{\eref{W-as-NDC}}
+\\&&[in|\ell_g|out]
+     \land
+     \bigvee_{i \in 0,\dots}(~
+         \Skip
+         \seq (~
+         A(in|ii|\ell_g)
+         \lor
+         P[g_{:2},\ell_g/g,in]~)^i
+     ~)
+}
+
+\subsection{Proof of Law ;;-r-unit}
+\RLEQNS{
+   P \cseq \cskip &=& P & \eref{;;-r-unit}
+}
+LHS:
+\RLEQNS{
+  && P \cseq \cskip
+\EQ{careful look at LHS calculation for \ecite{;;-l-unit} above.}
+\\&&[in|\ell_g|out]
+     \land
+     \bigvee_{i \in 0,\dots}(~
+         \Skip
+         \seq
+         (~ P[g_{:1},\ell_g/g,out]
+         \lor
+         A(\ell_g|ii|out)~)^i
+     ~)
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P \cseq ( Q \cseq R) &=& ( P \cseq Q ) \cseq R & \eref{;;-assoc}
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P \parallel Q &=& Q \parallel P & \eref{||-comm}
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P \parallel ( Q \parallel R) &=& ( P \parallel Q ) \parallel R & \eref{||-assoc}
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P + Q &=& Q+P
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P + ( Q + R) &=& ( P + Q ) + R
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P + Q &\refinedby& P
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P \sqsubseteq Q &\equiv& (P + Q) = Q
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P^* &=& \cskip + P \cseq P^*
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P \dcond{true} Q &=& P & \eref{cond-true}
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P \dcond{false} Q &=& Q & \eref{cond-false}
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   (P_1 \dcond c P_2) \cseq P_3 &=& (P_1 \cseq P_3) \dcond c (P_2 \cseq P_3)
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   c \ddo P &=& (P \cseq c \ddo P) \dcond c \cskip & \eref{wdo-unroll}
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P_1 \cseq (P_2 \parallel P_3) &\sqsubseteq& (P_1 \cseq P_2) \parallel P_3
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P_1 \cseq P_2 &\sqsubseteq& P_1 \parallel P_2
+}
+
+\subsection{Proof of Law XXX}
+\RLEQNS{
+   P_1 \dcond{c_1 \land c_2} P_2 &\sqsubseteq& (P_1 \dcond{c_2} P_2) \dcond{c_1} P_2
+}
