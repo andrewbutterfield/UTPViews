@@ -320,7 +320,7 @@ We often omit the $s$ subscript when its use is clear from context.
 
 \subsection{Healthiness Conditions}
 
-\subsubsection{Disjoint Lables}
+\subsubsection{Disjoint Labels}
 
 We have a general healthiness condition (Disjoint Labels) which asserts
 that the labels associated with $in$, $out$ and $g$
@@ -381,6 +381,15 @@ However, using $\W$ results in a slight variation,
 which is composable!
 What turns out to be crucial
 to this outcome is the explicit stuttering option in the infinite loop.
+
+\subsubsection{Mumble Closure}
+
+A program's semantics includes all its mumblings,
+and so should be unchanged if sequentially composed with itself
+using \emph{UTP} sequential composition:
+\RLEQNS{
+   P \seq P &=& P  & \eref{mumble-closure}
+}
 
 \subsection{UTP Denotational Semantics}
 
