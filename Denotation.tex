@@ -564,7 +564,7 @@ Looking forward we will want some key algebraic properties:
    &=&
    ls(F(R,A,S)) \land P(R,A,S)
 \\ \Skip \seq P &=~P~=& P \seq \Skip
-\\ (P\seq Q)\gamma &=& P\gamma \seq Q\gamma
+\\ (P\seq Q)\gamma &=& P\gamma \seq Q\gamma  & \elabel{seq-gnd-distr}
 \\ \Skip\gamma &=& \Skip
 \\ \DL(P) && \textrm{monotonic in } P
 \\ \DL(\DL(P)) &=& \DL(P)
@@ -578,6 +578,30 @@ Looking forward we will want some key algebraic properties:
 \\ \W(\Skip \lor P) &=& \Skip \lor \W(\Skip \lor P)
 \\ I \land \W(P) &=& \W(I \land P) & \elabel{I-W-distr}
 }
+
+When $P\gamma$ executes:
+\begin{description}
+  \item[\elabel{P-removes-in}]
+    it will remove $in\gamma$ from $ls$ at some point;
+  \item[\elabel{P-removes-g}]
+    the only other labels it removes are in $labs(g\gamma)$;
+  \item[\elabel{P-adds-out}]
+    it adds $out\gamma$ into $ls$ at some point;
+  \item[\elabel{P-adds-g}]
+    the only other labels it adds are in $labs(g\gamma)$;
+  \item[\elabel{P-ignores-rest}]
+    and its behaviour is not affected by any label not
+    in
+    \\$\setof{in\gamma,out\gamma} \cup labs(g\gamma)$.
+\end{description}
+We can summarise this as follows:
+\begin{itemize}
+  \item $P\gamma$ actions are enabled by labels in $in\gamma,g\gamma$
+  \item $P\gamma$ actions enable actions enabled by $g\gamma,out\gamma$
+  \item Remember that the following invariant holds: $[in\gamma|g\gamma|out\gamma]$
+\end{itemize}
+
+
 
 
 \newpage

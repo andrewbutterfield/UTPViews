@@ -243,8 +243,34 @@ We can also identify a pattern based on number of $a$s performed:
 
 \RLEQNS{
    X(E|a|R|A)\gamma &=& X(E\gamma|a|R\gamma|A\gamma)
+   & \elabel{X-gnd-subs}
+\\ (\bigvee_n X_n)^2
+   &=& \bigvee_{n_1,n_2} X_{n_1} \seq X_{n_2}
+   & \elabel{NF-squared}
+\\ (\bigvee_p Y_p \lor \bigvee_q Z_q)^2
+     &=& \bigvee_{p_1,p_2}  (Y_{p_1} \seq Y_{p_2})
+\\&\lor& \bigvee_{q_1,q_2}  (Z_{q_1} \seq Z_{q_2})
+\\&\lor& \bigvee_{p,q}  (Y_p \seq Z_q)
+\\&\lor& \bigvee_{q,p}  (Z_q \seq Y_p)
+  & \elabel{NF+NF-squared}
+\\ &=& \bigvee_r X_r,\textrm{ for appropriate } r
+  & \elabel{NF-squared-alt}
+\\ (\bigvee_p Y_p \lor \bigvee_q Z_q)^n
+     &=& \bigvee_r X_r,\textrm{ for appropriate } r
+  & \elabel{NF-powered}
+\\ \W(\Skip \lor \bigvee_p Y_p \lor \bigvee_q Z_q)
+     &=& \bigvee_r X_r,\textrm{ for appropriate } r
+  & \elabel{W-of-NDC-is-NF}
 }
 Add in X-then-X and related properties.
+
+Nice to have:
+the combined invariants ensure that the normal form
+has the form:
+\[
+  P = \bigvee_n A(E_n|a_n|N+n)  \qquad \elabel{NF-only-As}
+\]
+Is this the case?
 
 \newpage
 \subsection{Miscellaneous}

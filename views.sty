@@ -119,13 +119,13 @@
 \def\B#1{\overline{#1}}
 
 % proof/calculation stuff
-\def\say#1{\textrm{``#1''}}
+\def\say#1{\textrm{~~#1}}
 \def\EQ#1{\\&=&\rule[-6pt]{0pt}{17pt}\say{#1}}
 \def\EOLC#1{\textrm{ --- ``#1''}}
 
 \def\llawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\langle\!\langle\cdot}$}}}
 \def\rlawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\cdot\rangle\!\rangle}$}}}
-\def\mkelabel#1{\textsf{\llawnamebr{#1}\rlawnamebr}}
+\def\mkelabel#1{\textsf{\llawnamebr{{\footnotesize{#1}}}\rlawnamebr}}
 \def\elab#1#2{\mkelabel{#1}\label{#2}}
 \def\elabel#1{\elab{#1}{#1}}
 \def\ecite#1{\mkelabel{#1}}
