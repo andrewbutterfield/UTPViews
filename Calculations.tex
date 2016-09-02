@@ -272,6 +272,19 @@ has the form:
 \]
 Is this the case?
 
+\subsubsection{STOP PRESS! $P^2=P$ ?}
+
+The semantics of a program $P$
+contains a stuttering step $\Skip$,
+all the single atomic actions $A(\dots)$,
+and all the feasible mumblings
+$X(\dots) = A(\dots) \seq A(\dots) \seq \dots \seq A(\dots)$.
+Calculations for law $\cskip\cseq P = P$ suggest the following conjecture:
+\begin{center}
+\fbox{$\large P \seq P = P \qquad \elabel{mumble-closure}$}
+\end{center}
+This is because combining elements of $P$ with each other results
+in either infeasibility, or some other already present mumble.
 \newpage
 \subsection{Miscellaneous}
 

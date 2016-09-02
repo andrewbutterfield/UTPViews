@@ -1,0 +1,37 @@
+\section{Calculation Proofs}\label{sec:calc-proofs}
+
+\subsection{Proof of mumble-closure}
+
+\RLEQNS{
+  && P \seq P
+\EQ{\eref{NF-as-NDC}, $n \in N$}
+\\&& (\bigvee_n X_n) \seq (\bigvee_n X_n)
+\EQ{$\seq$-$\lor$-distr, $m,n \in N$}
+\\&& \bigvee_{m,n}  (X_m \seq X_n)
+\EQ{let $m',n' \in N\setminus\setof{n_0}$}
+\\&&\bigvee_{m'}  (X_{m'} \seq X_{n_0})
+    \lor
+    \bigvee_{n'}  (X_{n_0} \seq X_{n'})
+    \lor
+    \bigvee_{m',n'}  (X_{m'} \seq X_{n'})
+\EQ{by convention, $X_{n_0}=\Skip$}
+\\&& \bigvee_{m'}  (X_{m'} \seq \Skip)
+     \lor
+     \bigvee_{n'} (\Skip \seq X_{n'})
+     \lor
+     \bigvee_{m',n'}  (X_{m'} \seq X_{n'})
+     \EQ{$X\seq\Skip = X = \Skip\seq X$}
+\\&& \bigvee_{m'} X_{m'}
+     \lor
+     \bigvee_{n'} X_{n'}
+     \lor
+     \bigvee_{m',n'}  (X_{m'} \seq X_{n'})
+\EQ{simplify}
+\\&& P \lor \bigvee_{m',n'}  (X_{m'} \seq X_{n'})
+}
+What we need to show is that every term $X_{m'} \seq X_{n'}$
+either:
+\begin{itemize}
+  \item vanishes (infeasible), or:
+  \item coincides with $X_p$ for some $p \in N$.
+\end{itemize}
