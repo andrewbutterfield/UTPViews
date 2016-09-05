@@ -70,7 +70,55 @@ LHS:
          \lor
          (\bigvee_p X_p\gamma)~)^i
      )
+\EQ{Lemma 0 below}
+\\&&[in|\ell_g|out]
+     \land
+     (\Skip
+       \lor A(in|ii|\ell_g)
+       \lor (\bigvee_p X_p\gamma)
+       \lor (\bigvee_m X_m)
+     )
+\\&& \textbf{where } E_m = \setof{in}
+\EQ{$\land$-$\lor$-distr}
+\\&& [in|\ell_g|out]\land\Skip
+\\&\lor& [in|\ell_g|out] \land A(in|ii|\ell_g)
+\\&\lor& (\bigvee_p [in|\ell_g|out] \land X_p\gamma)
+\\&\lor& (\bigvee_m [in|\ell_g|out] \land X_m)
+\\&& \textbf{where } E_m = \setof{in}
 }
+We now apply $\HL$ to both sides.
+
+LhS:
+\RLEQNS{
+  && \HL(\cskip \cseq P)
+\EQ{result above, \eref{HL-or-distr}}
+\\&& \HL([in|\ell_g|out]\land\Skip)
+\\&\lor& \HL([in|\ell_g|out] \land A(in|ii|\ell_g))
+\\&\lor& (\bigvee_p \HL([in|\ell_g|out] \land X_p\gamma))
+\\&\lor& (\bigvee_m \HL([in|\ell_g|out] \land X_m))
+\\&& \textbf{where } E_m = \setof{in}
+\EQ{various \ecite{HL-I-and-...} laws}
+\\&& ii
+\\&\lor& ii
+\\&\lor& (\bigvee_p a_p)
+\\&\lor& (\bigvee_m a_m)
+\\&& \textbf{where } E_m = \setof{in}
+\EQ{Simplify, noting every $m$ is a $p$}
+\\&& ii
+\\&\lor& (\bigvee_p a_p)
+}
+
+RHS:
+\RLEQNS{
+  && \HL(P)
+\EQ{\eref{UTCP-NF},etc.,\eref{HL-or-distr}}
+\\&& \HL(\Skip) \lor \bigvee_p \HL(X_p))
+\EQ{various \ecite{HL-I-and-...} laws}
+\\&& ii \lor (\bigvee_p a_p)
+}
+QED
+
+\subsubsection{Lemma 0}
 Now we break out to explore the sequencing, starting with $i=2$,
 and noting that the invariant is $[in|\ell_g|out]$
 \RLEQNS{
@@ -89,10 +137,59 @@ and noting that the invariant is $[in|\ell_g|out]$
 \\&\lor&  \bigvee_p(A(in|ii|\ell_g) \seq X_p\gamma)
 \EQ{Lemma 2 below}
 \\    &&  \bigvee_{p_1,p_2}(X_{p_1}\gamma \seq X_{p_2}\gamma)
-\\&\lor&  \bigvee_p X_p, \textbf{ where } E_p = in
-\EQ{\eref{NF-squared}}
-\\&& (\bigvee_p X_p)^2 \lor \bigvee_r X_r, \textbf{ where } E_r = in
+\\&\lor&  \bigvee_p X_p, \textbf{ where } E_p = \setof{in}
+\EQ{\eref{NF-squared},\eref{seq-gnd-distr},re-index}
+\\&& (\bigvee_p X_p)^2\gamma \lor \bigvee_m X_m,
+     \textbf{ where } E_m = \setof{in}
+\EQ{\eref{UTCP-NF},\eref{seq-gnd-distr}}
+\\&& P^2\gamma \lor \bigvee_m X_m, \textbf{ where } E_m = \setof{in}
+\EQ{\eref{mumble-closure}}
+\\&& P\gamma \lor \bigvee_m X_m, \textbf{ where } E_m = \setof{in}
 }
+So, we have demonstrated that
+\[
+ (A(in|ii|\ell_g) \lor P\gamma)^2
+ =
+ P\gamma \lor \bigvee_m X_m, \textbf{ where } E_m = \setof{in}
+\]
+We shall introduce the following shorthand:
+\[
+  M = \bigvee_m X_m, \textbf{ where } E_m = \setof{in}
+\]
+
+\RLEQNS{
+  && (A(in|ii|\ell_g) \lor P\gamma)^3
+\EQ{prev result}
+\\&& (A(in|ii|\ell_g) \lor P\gamma)\seq (P\gamma \lor M)
+\EQ{$\lor$-$\seq$-distr}
+\\&& A(in|ii|\ell_g) \seq P\gamma
+     \lor A(in|ii|\ell_g) \seq M
+     \lor P\gamma\seq P\gamma
+     \lor P\gamma \seq M
+\EQ{$\lor$-$\seq$-distr}
+\\&& A(in|ii|\ell_g) \seq P\gamma
+     \lor A(in|ii|\ell_g) \seq M
+     \lor P\gamma\seq P\gamma
+     \lor P\gamma \seq M
+\EQ{Lemma 2}
+\\&& M
+     \lor A(in|ii|\ell_g) \seq M
+     \lor P\gamma\seq P\gamma
+     \lor P\gamma \seq M
+\EQ{$E_m = \setof{in}$, so $A$ diables all $X_m$}
+\\&& M
+     \lor P\gamma\seq P\gamma
+     \lor P\gamma \seq M
+\EQ{$P\gamma$ adds in labels in $\g{:2},out$, so never enables $M$}
+\\&& M
+     \lor P\gamma\seq P\gamma
+\EQ{\eref{mumble-closure},\eref{seq-gnd-distr}}
+\\&& M \lor P\gamma
+}
+So we have demonstrated that
+\[
+  (A(in|ii|\ell_g) \lor P\gamma)^i = p\gamma \lor M, \quad i \geq 2
+\]
 
 \subsubsection{Lemma 1}
 
