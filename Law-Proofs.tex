@@ -256,25 +256,117 @@ So we have demonstrated that
 \RLEQNS{
    P \cseq \cskip &=& P & \eref{;;-r-unit}
 }
-LHS:
-\RLEQNS{
-  && P \cseq \cskip
-\EQ{careful look at LHS calculation for \ecite{;;-l-unit} above.}
-\\&&[in|\ell_g|out]
-     \land
-     (\Skip \lor
-        \bigvee_{i \in 0,\dots}(~
-          P[g_{:1},\ell_g/g,out]
-         \lor
-         A(\ell_g|ii|out)~)^i
-     )
-}
+The proof of this will be very similar to that
+of \eref{;;-l-unit} above,
+except that we need to reason about
+$X_p\gamma \seq A(\ell_{g}|ii|out)$ instead.
 
-\subsection{Proof of Law XXX}
+\newpage
+\subsection{Proof of Law ;;-assoc}
 \RLEQNS{
    P \cseq ( Q \cseq R) &=& ( P \cseq Q ) \cseq R & \eref{;;-assoc}
 }
+We have the following normal forms and shorthands
+\RLEQNS{
+   P &=& \bigvee_p S_p
+\\ Q &=& \bigvee_q T_q
+\\ R &=& \bigvee_r U_r
+\\ \gamma_1 &=& [\g{:1},\ell_g/g,out]
+\\ \gamma_2 &=& [\g{:2},\ell_g/g,in]
+\\ \gamma_{11} &=& [\g{:1:1},\ell_{g:1}/g,out]
+\\ \gamma_{12} &=& [\g{:2:1},\ell_{g:2}/g,out]
+\\ \gamma_{21} &=& [\g{:1:2},\ell_{g:1}/g,in]
+\\ \gamma_{22} &=& [\g{:2:2},\ell_{g:2}/g,in]
+\\ I &=& [in|\ell_g|out]
+\\ I_1 &=& [in|\ell_{g:1}|\ell_g]
+\\ I_2 &=& [\ell_g|\ell_{g:2}|out]
+}
 
+LHS:
+\RLEQNS{
+  && P \cseq ( Q \cseq R)
+\EQ{\eref{sem:seq}}
+\\&& I \land \W(P\gamma_1 \lor (I \land \W(Q\gamma_1 \lor R\gamma_2))\gamma_2)
+\EQ{\eref{W-gamma-subst},etc..}
+\\&& I \land \W(P\gamma_1
+     \lor (I\gamma_2 \land \W(Q\gamma_{12} \lor R\gamma_{22})))
+}
+
+RHS:
+\RLEQNS{
+  && (P \cseq  Q) \cseq R
+\EQ{\eref{sem:seq}}
+\\&& I \land \W((I \land \W(P\gamma_1 \lor Q\gamma_2))\gamma_1 \lor R\gamma_2))
+\EQ{\eref{W-gamma-subst},etc..}
+\\&& I \land \W(I\gamma_1 \land \W(P\gamma_{11} \lor Q\gamma_{21}) \lor R\gamma_2))
+}
+
+\subsubsection{Lemma 1}
+
+It looks like we should explore $P \cseq Q$ in the first instance.
+\RLEQNS{
+  && P \cseq Q
+\EQ{\eref{sem:seq}}
+\\&& I \land \W(P\gamma_1 \lor Q\gamma_2)
+\EQ{\eref{W-as-NDC}}
+\\&& I \land \bigvee_{i \in \Nat} (P\gamma_1 \lor Q\gamma_2)^i
+}
+Ok, let's try squaring, keeping in mind that $I$ holds:
+\RLEQNS{
+  && (P\gamma_1 \lor Q\gamma_2)^2
+\EQ{$\lor$-$\seq$-distr}
+\\&& (P\gamma_1)^2
+     \lor
+     P\gamma_1\seq Q\gamma_2
+     \lor
+     Q\gamma_2\seq P\gamma_1
+     \lor
+     (Q\gamma_2)^2
+\EQ{\eref{mumble-closure}}
+\\&& P\gamma_1
+     \lor
+     P\gamma_1\seq Q\gamma_2
+     \lor
+     Q\gamma_2\seq P\gamma_1
+     \lor
+     Q\gamma_2
+\EQ{\eref{Lemma 2}}
+\\&& P\gamma_1
+     \lor
+     P\gamma_1\seq Q\gamma_2
+     \lor
+     Q\gamma_2
+}
+
+
+\subsubsection{Lemma 2}
+
+We show that $Q\gamma_2\seq P\gamma_1$ vanishes.
+
+We note that we have the following instances of $\DL$:
+\[
+  [in|g|out] \qquad [in|\g{:1}|\ell_g] \qquad [\ell_g|\g{:2}|out]
+\]
+\RLEQNS{
+  && Q\gamma_2\seq P\gamma_1
+\EQ{normal forms}
+\\&& (\bigvee_q T_q\gamma_2) \seq (\bigvee_p S_p\gamma_1)
+\EQ{$\seq$-$\lor$-distr}
+\\&& \bigvee_{q,p} T_q\gamma_2 \seq S_p\gamma_1)
+}
+The $T_q\gamma_1$ enable $\g{:2}$ and $out$,
+while the $S_p\gamma_1$ are enabled by $in$ and $\g{:1}$.
+So all of these terms reduce to $\false.$
+
+
+\subsubsection{Lemma 3}
+
+Looking at $P\gamma_1 \seq Q\gamma_2$.
+
+
+
+
+\newpage
 \subsection{Proof of Law XXX}
 \RLEQNS{
    P \parallel Q &=& Q \parallel P & \eref{||-comm}
