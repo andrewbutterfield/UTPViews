@@ -1,5 +1,143 @@
 \section{Calculation Proofs}\label{sec:calc-proofs}
 
+We present the calculations of normal form examples here.
+
+\subsection{Normal Forms: Sequential Composition}
+
+\subsubsection{Atomic Components}
+
+\subsubsection{Generic Components}
+
+\RLEQNS{
+  && P \cseq Q
+\EQ{\eref{sem:seq}, with $\DL$}
+\\&& [in|\ell_g|out]
+     \land \setof{in|g|out}
+     \land
+     \W( P[\g{:1},\ell_g/g,out]
+         \lor
+         Q[\g{:2},\ell_g/g,in]   )
+}
+Shorthands:
+We have the following normal forms and shorthands
+\RLEQNS{
+   P &=& \bigvee_p S_p
+\\ Q &=& \bigvee_q T_q
+\\ \gamma_1 &=& [\g{:1},\ell_g/g,out]
+\\ \gamma_2 &=& [\g{:2},\ell_g/g,in]
+\\ I &=& [in|\ell_g|out]
+\\ D &=& \{in|g|out\}
+\\ D_1 &=& \{in|\g{:1}|\ell_g\}
+\\ D_2 &=& \{\ell_g|\g{:2}|out\}
+}
+So, we shall park the invariants ($I$) and disjointness ($D$) for now,
+and focus on $P$ and $Q$ with $\W$.
+\RLEQNS{
+  && \W( P\gamma_1 \lor Q\gamma_2 )
+\EQ{\eref{W-as-NDC}}
+\\&& \bigvee_{i \in \Nat} (P\gamma_1 \lor Q\gamma_2)^i
+}
+Ok, let's try squaring, keeping in mind that we have $I$, $D$, $D_1$
+and $D_2$ holding as well.
+\RLEQNS{
+  && (P\gamma_1 \lor Q\gamma_2)^2
+\EQ{$\lor$-$\seq$-distr}
+\\&& (P\gamma_1)^2
+     \lor
+     P\gamma_1\seq Q\gamma_2
+     \lor
+     Q\gamma_2\seq P\gamma_1
+     \lor
+     (Q\gamma_2)^2
+\EQ{\eref{mumble-closure}}
+\\&& P\gamma_1
+     \lor
+     P\gamma_1\seq Q\gamma_2
+     \lor
+     Q\gamma_2\seq P\gamma_1
+     \lor
+     Q\gamma_2
+\EQ{Lemma A}
+\\&& P\gamma_1
+     \lor
+     P\gamma_1\seq Q\gamma_2
+     \lor
+     Q\gamma_2
+\EQ{Lemma B}
+\\&& P\gamma_1
+     \lor
+     P\gamma_1\seq Q\gamma_2
+     \lor
+     Q\gamma_2
+}
+
+
+\paragraph{Lemma A}
+We show that $Q\gamma_2\seq P\gamma_1$ vanishes.
+
+We note that we have the following instances of $\DL$:
+\[
+  [in|g|out] \qquad [in|\g{:1}|\ell_g] \qquad [\ell_g|\g{:2}|out]
+\]
+\RLEQNS{
+  && Q\gamma_2\seq P\gamma_1
+\EQ{normal forms}
+\\&& (\bigvee_q T_q\gamma_2) \seq (\bigvee_p S_p\gamma_1)
+\EQ{$\seq$-$\lor$-distr}
+\\&& \bigvee_{q,p} (T_q\gamma_2 \seq S_p\gamma_1)
+}
+The $T_q\gamma_1$ enable $\g{:2}$ and $out$,
+while the $S_p\gamma_1$ are enabled by $in$ and $\g{:1}$.
+So all of these terms reduce to $\false.$
+
+\paragraph{Lemma B}
+We show that $P\gamma_1 \seq Q\gamma_2$
+is all the mumblings that cross from $P$ to $Q$.
+\RLEQNS{
+  && P\gamma_1\seq Q\gamma_2
+\EQ{normal forms}
+\\&& (\bigvee_p S_p\gamma_1) \seq (\bigvee_q T_q\gamma_2)
+\EQ{$\seq$-$\lor$-distr}
+\\&& \bigvee_{p,q}(S_p\gamma_1  \seq  T_q\gamma_2)
+\EQ{$X$-composability}
+\\&& \bigvee_{p,q}(S_p\gamma_1  \seq  T_q\gamma_2)
+\\&& \textbf{where } A_p = \setof{out} \land E_q = \setof{in}
+}
+
+
+
+\subsection{Normal Forms: Parallel Composition}
+
+\subsubsection{Atomic Components}
+
+\subsubsection{Generic Components}
+
+\subsection{Normal Forms: Non-deterministic Choice}
+
+\subsubsection{Atomic Components}
+
+\subsubsection{Generic Components}
+
+\subsection{Normal Forms: Non-deterministic Iteration}
+
+\subsubsection{Atomic Components}
+
+\subsubsection{Generic Components}
+
+\subsection{Proof of mumble-closure}
+
+\subsection{Normal Forms: Conditional Choice}
+
+\subsubsection{Atomic Components}
+
+\subsubsection{Generic Components}
+
+\subsection{Normal Forms: Conditional Iteration}
+
+\subsubsection{Atomic Components}
+
+\subsubsection{Generic Components}
+
 \subsection{Proof of mumble-closure}
 
 \RLEQNS{

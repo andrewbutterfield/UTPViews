@@ -133,8 +133,10 @@ and $\Skip$ is a unit for it as well.
 \subsection{Normal Form Results for Atomic components}
 
 We now present the results of calculations of normal forms for every language
-construct, given atomic sub-components.
-For ease of reading,
+construct, given atomic sub-components,
+and the generic case.
+
+For ease of reading in the former,
 we display the invariant $I$ on the first line,
 followed by the list of $A(\dots)$ disjuncts, perhaps several on a line,
 as follows
@@ -148,6 +150,8 @@ with all the mumblings on lower lines.
 Here we also just write $a$ instead of $\catom a$,
 for brevity.
 
+In the latter generic case we  \emph{\dots to be determined \dots}
+
 \subsubsection{Atomic Actions}
 \RLEQNS{
    a &=& [in|out]
@@ -158,12 +162,23 @@ for brevity.
 }
 
 \subsubsection{Sequential Composition}
+
+With atomic components:
 \RLEQNS{
    a \cseq b
    &=& [in|\ell_g|out]
 \\ && A(in|a|\ell_g)\quad  A(\ell_g|b|out)
 \\ && A(in|a\seq b|out)
 }
+
+With generic components:
+\RLEQNS{
+   P \cseq Q
+   &=& [in|\ell_g|out]
+\\ && A(in|a|\ell_g)\quad  A(\ell_g|b|out)
+\\ && A(in|a\seq b|out)
+}
+
 
 \subsubsection{Non-deterministic Choice}
 \RLEQNS{
@@ -174,6 +189,7 @@ for brevity.
        A(\ell_{g1}|a|out) \quad A(\ell_{g2}|b|out)
 \\&& A(in|a|out) \quad A(in|b|out)
 }
+
 
 \subsubsection{Parallel Composition}
 Here $\#n$ denotes mumblings of length $n$.
