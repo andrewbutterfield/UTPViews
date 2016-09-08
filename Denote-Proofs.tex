@@ -1,3 +1,77 @@
 \section{Denotation Proofs}\label{sec:denote-proofs}
 
-TBC
+\subsection{Proof of atom-inv-ok}
+
+\RLEQNS{
+   [in|out]\gamma \land A(in|a|out)\gamma &\implies& [in|out]'\gamma
+   & \ecite{atom-inv-ok}
+}
+We shall expand the definitions
+\RLEQNS{
+   \left(\begin{array}{c}
+     ls(in) \land a \land ls'=(ls\setminus in\cup out)
+  \\\land
+  \\ (ls(in)\implies \lnot ls(out))
+  \\\land
+  \\(ls(out)\implies \lnot ls(in))
+  \end{array}\right)
+  &\implies&
+  \left(\begin{array}{c}
+     (ls'(in)\implies \lnot ls'(out))
+  \\\land
+  \\(ls'(out)\implies \lnot ls'(in))
+  \end{array}\right)
+}
+We note that $(A \implies \lnot B) \land (B \implies \lnot A)$
+is equivalent to $(\lnot A \lor \lnot B)$
+\RLEQNS{
+   \left(\begin{array}{c}
+     ls(in) \land a \land ls'=(ls\setminus in\cup out)
+  \\\land
+  \\ (\lnot  ls(in) \lor  \lnot ls(out))
+  \end{array}\right)
+  &\implies&
+  (\lnot ls'(in) \lor \lnot ls'(out))
+}
+We now point out that the antecedent is $\false$ if $ls(in)$
+is not true, so we assume $ls(in)$ and simplify:
+\RLEQNS{
+   \left(\begin{array}{c}
+     a \land ls'=(ls\setminus in\cup out)
+  \\\land
+  \\ \lnot ls(out)
+  \end{array}\right)
+  &\implies&
+  (\lnot ls'(in) \lor \lnot ls'(out))
+}
+We now replace $ls'$ on the RHS with its value from the RHS:
+\RLEQNS{
+   \left(\begin{array}{c}
+     a \land ls'=(ls\setminus in\cup out)
+  \\\land
+  \\ \lnot ls(out)
+  \end{array}\right)
+  &\implies&
+  \left(\begin{array}{c}
+     \lnot ((ls\setminus in\cup out))(in)
+  \\ \lor
+  \\\lnot((ls\setminus in\cup out))(out)
+  \end{array}\right)
+}
+Set theory
+\RLEQNS{
+   \left(\begin{array}{c}
+     a \land ls'=(ls\setminus in\cup out)
+  \\\land
+  \\ \lnot ls(out)
+  \end{array}\right)
+  &\implies&
+  \left(\begin{array}{c}
+     \lnot \false
+  \\ \lor
+  \\\lnot \true
+  \end{array}\right)
+}
+QED
+
+\textbf{WE REPEAT ABOVE WITH $\gamma$ TO DEMONSTRATE SUBSTITUTION INDEPENDENCE}

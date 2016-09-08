@@ -426,14 +426,19 @@ from the label-set, and adds in those in $N$.
 \newpage
 \subsubsection{Atomic Action}
 
+\includegraphics{images/atomic-action}
 \RLEQNS{
   \catom a
-  &\defs& [in|out] \land \W(\Skip \lor A(in|a|out)) & \elabel{sem:atomic}
+  &\defs& \DL(\W(\Skip \lor A(in|a|out))) & \elabel{sem:atomic}
 \\ &=&  [in|out] \land (\Skip \lor A(in|a|out))
         & \elabel{nf-atomic}
 }
-\includegraphics{images/atomic-action}
 
+Invariant Preservation:
+\RLEQNS{
+   [in|out]\gamma \land A(in|a|out)\gamma &\implies& [in|out]'\gamma
+   & \elabel{atom-inv-ok}
+}
 
 \subsubsection{Guarded Atomic Action}
 In effect there is no real difference between $c \pgrd a$
@@ -459,13 +464,21 @@ on state.
 \newpage
 \subsubsection{Sequential Composition}
 
+\includegraphics{images/seq-comp-actual}
+
 \RLEQNS{
    P \cseq Q
    &\defs&
    [in|\ell_g|out]\land \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
    & \elabel{sem:seq}
 }
-\includegraphics{images/seq-comp-actual}
+
+If $A$ actions in $P$ and $Q$ preserve the invariant,
+then so does their composition.
+This is immediate by the ground/sound substitution independence
+of invariant preservation.
+
+
 
 \newpage
 \subsubsection{Parallel Composition}
@@ -557,6 +570,9 @@ on state.
 \newpage
 \subsection{Essential Properties?}
 
+The first key property is that every instance of $A$
+in the semantics preserves the invariant.
+
 Looking forward we will want some key algebraic properties:
 \RLEQNS{
    ~[S_1|\dots|S_n]
@@ -580,9 +596,6 @@ Looking forward we will want some key algebraic properties:
 \\ \Skip \seq P &=~P~=& P \seq \Skip
 \\ (P\seq Q)\gamma &=& P\gamma \seq Q\gamma  & \elabel{seq-gnd-distr}
 \\ \Skip\gamma &=& \Skip
-\\ \DL(P) && \textrm{monotonic in } P
-\\ \DL(\DL(P)) &=& \DL(P)
-\\ \DL(P\gamma) &=& P\gamma
 \\ \W(P)  && \textrm{monotonic in } P
 \\ \W(\W(P)) &=& \W(P) & ?
 \\ \W(\W(\Skip \lor P)) &=& \W(\Skip \lor P)
