@@ -60,8 +60,10 @@ We have a general healthiness condition (Disjoint Labels) which asserts
 that the labels associated with $in$, $out$ and $g$
 are different:
 \RLEQNS{
-  \DL(P) &=& P \land in \neq out \land \setof{in,out} \cap labs(g) = \emptyset
+  \DL(P) &=& P \land \setof{in|g|out}
 }
+This is just the Disjoint Labels invariant of \S\ref{sssec:disjoint-labels},
+reformulated as a healthiness condition.
 
 \subsubsection{Wheels-within-Wheels}
 
@@ -142,6 +144,24 @@ from the label-set, and adds in those in $N$.
 }
 
 
+We define what it means for an atomic action invocation
+to satisfy an invariant parameterised on the label type ($Lbl$).
+\RLEQNS{
+  ls \textbf{ lsat } I \land A(E|a|N) &\implies& ls' \textbf{ lsat } I
+}
+We can re-formulate this as a following equivalent test:
+\RLEQNS{
+   A(E|a|N) \textbf{ sat } I_{Lbl}
+   &\defs&
+   E \textbf{ lsat } I_{Lbl} \land N \textbf{ lsat } I_{Lbl}
+}
+
+\RLEQNS{
+   ls(\ell) &\defs& \ell \in ls
+\\ ls(L) &\defs& L \subseteq ls
+\\ ls(\B\ell) &\defs& \ell \notin ls
+\\ ls(\B L) &\defs& L \cap ls = \emptyset
+}
 
 
 \newpage
