@@ -44,24 +44,102 @@ but in such a way as make the generation a compositional process.
 In addition we explicitly associate two labels with every program construct:
 one that marks the entry into the construct,
 and another that indicates the exit.
+In our UTP theory we will introduce two static observation variables,
+$in$ and $out$ to record respectively the entry and exit labels
+for a given construct.
 
-\subsubsection{On Notation}
-
-We make liberal use of a number of shorthand notations,
-largely to reduce expression size and clutter.
-Typically these reduce the use of infix operators,
-and in one notable case, collapse large conjunctions
-of implications into a simple form with string visual cues.
-Each shorthand is introduced by a subsection similar to this one.
 
 \subsection{Label Generation}
 
-INTRODUCE
-
+We want to have a way to associate unique labels
+with every atomic action, including those added to manage flow of control,
+in a compositional manner.
+We start by assuming that we have types for labels,
+and label generators:
 \RLEQNS{
-   g &:& Gen = \setof g  & \mbox{only one variable!}
-\\ \ell &:& Gen \fun Lbl
-\\ G \in Gen &::=&  g     & \mbox{the ``root'' generator}
+   l &\in& Lbl
+\\ g &\in& Gen
+}
+We have two distinct things we can do with label generators:
+\begin{enumerate}
+  \item
+   Use it then generate a label,
+   in which case we also need to get a transformed generator
+   that is guaranteed to never produce the label just generated.
+   \RLEQNS{
+     new &:&  Gen \fun (Lbl \times Gen)
+     & \elabel{new-sig}
+   }
+  \item
+   Split generators into two new generators,
+   each of which will produce disjoint sets of labels.
+   \RLEQNS{
+     split &:& Gen \fun (Gen \times Gen)
+     & \elabel{split-sig}
+   }
+\end{enumerate}
+Given $new$ and $split$ above, we can defined a function $labs$ that
+returns all the labels produced by a generator,
+and express our label uniqueness guarantees.
+Assuming that $ (l,g') = new(g)$ and $(g_1,g_2) = split(g)$
+we get:
+\RLEQNS{
+   labs &:& Gen \fun \power Lbl & \elabel{labs-sig}
+\\ labs(g)
+   &\defs&
+   \setof l \cup labs(g')
+   \cup
+   labs(g_1) \cup labs(g_2) &\ecite{labs-def}
+\\ l &\notin& labs(g') &\ecite{new-disj}
+\\ labs(g_1) \cap labs(g_2) &=&  \emptyset & \ecite{split-disj}
+}
+
+Given the notion of label generators as just described,
+we are faced with two problems.
+The first is that the notation is quite clumsy:
+For example in the semantics to be presented below,
+we will need the following generator expression:
+$
+\pi_2(new(\pi_2(new(\pi_2(split(g))))))
+$,
+where $\pi_i$ projects out the $i$th element of a pair.
+The second is that our definitions above are axiomatic,
+and we need to demonstrate some form of model that satisfies
+the above laws (\ecite{new-disj},\ecite{split-disj}).
+Ideally this should also avoid some sort of global check for uniqueness,
+to ensure compositionality of the resulting semantics.
+
+Fortunately,
+it turns out there is a shorthand notation that dramatically shortens
+generator and label expressions,
+while also providing a compositional model that satisfies the laws above.
+
+\subsubsection{Generator Notation}
+
+The idea is to realise that we really have four functions of interest:
+\RLEQNS{
+   \pi_1 \circ new &:& Gen \fun Lbl
+\\ \pi_2 \circ new &:& Gen \fun Gen
+\\ \pi_1 \circ split &:& Gen \fun Gen
+\\ \pi_2 \circ split &:& Gen \fun Gen
+}
+For the first one, we shall define a prefix operator $\ell : Gen \fun Lbl$
+and render its generator argument as a subscript:
+\RLEQNS{
+  \ell_g &\defs& \pi_1(new(g)) & \elabel{ell-def}
+}
+
+For the other three, we turn them into single-character postfix operators,
+themselves being rendered as subscripts:
+\RLEQNS{
+   \g{:} &\defs& \pi_2 \circ new & \elabel{new-:-def}
+\\ \g1   &\defs& \pi_1 \circ split & \elabel{split-1-def}
+\\ \g2   &\defs& \pi_2 \circ split & \elabel{split-2-def}
+}
+We then introduce a notation of generator and label expressions
+with the following syntax:
+\RLEQNS{
+   G \in Gen &::=&  g     & \mbox{the ``root'' generator}
 \\           &\mid& G_{:} & \mbox{resulting generator after label produced}
 \\           &\mid& G_1   & \mbox{first generator after generator split}
 \\           &\mid& G_2   & \mbox{second generator after generator split}
@@ -69,25 +147,61 @@ INTRODUCE
 }
 Note that our generator expression language has only one variable, $g$,
 which denotes the ``root'' generator.
-All generator expressions have the form $g$ followed by zero
-or more uses of $:$, $1$ and $2$.
 We say the  ``root'' generator because this notion is local to a
 particular context, and we can relativise things by replacing $g$
-by an arbitrary $G$ expression.
-We define the notion of the set of labels produced by a generator,
-which must satisfy the following laws:
+by an appropriate $G$ expression.
+We can now revisit our definition of $labs$ and our disjointness rules
+with the new notation:
 \RLEQNS{
    labs &:& Gen \fun \power Lbl
 \\ labs(G) &=& \setof{\ell_G} \cup labs(G_{:}) \cup labs(G_1) \cup labs(G_2)
   &\elabel{labs-def}
 \\ \ell_G &\notin& labs(G_{:})
-   &\elabel{labs-unique}
+   &\elabel{new-disj}
 \\ \emptyset &=& labs(G_1) \cap labs(G_2)
-  &\elabel{labs-split-disjoint}
+  &\elabel{split-disj}
 }
-The conceptually simplest model of such a generator
-is one where labels are simply the strings of $:$, $1$ and $2$
-that designate how its generator was produced from the root.
+The our complicated example shown earlier:
+\[
+\pi_2(new(\pi_2(new(\pi_2(split(g))))))
+\]
+now reduces to
+\[
+  \g{2::}
+\]
+
+We can also introduce a graphical way to visualise
+generators that proves useful as a way to understand
+the semantic definitions that occur later on,
+as shown in Fig. \ref{fig:new-and-split}
+\begin{figure}%
+  \centering
+  \parbox{1.2in}{\includegraphics{images/new-label}}%
+  \qquad\qquad
+  \begin{minipage}{1.2in}%
+    \includegraphics{images/split-gen}
+  \end{minipage}%
+  \caption{Graphical renderings of $new$ (left) and $split$ (right)}%
+  \label{fig:new-and-split}%
+\end{figure}
+
+
+
+\subsubsection{Model for $new$ and $split$}
+
+The conceptually simplest model of such generators
+is one where labels produced are simply the strings of $:$, $1$ and $2$
+that designate how the generator was produced from the original root.
+For full clarity we show the model here using the full notation.
+Both generators and labels are now represented as sequences of the three symbols
+$:$, $1$ and $2$.
+\RLEQNS{
+  s \in LblSym &=& \setof{\texttt{:},\texttt{1},\texttt{2}}
+\\ g \in GenSym &=& LblSym^*
+\\ l \in Label &=& LblSym^*
+\\ new(g) &\defs&  (g,g \cat \seqof{\texttt{:}})
+\\ split(g) &\defs&  (g \cat \seqof{\texttt{1}},g \cat \seqof{\texttt{2}})
+}
 With this model we also get the following law:
 For any generator expression $G$,
 the following four sets are mutually disjoint:
@@ -102,10 +216,33 @@ the following four sets are mutually disjoint:
   \qquad
   \elabel{labs-fully-disjoint}
 \]
-
-\includegraphics{images/new-label}
-
-\includegraphics{images/split-gen}
+This is stronger than we require, but this is not a problem.
+We also get two very significant benefits from this model/notation:
+\begin{enumerate}
+  \item
+    It is very easy to decide if two generator expressions produce
+    disjoint labels.
+    This occurs if and only if neither of the sequences of postfix operators
+    involved are a prefix of the other.
+    Or put differently, a generator's labels are a subset of another's
+    iff its postfix sequence extends that of the other generator:
+    \RLEQNS{
+       labs(\g{\rho}) \subseteq labs(\g{\varrho}) &\equiv& \varrho \leq \rho
+       & \elabel{prefix-lab-subset}
+    }
+    where $\leq$ is the sequence prefix relation.
+  \item
+    We refer to $g$ as the ``root'' in double quotes,
+    because $g$ is not privileged in any way.
+    If we substitute a different expression $G$ for $g$
+    in the semantics of a construct,
+    the behaviour is unchanged.
+    In effect $g$ is like a ``base address'',
+    with all the labels generated from $g$ being relative to it,
+    and replacing $g$ by $G$ simply relocates it and the labels it generates.
+    This is the basic mechanism used to construct the semantics
+    of all the composite constructs in the language.
+\end{enumerate}
 
 
 \subsection{Label-Set Invariants}
