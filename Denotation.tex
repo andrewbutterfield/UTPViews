@@ -47,38 +47,57 @@ two classes of observations.
 
 \subsection{``Standard'' UTP Predicates}
 
-INTRODUCE
-
+Given a non-homogeneous alphabet,
+some care has to be taken to define standard notions
+from UTP theories, such as sequential composition ($\seq$),
+and its unit predicate Skip $\Skip$.
+The important thing here turns out to be that these concepts
+completely ignore the static parameters.
+So the definition of standard sequential composition
+defines a mid-point state based solely on $s$ and $ls$:
+\RLEQNS{
+   P \seq Q
+   &\defs& \exists s_m,ls_m \bullet
+\\ && \qquad P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
+   & \elabel{UTP-seq-def}
+}
+Similarly, $\Skip$, the behaviour that immediately terminates
+without changing any state, only refers to the dynamic observations:
+\RLEQNS{
+   \Skip
+   &\defs&
+   s'= s \land ls'=ls
+   & \elabel{UTP-skip-def}
+}
+It is easy to show that $\Skip$ is both a left- and right-unit for $\seq$.
+\RLEQNS{
+ \Skip \seq P &=~P~=& P \seq \Skip & \elabel{seq-unit}
+}
+Given the definitions above,
+then the definitions of UTP conditionals and iteration
+are quite standard.
 \RLEQNS{
    P \cond C Q
    &\defs&
    C \land P \lor \lnot C \land Q
    & \elabel{UTP-cond-def}
-\\ \Skip
-   &\defs&
-   s'= s \land ls'=ls
-   & \elabel{UTP-skip-def}
-\\ P \seq Q
-   &\defs& \exists s_m,ls_m \bullet
-\\ && \qquad P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
-   & \elabel{UTP-seq-def}
 \\ C * P
    &=&
    P ; C * P \cond C \Skip
    & \elabel{UTP-loop-unroll}
 }
-
-
+For iteration we juts present the loop unrolling law, as the most useful here.
 
 We also define a specialised form of sequential composition
 to be used when neither component refers to $ls$ or $ls'$,
-and its unit:
+and its unit $ii$:
 \RLEQNS{
    P \seq_s Q
    &\defs&
    \exists s_m \bullet P[s_m/s'] \land Q[s_m/s]
    & \elabel{UTP-s-seq-def}
 \\ ii &\defs& s'=s & \elabel{ii-def}
+\\ ii \seq_s a \quad=& a &=\quad a \seq_s ii & \elabel{seq-s-unit}
 }
 Note that if neither predicate mentions $ls$ or $ls'$
 then the effect of $\seq$ and $\seq_s$ is the same.
@@ -88,13 +107,111 @@ We often omit the $s$ subscript when its use is clear from context.
 
 We assume a general notion of expressions ($e$)
 and say that an expression $e$ is ``ground''
-if it's free variables are limited to only $g$, $in$ and $out$.
+if its free variables are limited to only $g$, $in$ and $out$.
+We say that a predicate is ground if all constituent expressions
+are ground.
+\RLEQNS{
+   isGnd(e) &\defs&  FV(e) \subseteq \setof{g,in,out}
+   & \elabel{gnd-expr-def}
+\\ isGnd(P) &\defs&  FV(P) \subseteq \setof{g,in,out}
+   & \elabel{gnd-pred-def}
+}
+This means that ground expressions in this setting can only
+define either generators, label-sets, or atomic predicates
+over these.
+Indeed, generator expressions are ground by construction,
+because the only variable they contain is precisely $g$.
+It also means that a ground expression can always be simplified
+to either a generator expression, enumerated label-set,
+and any ground predicate to either true (valid) or false (a contradiction).
 
-TALK IN HERE ABOUT GROUND SUBSTITUTIONS
+Substitution of expressions for free variables is
+an important mechanism used to construct and reason about
+UTP theories.
+We define a substitution as being ground if the expressions
+are all ground, and the target variables belong to $g$, $in$ and $out$.
+\RLEQNS{
+   isGnd[G,I,O/g,in,out] &\defs& isGnd(G) \land isGnd(I) \land isGnd(O)
+   &\elabel{gnd-subs-def}
+}
+where $G$ is a generator expression,
+and $I$ and $O$ are label-set expressions.
+In the sequel we shall always assume that $G$, $I$ and $O$
+stand for ground expressions, as here.
 
-\subsubsection{Sound Subtitutions}
+We shall use $\gamma$ to denote a ground substitution.
+\RLEQNS{
+  \gamma &=& [G,I,O/g,in,out] &\elabel{gamma-def}
+}
+The identity substitution can be written as a ground substitution:
+\RLEQNS{
+  \gamma_{id} &=& [g,in,out/g,in,out] & \elabel{gamma-id-def}
+}
 
-TALK ABOUT SOUND SUBSTITUTIONS
+The significance of ground substitutions
+is that they ignore UTP sequential composition,
+in that they distribute through them,
+and have no effect on Skip
+\RLEQNS{
+   (P\seq Q)\gamma &=& P\gamma \seq Q\gamma  & \elabel{seq-gnd-distr}
+\\ \Skip\gamma     &=& \Skip                 &\elabel{skip-gamma}
+}
+They also distribute nicely through our invariant shorthands
+\RLEQNS{
+   ~\{L_1|\dots|L_n\}\gamma &=& \{L_1\gamma|\dots|L_n\gamma\}
+   & \elabel{DL-gamma-subst}
+\\ ~[L_1|\dots|L_n]\gamma &=& [L_1\gamma|\dots|L_n\gamma]
+   & \elabel{LE-gamma-subst}
+}
+
+In addition, the set of all ground substitutions
+is closed under substitution composition.
+\RLEQNS{
+  \exists G,I,O
+  &@&
+  [G_1,I_1,O_1/g,in,out] [G_2,I_2,O_2/g,in,out]
+  =
+   [G,I,O/g,in,out]
+\\  && \elabel{gnd-sub-closure}
+}
+
+
+\subsubsection{Sound Substitutions}
+
+Unfortunately, there are ground substitutions
+that can break the unique label properties
+we have worked so hard to achieve with our label generators.
+A good example of this is $[g,\ell_g,\ell_g/g,in,out]$,
+which can transform an invariant respecting predicate $P$
+into one that violates that invariant in a strong way.
+
+A ground substitution $[G,I,O/g,in,out]$ is sound
+if the disjoint label invariant $\setof{I|G|O}$ is true.
+\RLEQNS{
+   isSound[G,I,O/g,in,out] &\defs& \setof{I|G|O}
+   & \elabel{sound-sub-def}
+}
+We shall use $\varsigma$ to denote a sound substitution
+\RLEQNS{
+   \varsigma &=& [G,I,O/g,in,out] \textbf{ where } \setof{I|G|O} &\elabel{vsigma-def}
+}
+Note that $\gamma_{id}$ is sound.
+
+All the substitutions explicitly given in the semantic rules below
+are sound.
+So it is particularly important that soundness is preserved by
+substitution composition
+\RLEQNS{
+   isSound(\varsigma_1)
+   \land
+   isSound(\varsigma_2)
+   &\implies&
+   isSound(\varsigma_1\varsigma_2)
+   & \elabel{sound-sub-closure}
+}
+
+
+
 
 \subsection{Healthiness Conditions}
 
@@ -360,17 +477,7 @@ in the semantics preserves the invariant.
 
 Looking forward we will want some key algebraic properties:
 \RLEQNS{
-   ~[S_1|\dots|S_n]
-   &=&
-   [S_{\rho(1)}|\dots|S_{\rho(n)}]
-\\ && \rho \textrm{ a permutation of } 1\dots n
-\\ ~[S_1|\dots|S_i|S_{i+1}|\dots|S_n]
-   &\implies&
-   [S_1|\dots|S_i]
-   ,\quad i > 1 &\elabel{I-subsumption}
-\\ ~[S_1|\dots|S_n]\gamma &=& [S_1\gamma|\dots|S_n\gamma]
-   & \elabel{I-gamma-subst}
-\\ A(E|a|N)\gamma &=& A(E\gamma|a|N\gamma)
+   A(E|a|N)\gamma &=& A(E\gamma|a|N\gamma)
 \\ A(E|a|N) \textbf{ sat } I
    &=&
    A(E|a|N)\gamma \textbf{ sat } I\gamma
@@ -378,9 +485,6 @@ Looking forward we will want some key algebraic properties:
 \\ ((ls\setminus R)\cup A)(S)
    &=&
    ls(F(R,A,S)) \land P(R,A,S)
-\\ \Skip \seq P &=~P~=& P \seq \Skip
-\\ (P\seq Q)\gamma &=& P\gamma \seq Q\gamma  & \elabel{seq-gnd-distr}
-\\ \Skip\gamma &=& \Skip
 \\ \W(P)  && \textrm{monotonic in } P
 \\ \W(\W(P)) &=& \W(P) & ?
 \\ \W(\W(\Skip \lor P)) &=& \W(\Skip \lor P)
@@ -390,6 +494,7 @@ Looking forward we will want some key algebraic properties:
 \\ \W(\Skip \lor P) &=& \Skip \lor \W(\Skip \lor P)
 \\ I \land \W(P) &=& \W(I \land P) & \elabel{I-W-distr}
 }
+
 
 When $P\gamma$ executes:
 \begin{description}

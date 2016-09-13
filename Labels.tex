@@ -226,10 +226,14 @@ the following four sets are mutually disjoint:
   \elabel{labs-fully-disjoint}
 \]
 This is stronger than we require, but this is not a problem.
-We also get two very significant benefits from this model/notation:
+We also get three very significant benefits from this model/notation:
 \begin{enumerate}
   \item
-    It is very easy to decide if two generator expressions produce
+    It is very easy to decide if two generator expressions
+    denote the same label---they do if and only if the expressions are the
+    same, which in shorthand terms means the label sequences are the same.
+  \item
+    It is almost as easy to decide if two generator expressions produce
     disjoint labels.
     This occurs if and only if neither of the sequences of postfix operators
     involved are a prefix of the other.
