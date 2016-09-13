@@ -88,6 +88,16 @@ We also note the following law, an easy consequence of the above laws:
 }
 It, and its generalisation will play an important role
 in what is to come.
+Also important is that ground predicates in conjunction
+with a sequential composition can be pushed inside:
+\RLEQNS{
+   K \land (P \seq Q)
+   &=& K \land P \seq Q & \elabel{GND-and-seq-L}
+\\ &=& P \seq K \land Q & \elabel{GND-and-seq-R}
+\\ &=& K \land P \seq K \land Q & \elabel{GND-and-seq-both}
+\\ K \seq K &=& K & \elabel{GND-seq-GND-is-GND}
+}
+where $isGnd(K)$ and $\land$ binds tighter than $\seq$.
 
 
 Given the definitions above,
