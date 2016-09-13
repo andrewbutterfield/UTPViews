@@ -275,7 +275,7 @@ which characterise proper label-set contents,
 which are preserved by all label-set manipulations performed
 by our semantic definitions.
 
-\subsubsection{Disjoint Labels}\label{sssec:disjoint-labels}
+\subsubsection{Disjoint Labels (DL)}\label{sssec:disjoint-labels}
 
 The first invariant we have is simply one that asserts,
 for every construct, that $in$, $out$ and the labels of $g$
@@ -294,7 +294,7 @@ with definitions and results that are harder to interpret and check.
 
 
 
-\subsubsection{Label Exclusivity}
+\subsubsection{Label Exclusivity (LE)}
 
 In addition to Disjoint Labels above,
 which merely ensures distinctness of labels themselves,
@@ -359,6 +359,7 @@ For now we simply observe,
 that these invariants are quite bulky and complex.
 
 
+
 \subsubsection{Label-Set Invariant Notation}
 
 First we shorten $labs(g)$ to just $g$ when this is clear from context,
@@ -373,6 +374,7 @@ We use the following shorthand, where the $L_i$ are label-sets,
    \forall_{i,j \in 1\dots n}
     @
     i \neq j \implies L_i \cap L_j = \emptyset
+\\ \multicolumn{3}{c}{\elabel{short-disj-lbl}}
 }
 So we have an alternative definition of the Disjoint Labels invariant:
 \RLEQNS{
@@ -390,9 +392,14 @@ whose easy cases can be formulated as follows:
     @
     i \neq j \implies
      ( L_i \cap ls \neq \emptyset \implies L_j \cap ls = \emptyset )
+\\ \multicolumn{3}{c}{\elabel{short-lbl-exclusive}}
 }
 So the sequential composition Label Exclusivity invariant
 is simply: $[in|\ell_g|out]$.
+What needs to be kept in mind regarding this shorthand notation
+is that $ls$ is mentioned under the hood,
+and it is really all about what can be present in the global label-set
+at any instant in time.
 
 For parallel composition, we a little more complexity.
 In shorthand it is expressed as
@@ -408,3 +415,59 @@ and neither can $\ell_{g2}$ and $\ell_{g2:}$.
 A more detailed and formal description of this way of describing
 these invariants, in terms of an different abstract notation,
 is presented in \S\ref{ssec:exclusive-lsat}.
+
+\subsubsection{Properties of DL and LE}
+
+Consider the following two generic examples:
+\begin{enumerate}
+  \item
+    $DL_n = [L_1|L_2|\dots|L_n]$
+    asserts that each $L_i$ is disjoint from any other.
+  \item
+    $LE_n = \{L_1|L_2|\dots|L_n\}$
+    asserts that if elements one $L_i$ are in $ls$,
+    then no elements from the others are.
+\end{enumerate}
+
+The ordering in either invariant is immaterial.
+If $\rho$ is a permutation over $\setof{1\dots n}$ then
+\RLEQNS{
+   \{L_1|L_2|\dots|L_n\} &=& \{L_{\rho1}|L_{\rho2}|\dots|L_{\rho n}\}
+   & \elabel{DL-perm}
+\\ ~[L_1|L_2|\dots|L_n] &=& [L_{\rho1}|L_{\rho2}|\dots|L_{\rho n}]
+   & \elabel{LE-perm}
+}
+Both invariants imply shorter versions of themselves:
+\RLEQNS{
+   \{\dots|L_{i-1}|L_i|L_{i+1}\dots\} &\implies& \{\dots|L_{i-1}|L_{i+1}\dots\}
+   & \elabel{DL-drop}
+\\ ~[\dots|L_{i-1}|L_i|L_{i+1}\dots] &\implies& [\dots|L_{i-1}|L_{i+1}\dots]
+   & \elabel{LE-drop}
+}
+Both invariants imply versions with smaller sets:
+\RLEQNS{
+   S_i \subseteq L_i \land \{L_1|\dots|L_n\}
+   &\implies& \{S_1|\dots|S_n\}
+   & \elabel{DL-subset}
+\\ S_i \subseteq L_i \land [L_1|\dots|L_n]
+   &\implies& [S_1|\dots|S_n]
+   & \elabel{DL-subset}
+}
+A key property shared by all LE invariants,
+is that they are trivially satisfied by $ls = \emptyset$,
+or if $ls$ only contains labels not mentioned in the invariant.
+\RLEQNS{
+   scope(LE_n) &\defs& L_1 \cup L_2 \cup \dots \cup L_n
+\\ (ls = ls \setminus scope(LE_n)) &\implies& LE_n = \true
+    & \elabel{LE-out-of-scope}
+\\ ls = \emptyset &\implies& LE_n = \true
+    & \elabel{LE-trivial}
+}
+There is no simple relationship between $DL_n$ and $LE_n$.
+It is possible for one to be true when the other is false.
+\begin{description}
+  \item[DL true, LE false]
+    $L_1 \cap L_2 = \emptyset \quad\land\quad (L_1 \cup L_2) \subseteq ls$.
+  \item[DL false, LE true]
+    $L_1 = L_2 \quad\land\quad L_1 \cap ls = \emptyset$
+\end{description}
