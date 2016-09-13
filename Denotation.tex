@@ -1,17 +1,46 @@
 \section{Denotations}\label{sec:denote}
 
-
 \subsection{Observation Variables}
 
-\begin{eqnarray*}
-   s, s' &:& \mathcal S
-\\ ls, ls' &:& \mathcal P (Lbl)
-\\ g &:& Gen
-\\ in, out &:& Lbl
-\end{eqnarray*}
-We assume a general notion of expressions ($e$)
-and say that an expression $e$ is ``ground''
-if it's free variables are limited to only $g$, $in$ and $out$.
+Our program language is built upon basic atomic state-change
+actions that modify global shared state $s$.
+The concurrent flow of control is managed using a global label-set $ls$
+and the association of two distinguished labels $in$ and $out$,
+and a label generator $g$ with every language construct.
+
+A key feature of this UTP semantics is that we have a key distinction
+between two groups of observations that we wish to make of a running program.
+\begin{description}
+  \item[Dynamic State]~\\
+    Both the global shared state and control-flow label-set
+    are observations that change as the program executes.
+    So our UTP theory will need to record both before- and after-values
+    for both of these.
+    \RLEQNS{
+       s, s' &:& State        & \elabel{obs-s}
+    \\ ls, ls' &:& \power Lbl & \elabel{obs-ls}
+    }
+  \item[Static Parameters]~\\
+    The labels and generators associated with any given program
+    construct are fixed during the lifetime of the program.
+    They are determined statically by the context of each construct.
+    For this reason we do not distinguish between before- and after-values
+    \RLEQNS{
+       in, out &:& Lbl & \elabel{obs-in-out}
+    \\ g &:& Gen       & \elabel{obs-g}
+    }
+\end{description}
+So our UTP theory has alphabet
+\[
+  \alpha P  = \setof{s,s',ls,ls',in,out,g}
+  \qquad
+  \elabel{alpha-P}
+\]
+and hence is based on a non-homogeneous relation.
+This will not turn out to be problematical because
+the formulation of the theory as described below will largely isolate the
+two classes of observations.
+
 
 
 
@@ -38,6 +67,9 @@ INTRODUCE
    P ; C * P \cond C \Skip
    & \elabel{UTP-loop-unroll}
 }
+
+
+
 We also define a specialised form of sequential composition
 to be used when neither component refers to $ls$ or $ls'$,
 and its unit:
@@ -51,6 +83,18 @@ and its unit:
 Note that if neither predicate mentions $ls$ or $ls'$
 then the effect of $\seq$ and $\seq_s$ is the same.
 We often omit the $s$ subscript when its use is clear from context.
+
+\subsubsection{Ground Expressions}
+
+We assume a general notion of expressions ($e$)
+and say that an expression $e$ is ``ground''
+if it's free variables are limited to only $g$, $in$ and $out$.
+
+TALK IN HERE ABOUT GROUND SUBSTITUTIONS
+
+\subsubsection{Sound Subtitutions}
+
+TALK ABOUT SOUND SUBSTITUTIONS
 
 \subsection{Healthiness Conditions}
 

@@ -4,7 +4,6 @@ We now give a proper presentation of our UTP theory
 of concurrent programming, looking at both the condition-free command language
 of the Views paper\cite{conf/popl/Dinsdale-YoungBGPY13},
 as well as the more complete language covered in the UTPP paper\cite{DBLP:conf/icfem/WoodcockH02}.
-in UTP.
 
 All references in bold to things
 like \textbf{Definition 9} or \textbf{Parameter E} refer to corresponding material
@@ -82,7 +81,7 @@ Each shorthand is introduced by a subsection similar to this one.
 
 \subsubsection{Structure of this paper}
 
-Right now this paper is poorly structured,
+Right now this paper is still poorly structured,
 organised roughly around the themes of
 Related Work;
 Commands;
@@ -93,7 +92,7 @@ It needs to be re-organised to provide a much better narrative,
 because there really is a story to tell here.
 
 A key principle has to be a focus on the higher level results and how
-they knot together,
+they knit together,
 with detailed justifications kept ``offline'' in appendices.
 
 We propose the following structure:
@@ -105,11 +104,14 @@ We propose the following structure:
   \item
     We formally present the syntax of our language (\S\ref{sec:syntax}).
   \item
+     The semantics uses the notion of global labels to orchestrate
+     program control flow. We discuss these in some depth in \S\ref{sec:labels}.
+  \item
      We then explain the reasoning underlying our denotational
      UTP semantics and present it (\S\ref{sec:denote}).
   \item
      We then discuss how best to perform calculations with the theory,
-     and show how this leads to the notional of a normal form
+     and show how this leads to the notion of a normal form
      (\S\ref{sec:calc}).
   \item
      Next we present the desired algebraic laws,
