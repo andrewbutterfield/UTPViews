@@ -69,10 +69,27 @@ without changing any state, only refers to the dynamic observations:
    s'= s \land ls'=ls
    & \elabel{UTP-skip-def}
 }
-It is easy to show that $\Skip$ is both a left- and right-unit for $\seq$.
+It is easy to show that $\Skip$ is both a left- and right-unit for $\seq$,
+that $\seq$ is associative,
+and that disjunction distributes through it:
 \RLEQNS{
- \Skip \seq P &=~P~=& P \seq \Skip & \elabel{seq-unit}
+   \Skip \seq P &=~P~=& P \seq \Skip & \elabel{seq-unit}
+\\ P \seq (Q \seq R) &=& (P \seq Q) \seq R & \elabel{seq-assoc}
+\\ P \seq (Q \lor R) &=& P \seq Q \lor P \seq R & \elabel{seq-or-distr}
+\\ (P \lor Q) \seq R &=& P \seq R \lor Q \seq R & \elabel{or-seq-distr}
 }
+Note that we assume that $\seq$ binds more tightly than $\lor$.
+We also note the following law, an easy consequence of the above laws:
+\RLEQNS{
+   (\Skip \lor P) \seq (\Skip \lor Q)
+   &=&
+   \Skip \lor P \lor Q \lor P\seq Q
+   & \elabel{skip-lor-twice}
+}
+It, and its generalisation will play an important role
+in what is to come.
+
+
 Given the definitions above,
 then the definitions of UTP conditionals and iteration
 are quite standard.
@@ -174,6 +191,13 @@ is closed under substitution composition.
    [G,I,O/g,in,out]
 \\  && \elabel{gnd-sub-closure}
 }
+We can even give a direct definition of the result:
+\RLEQNS{
+   [G_1,I_1,O_1/g,in,out]\gamma_2
+   &=&
+   [G_1\gamma_2,I_1\gamma_2,O_1\gamma_2/g,in,out]
+   & \elabel{gnd-sub-comp}
+}
 
 
 \subsubsection{Sound Substitutions}
@@ -215,6 +239,13 @@ substitution composition
 
 \subsection{Healthiness Conditions}
 
+As is normal in a UTP theory,
+we define a number of healthiness conditions
+that characterise the predicates we consider to be sound assertions
+with respect to our intended interpretation.
+At present we have two, called Disjoint Labels
+and Wheels-within-Wheels respectively.
+
 \subsubsection{Disjoint Labels}
 
 We have a general healthiness condition (Disjoint Labels) which asserts
@@ -239,10 +270,14 @@ However this failed to keep atomic components ``live''.
 They could never be re-executed,
 as would be required if they were within an iteration.
 Instead it was realised that every construct (atomic and composite)
-would have to be within an infinite loop.
+would have to be within an infinite loop.%
 \RLEQNS{
-   \W(P) &\defs& \true * P &\elabel{W-as-loop}
-}
+    \true * P &\elabel{W-as-loop}
+}%
+This wrapping of the basic property in an infinite loop
+would occur at every level of the program hierarchy,
+hence the term ``Wheels within Wheels''.
+
 This bold step turns out to be remarkably effective,
 with some quite counter-intuitive outcomes.
 However it does depend on a specific tweak to the
@@ -252,17 +287,23 @@ as placing a basic action inside such a loop,
 but within a non-deterministic choice between it
 and a \emph{stuttering} step, denoted by UTP skip:
 \RLEQNS{
-  \catom a &\defs& \W(\Skip \lor A(in|a|out))
+  \catom a &\defs& \true * (\Skip \lor A(in|a|out))
 }
 A result of this is that this stuttering step gets
 propagated up to enclosing composites,
-so in effect we see $\W(C)=\W(\Skip\lor C)$
+so in effect we see $\true * C = \true * (\Skip\lor C)$
 where $C$ is any predicate denoting the semantics of a command.
-We give more details about this in the section on calculation (\S\ref{sec:calc}).
-One key calculational advantage of this is that we can rewrite
-the rhs of the definition of $\W$ as:
+In effect,
+we  see that
 \RLEQNS{
-   \W(P) &  =  & \bigvee_{i \in 0,\dots} \Skip \seq P^i &\elabel{W-as-NDC}
+  \true * (\Skip \lor P) &=& \bigvee_{i \in \Nat} P^i
+  & \elabel{loop-as-NDC}
+}
+This leads us to define the healthiness condition as
+\RLEQNS{
+   \W(P) & \defs  & \bigvee_{i \in \Nat} P^i &\elabel{W-as-NDC}
+\\ P^0 & \defs& \Skip           & \elabel{seq-0}
+\\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
 }%
 We note explicitly here that, in effect,
 our semantic model is based on unbounded non-determinism.
@@ -277,7 +318,31 @@ to get composite behaviour.
 However, using $\W$ results in a slight variation,
 which is composable!
 What turns out to be crucial
-to this outcome is the explicit stuttering option in the infinite loop.
+to this outcome is the explicit stuttering option.
+
+For $\W$ to be a proper healthiness condition
+is has to be monotonic and idempotent.
+\RLEQNS{
+   P \refinedby Q &\implies& \W(P) \refinedby \W(Q)
+   & \elabel{W-monotonic}
+\\ \W(\W(P)) &=& \W(P) & \elabel{W-idempotent}
+}
+The latter is easy to show once we realise that composing the result
+of $\W(P)$ with itself results in no change:
+\RLEQNS{
+   \W(P) \seq \W(P) &=& \W(P)  & \elabel{W-seq-W-is-W}
+}
+Given the definition of $\W$, it is easy to see that ground
+substitution distributes in:
+\RLEQNS{
+   \W(P)\gamma &=& \W(P\gamma) & \elabel{W-gnd-subst}
+}
+as does any top-level conjunction with a ground predicate $K$:
+\RLEQNS{
+   K \land \W(Q) &=& \W(K \land Q) & \elabel{W-gnd-and-distr}
+}
+
+
 
 
 \subsection{UTP Denotational Semantics}
@@ -485,14 +550,6 @@ Looking forward we will want some key algebraic properties:
 \\ ((ls\setminus R)\cup A)(S)
    &=&
    ls(F(R,A,S)) \land P(R,A,S)
-\\ \W(P)  && \textrm{monotonic in } P
-\\ \W(\W(P)) &=& \W(P) & ?
-\\ \W(\W(\Skip \lor P)) &=& \W(\Skip \lor P)
-\\ \W(\Skip \lor P) &=& \bigvee_{i \in 0,\dots} \Skip \seq P^i
-   & \elabel{W-as-NDC}
-\\ \W(P)\gamma &=& \W(P\gamma) & \elabel{W-gamma-subst}
-\\ \W(\Skip \lor P) &=& \Skip \lor \W(\Skip \lor P)
-\\ I \land \W(P) &=& \W(I \land P) & \elabel{I-W-distr}
 }
 
 
