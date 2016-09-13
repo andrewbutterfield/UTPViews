@@ -2,11 +2,18 @@
 
 \subsection{Observation Variables}
 
+\begin{figure}
+  \centering
+  \includegraphics{images/parallel-program}\\
+  \caption{High-level view of a concurrent program}
+  \label{fig:high-level-prog}
+\end{figure}
 Our program language is built upon basic atomic state-change
 actions that modify global shared state $s$.
 The concurrent flow of control is managed using a global label-set $ls$
 and the association of two distinguished labels $in$ and $out$,
-and a label generator $g$ with every language construct.
+and a label generator $g$ with every language construct
+(See Fig. \ref{fig:high-level-prog}).
 
 A key feature of this UTP semantics is that we have a key distinction
 between two groups of observations that we wish to make of a running program.
@@ -40,6 +47,7 @@ and hence is based on a non-homogeneous relation.
 This will not turn out to be problematical because
 the formulation of the theory as described below will largely isolate the
 two classes of observations.
+
 
 
 
@@ -357,11 +365,10 @@ as does any top-level conjunction with a ground predicate $K$:
 
 \subsection{UTP Denotational Semantics}
 
-INTRODUCE
-
-We present each construct individually,
-with full diagrams for each \dots
-
+We shall first introduce the notation of a Basic Action,
+which is the lifting of an atomic shared state transformer $a$
+into something that waits for itself to be enabled by appropriate labels.
+Then we give the semantics of each language construct in turn.
 
 
 \subsubsection{Basic Action}
@@ -375,35 +382,29 @@ from the label-set, and adds in those in $N$.
 \RLEQNS{
    A(E|a|N)
    &\defs&
-   ls(E) \land a \land ls'=(ls\setminus E) \cup N
+   E \subseteq ls \land a \land ls'=(ls\setminus E) \cup N
    & \elabel{A-def}
 }
+This is a basic building block that is used in subsequent
+definitions, both for lifting atomic state change actions,
+and for defining control-flow label management.
 
-
-We define what it means for an atomic action invocation
-to satisfy an invariant parameterised on the label type ($Lbl$).
+A key property of basic actions is that ground substitutions
+can be driven inside
 \RLEQNS{
-  ls \textbf{ lsat } I \land A(E|a|N) &\implies& ls' \textbf{ lsat } I
-}
-We can re-formulate this as a following equivalent test:
-\RLEQNS{
-   A(E|a|N) \textbf{ sat } I_{Lbl}
-   &\defs&
-   E \textbf{ lsat } I_{Lbl} \land N \textbf{ lsat } I_{Lbl}
+   A(E|a|N)\gamma &=& A(E\gamma|a|N\gamma)
+   & \elabel{A-gamma-subs}
 }
 
-\RLEQNS{
-   ls(\ell) &\defs& \ell \in ls
-\\ ls(L) &\defs& L \subseteq ls
-\\ ls(\B\ell) &\defs& \ell \notin ls
-\\ ls(\B L) &\defs& L \cap ls = \emptyset
-}
+
 
 
 \newpage
 \subsubsection{Atomic Action}
 
+\begin{center}
 \includegraphics{images/atomic-action}
+\end{center}
 \RLEQNS{
   \catom a
   &\defs& \DL(\W(\Skip \lor A(in|a|out))) & \elabel{sem:atomic}
@@ -441,8 +442,9 @@ on state.
 \newpage
 \subsubsection{Sequential Composition}
 
+\begin{center}
 \includegraphics{images/seq-comp-actual}
-
+\end{center}
 \RLEQNS{
    P \cseq Q
    &\defs&
@@ -474,9 +476,12 @@ of invariant preservation.
    A(\ell_{g1:},\ell_{g2:}|ii|out)~)
 }
 
+\begin{center}
 \includegraphics{images/parallel-label-gen}
-
+\end{center}
+\begin{center}
 \includegraphics{images/par-comp-actual}
+\end{center}
 
 
 \newpage
@@ -526,8 +531,9 @@ of invariant preservation.
    Q[g_{2:},\ell_{g2}/g,in]~)
 }
 
+\begin{center}
 \includegraphics{images/conditional-actual}
-
+\end{center}
 \newpage
 \subsubsection{Conditional Loop}
 
@@ -552,8 +558,7 @@ in the semantics preserves the invariant.
 
 Looking forward we will want some key algebraic properties:
 \RLEQNS{
-   A(E|a|N)\gamma &=& A(E\gamma|a|N\gamma)
-\\ A(E|a|N) \textbf{ sat } I
+   A(E|a|N) \textbf{ sat } I
    &=&
    A(E|a|N)\gamma \textbf{ sat } I\gamma
    , \quad \mbox{arbitrary }\gamma
