@@ -389,11 +389,41 @@ as does any top-level conjunction with a ground predicate $K$:
 
 \subsection{UTP Denotational Semantics}\label{ssec:UTP-denote}
 
-TALK ABOUT DISJUNCTIONS OF ACTIONS
-AND HOW $\seq$ IS ALL ABOUT MUMBLING,
-AND $\Skip$ IS STUTTERING.
+The denotational semantic definitions below will have
+$\W(P)$ as a component,
+where $P$ will turn out to be a disjunction of lifted atomic actions,
+one of which will be $\Skip$.
+\[
+  P = \Skip \lor A_1 \lor A_2 \lor A_3 \lor \dots
+\]
+The effect of this is that $\W(P)$ itself
+will be a disjunction of elements that are
+either $\Skip$, one of those actions making up $P$
+or the sequential composition, using $\seq$,
+of a sequence of two or more of those actions.
+\RLEQNS{
+   \W(P) &=& \bigvee_{i \in \Nat} P^i
+\\ &=& \Skip \lor A_1 \lor A_2 \lor A_3 \lor \dots
+\\ &\lor& A_1^2 \lor A_2^2 \lor A_3^2 \lor \dots
+\\ &\lor& A_1\seq A_2 \lor A_2 \seq A_1 \lor \dots
+\\ &\lor& \dots \lor A_3\seq A_3\seq A_1 \seq A_2 \lor \dots
+}
+In practise, many of these sequential compositions will reduce to $\false$,
+because they are not viable---this is discussed in more detail in the section
+on calculating with the theory (\S\ref{sec:calc}).
 
-We shall first introduce the notation of a Basic Action,
+Given a composition $A_3\seq A_3\seq A_1 \seq A_2$ (say),
+it is to be interpreted as an observation
+of the execution of its components in order,
+without any interference from outside.
+In effect these terms correspond to mumblings in the denotational
+semantics of Brookes\cite{DBLP:journals/iandc/Brookes96}.
+So, in this theory, $\seq$ can be thought of as \emph{mumbling composition}.
+In a similar vein, the $\Skip$ predicate represents
+all the possible stuttering steps in Brookes' semantics.
+
+
+To proceed we shall first introduce the notation of a Basic Action,
 which is the lifting of an atomic shared state transformer $a$
 into something that waits for itself to be enabled by appropriate labels.
 Then we give the semantics of each language construct in turn.
@@ -428,21 +458,39 @@ can be driven inside
 \newpage
 \subsubsection{Atomic Action}
 
-\begin{center}
-\includegraphics{images/atomic-action}
-\end{center}
+\begin{figure}
+  \centering
+  \includegraphics{images/atomic-action}\\
+  \caption{Atomic Action}
+  \label{fig:atomic-action}
+\end{figure}
+
+An atomic action (Fig.\ref{fig:atomic-action})
+is a basic action where the enabling label-set is
+simply $\setof{in}$, and the new label introduced once complete
+is $\setof{out}$.
+It has no subcomponents, so it does not use the label generator $g$.
+
+The key invariant here is that $in$ and $out$ are never simultaneously
+in $ls$.
+So we simply wrap the corresponding action with the healthiness conditions
+and conjoin our invariant:
 \RLEQNS{
   \catom a
-  &\defs& \DL(\W(\Skip \lor A(in|a|out))) & \elabel{sem:atomic}
-\\ &=&  [in|out] \land (\Skip \lor A(in|a|out))
-        & \elabel{nf-atomic}
+  &\defs& [in|out] \land \DL(\W(A(in|a|out))) & \elabel{sem:atomic}
 }
+Note here that we write $x$ rather than $\setof{x}$, as a shorthand.
+This is why the notation for $A$ uses vertical bars to separate arguments.
 
-Invariant Preservation:
+We need to show that $A(in|a|out)$ preserves the specified
+invariant, under any arbitrary sound substitution $\varsigma$:
 \RLEQNS{
-   [in|out]\gamma \land A(in|a|out)\gamma &\implies& [in|out]'\gamma
-   & \elabel{atom-inv-ok}
+   \{in|out\}\varsigma
+   \land [in|out]\varsigma
+   \land A(in|a|out)\varsigma &\implies& [in|out]'\varsigma
+   & \eref{atom-inv-ok}
 }
+Here $[in|out]'$ is simply $[in|out]$ with $ls$ replaced by $ls'$.
 
 \subsubsection{Guarded Atomic Action}
 In effect there is no real difference between $c \pgrd a$
@@ -455,14 +503,13 @@ on state.
  c \pgrd a &\defs& \catom{c \land a}  &\elabel{sem:pgrd}
 }
 
-
 \subsubsection{Skip}
 
+Skip in the programming language ($\cskip$)
+is simply an atomic action that leaves the program state $s$ unchanged:
 \RLEQNS{
-   ii     &\defs& s'=s
-\\ \cskip &\defs& \catom{ii}  &\elabel{sem:skip}
-\\  &=&  [in|out] \land (\Skip \lor A(in|ii|out))
-    &\elabel{nf-skip}
+   \cskip &\defs& \catom{s'=s}  &\elabel{sem:skip}
+\\ &=& \catom{ii}
 }
 
 \newpage

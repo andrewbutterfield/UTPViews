@@ -163,12 +163,19 @@ In the latter generic case we  \emph{\dots to be determined \dots}
 
 \subsubsection{Atomic Actions}
 \RLEQNS{
-   a &=& [in|out]
+   a &=& \{in|out\} \quad [in|out]
 \\ && A(in|a|out) & \elabel{NF:atomic-a}
 \\
 \\ \cskip &=& [in|out]
 \\ && A(in|ii|out) & \elabel{NF-skip}
 }
+
+\RLEQNS{
+  \catom a
+  &=&  \{in|out\} \land [in|out] \land (\Skip \lor A(in|a|out))
+        & \elabel{nf-atomic}
+}
+
 
 \subsubsection{Sequential Composition}
 
