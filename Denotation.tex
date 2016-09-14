@@ -50,10 +50,53 @@ two classes of observations.
 
 
 
+\subsubsection{Ground Expressions}
+
+We assume a general notion of expressions ($e$)
+and say that an expression $e$ is ``ground''
+if its free variables are limited to only $g$, $in$ and $out$.
+We say that a predicate is ground if all constituent expressions
+are ground.
+\RLEQNS{
+   isGnd(e) &\defs&  FV(e) \subseteq \setof{g,in,out}
+   & \elabel{gnd-expr-def}
+\\ isGnd(P) &\defs&  FV(P) \subseteq \setof{g,in,out}
+   & \elabel{gnd-pred-def}
+}
+This means that ground expressions in this setting can only
+define either generators, label-sets, or atomic predicates
+over these.
+Indeed, generator expressions are ground by construction,
+because the only variable they contain is precisely $g$.
+It also means that a ground expression can always be simplified
+to either a generator expression, enumerated label-set,
+and any ground predicate to either true (valid) or false (a contradiction).
 
 
 
 \subsection{``Standard'' UTP Predicates}
+
+By ``standard'' UTP predicates,
+we mean sequential composition ($\_\seq\_$), skip ($\Skip$),
+conditionals $\_\cond\_\_$, and iteration ($\_*\_$).
+We put ``standard'' in quotes because we are defining these
+in the context of our non-homogeneous alphabet,
+which is itself non-standard.
+
+Those familiar with UTP may wonder why we distinguish between
+sequential composition in the language ($\cseq$)
+and UTP sequential composition ($\seq$).
+In UTP theories of sequential programming,
+and reactive systems like CSP, sequential composition
+in the language has relational predicate composition
+as its semantics,
+and so the same symbol is used for both.
+In concurrent shared-variable programs,
+there is no such coincidence between the language operator,
+and its semantics.
+The precise interpretation of UTP sequential composition ($\seq$)
+in this theory will be explained when we introduce the
+actual denotational semantics in Section \ref{ssec:UTP-denote}.
 
 Given a non-homogeneous alphabet,
 some care has to be taken to define standard notions
@@ -105,7 +148,7 @@ with a sequential composition can be pushed inside:
 \\ &=& K \land P \seq K \land Q & \elabel{GND-and-seq-both}
 \\ K \seq K &=& K & \elabel{GND-seq-GND-is-GND}
 }
-where $isGnd(K)$ and $\land$ binds tighter than $\seq$.
+where $isGnd(K)$, and $\land$ binds tighter than $\seq$.
 
 
 Given the definitions above,
@@ -121,7 +164,7 @@ are quite standard.
    P ; C * P \cond C \Skip
    & \elabel{UTP-loop-unroll}
 }
-For iteration we juts present the loop unrolling law, as the most useful here.
+For iteration we just present the loop unrolling law, as the most useful here.
 
 We also define a specialised form of sequential composition
 to be used when neither component refers to $ls$ or $ls'$,
@@ -138,27 +181,8 @@ Note that if neither predicate mentions $ls$ or $ls'$
 then the effect of $\seq$ and $\seq_s$ is the same.
 We often omit the $s$ subscript when its use is clear from context.
 
-\subsubsection{Ground Expressions}
 
-We assume a general notion of expressions ($e$)
-and say that an expression $e$ is ``ground''
-if its free variables are limited to only $g$, $in$ and $out$.
-We say that a predicate is ground if all constituent expressions
-are ground.
-\RLEQNS{
-   isGnd(e) &\defs&  FV(e) \subseteq \setof{g,in,out}
-   & \elabel{gnd-expr-def}
-\\ isGnd(P) &\defs&  FV(P) \subseteq \setof{g,in,out}
-   & \elabel{gnd-pred-def}
-}
-This means that ground expressions in this setting can only
-define either generators, label-sets, or atomic predicates
-over these.
-Indeed, generator expressions are ground by construction,
-because the only variable they contain is precisely $g$.
-It also means that a ground expression can always be simplified
-to either a generator expression, enumerated label-set,
-and any ground predicate to either true (valid) or false (a contradiction).
+\subsubsection{Ground Substitutions}
 
 Substitution of expressions for free variables is
 an important mechanism used to construct and reason about
@@ -264,7 +288,7 @@ with respect to our intended interpretation.
 At present we have two, called Disjoint Labels
 and Wheels-within-Wheels respectively.
 
-\subsubsection{Disjoint Labels}
+\subsubsection{Disjoint Labels}\label{sssec:disj-labels}
 
 We have a general healthiness condition (Disjoint Labels) which asserts
 that the labels associated with $in$, $out$ and $g$
@@ -275,7 +299,7 @@ are different:
 This is just the Disjoint Labels invariant of \S\ref{sssec:disjoint-labels},
 reformulated as a healthiness condition.
 
-\subsubsection{Wheels-within-Wheels}
+\subsubsection{Wheels-within-Wheels}\label{sssec:WwW}
 
 The key intuition behind this compositional semantics was to take the
 $run$ function of the action-system based semantic model used in UTPP,
@@ -319,9 +343,9 @@ we  see that
 }
 This leads us to define the healthiness condition as
 \RLEQNS{
-   \W(P) & \defs  & \bigvee_{i \in \Nat} P^i &\elabel{W-as-NDC}
-\\ P^0 & \defs& \Skip           & \elabel{seq-0}
+   P^0 & \defs& \Skip           & \elabel{seq-0}
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
+\\ \W(P) & \defs  & \bigvee_{i \in \Nat} P^i &\elabel{W-as-NDC}
 }%
 We note explicitly here that, in effect,
 our semantic model is based on unbounded non-determinism.
@@ -363,7 +387,11 @@ as does any top-level conjunction with a ground predicate $K$:
 
 
 
-\subsection{UTP Denotational Semantics}
+\subsection{UTP Denotational Semantics}\label{ssec:UTP-denote}
+
+TALK ABOUT DISJUNCTIONS OF ACTIONS
+AND HOW $\seq$ IS ALL ABOUT MUMBLING,
+AND $\Skip$ IS STUTTERING.
 
 We shall first introduce the notation of a Basic Action,
 which is the lifting of an atomic shared state transformer $a$
@@ -371,7 +399,7 @@ into something that waits for itself to be enabled by appropriate labels.
 Then we give the semantics of each language construct in turn.
 
 
-\subsubsection{Basic Action}
+\subsubsection{Basic Action}\label{sssec:basic-action}
 
 Basic Action $A(E|a|N)$ is enabled when all the labels in $E$
 are present in the global label-set
@@ -395,8 +423,6 @@ can be driven inside
    A(E|a|N)\gamma &=& A(E\gamma|a|N\gamma)
    & \elabel{A-gamma-subs}
 }
-
-
 
 
 \newpage

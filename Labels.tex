@@ -12,8 +12,8 @@ This is all that is visible to the programmer.
 Our denotational UTP semantics
 is inspired by that done for UTPP\cite{DBLP:conf/icfem/WoodcockH02},
 itself based on a UTP theory of \emph{action systems}.
-First, we add a new state component, not visible in the program text,
-which is a set of labels ($ls$).
+In UTPP a new state component, not visible in the program text,
+was added: a set of labels ($ls$).
 These labels are used to orchestrate the flow of control.
 Given an atomic action $a$ that only knows about program state $s$,
 we use notation $\catom a$ to describe a lifted version
@@ -38,7 +38,7 @@ The continuation labels were taken to the the enabling labels
 of whatever other actions occurred immediately after, in the program.
 This means that the resulting semantics is not compositional.
 
-The approach we adopt is to adopt the notion of \emph{label generators}
+The approach we adopt here is to adopt the notion of \emph{label generators}
 to create the labels, so ensuring they are unique,
 but in such a way as make the generation a compositional process.
 In addition we explicitly associate two labels with every program construct:
