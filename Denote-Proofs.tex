@@ -126,3 +126,26 @@ Set theory
 QED
 
 \textbf{WE REPEAT ABOVE WITH $\gamma$ TO DEMONSTRATE SUBSTITUTION INDEPENDENCE}
+
+
+\subsection{Proof of split-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]\varsigma
+   && \elabel{split-inv-ok}
+\\ {} \land A(in|ii|\ell_{g1},\ell_{g2})\varsigma
+   &\implies&
+   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]'\varsigma
+}
+
+\subsection{Proof of merge-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]\varsigma
+   && \elabel{merge-inv-ok}
+\\ {} \land A(\ell_{g1:},\ell_{g2:}|ii|out)\varsigma
+   &\implies&
+   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]'\varsigma
+}

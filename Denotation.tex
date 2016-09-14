@@ -512,53 +512,135 @@ is simply an atomic action that leaves the program state $s$ unchanged:
 \\ &=& \catom{ii}
 }
 
-\newpage
+%\newpage
 \subsubsection{Sequential Composition}
 
-\begin{center}
-\includegraphics{images/seq-comp-actual}
-\end{center}
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.85]{images/seq-comp-actual}
+  \caption{Sequential Composition}
+  \label{fig:seq-comp}
+\end{figure}
+
+In order to sequentially compose $P$ and $Q$ (Fig.\ref{fig:seq-comp}),
+we want to arrange for the $out$ label of $P$
+to coincide with the $in$ label of $Q$.
+We do this by generating a new unique label with our generator $g$,
+giving us label $\ell_g$ and the ``leftover'' generator $\g{:}$.
+That $\ell_g$ is not the same as either $in$ or $out$
+is guaranteed by the $\DL$ invariant.
+When then replace all references in $P$ to $out$,
+and in $Q$ to $in$, by $\ell_g$.
+We also need to ensure that the generators used by $P$ and $Q$
+do not produce labels that clash with $in$, $out$, $\ell_g$,
+or each others' generator.
+We do this by splitting our leftover generator into two parts,
+$\g{:1}$ and $\g{:2}$,
+and replacing all references to $g$ in both $P$ and $Q$
+with these split generators.
+
+So $P$ becomes $P[\g{:1},\ell_g/g,out]$,
+and $Q$ is changed to $Q[\g{:2},\ell_g/g,in]$, both substitutions being sound.
+Next, we connect our modified $P$ and $Q$ with \emph{disjunction},
+and healthify.
+For all of this to work we require the LE invariant
+to ensure that only one of $in$, $\ell_g$ or $out$
+are ever present in $ls$.
 \RLEQNS{
    P \cseq Q
    &\defs&
-   [in|\ell_g|out]\land \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+   [in|\ell_g|out]
+   \land \DL(\W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in]))
    & \elabel{sem:seq}
 }
 
-If $A$ actions in $P$ and $Q$ preserve the invariant,
+If $A$ actions inside $P$ and $Q$ preserve the invariant,
 then so does their composition.
-This is immediate by the ground/sound substitution independence
-of invariant preservation.
+This is immediate by the sound substitution independence
+of invariant preservation (c.f., \eref{atom-inv-ok}).
 
 
 
 \newpage
 \subsubsection{Parallel Composition}
 
+\begin{figure}
+  \centering
+  \includegraphics{images/parallel-label-gen}\\
+  \caption{Generating labels of Parallel Composition}
+  \label{fig:par-lbl-gen}
+\end{figure}
+Parallel composition $P\parallel Q$ may seem straightforward:
+simply leave $in$ and $out$ alone, split $g$ and feed the
+two generators into $P$ and $Q$, put into disjunction with each other.
+However this won't work. Both $P$ and $Q$ will
+have an atomic action enabled by $in$,
+and one of these will be non-deterministically chosen to run first.
+When it does it will remove $in$ from $ls$,
+effectively disabling the other action.
+Instead we need to replace the $in$s and $out$s of $P$ and $Q$
+with four different labels, using a scheme such as that described
+in Fig.\ref{fig:par-lbl-gen}.
+
+We then introduce two new control-flow actions:
+the first (Split) is enabled by $in$, and adds into $ls$
+the labels replacing the $in$s;
+the second (Merge) is enabled by both of the labels replacing the $out$s,
+and adds $out$ into $ls$.
+In effect, Split enforces that both $P$ and $Q$ start together,
+once $P \parallel Q$ has started,
+while Merge ensures that $P \parallel Q$ only terminates
+when both $P$ and $Q$ have (See Fig.\ref{fig:par-comp}).
+\begin{figure}
+  \centering
+  \includegraphics{images/par-comp-actual}
+  \caption{Parallel Composition}
+  \label{fig:par-comp}
+\end{figure}
+
+The LE invariant for parallel has not only to ensure
+that $in$ and $out$ are never in $ls$ together
+or when any of the four generated labels are,
+but also that the labels that replace $in$
+are never in $ls$ at the same time as the corresponding
+replacements for $out$ (see also \S\ref{sssec:label-exclusivity}).
+
+\newpage
+Putting all of this together gives the following definition
 \RLEQNS{
    P \parallel Q
    &\defs&
    [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
    & \elabel{sem:par}
-\\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
-\\ && \qquad {}\lor
+\\&& \DL(\W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
+\\ && \qquad\qquad {}\lor
    P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-\\ && \qquad {}\lor
+\\ && \qquad\qquad {}\lor
     Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\ && \qquad {}\lor
-   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\\ && \qquad\qquad {}\lor
+   A(\ell_{g1:},\ell_{g2:}|ii|out)~))
 }
-
-\begin{center}
-\includegraphics{images/parallel-label-gen}
-\end{center}
-\begin{center}
-\includegraphics{images/par-comp-actual}
-\end{center}
-
+We need to demonstrate that the Split and Merge actions
+preserve the LE invariant:
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]\varsigma
+   && \eref{split-inv-ok}
+\\ {} \land A(in|ii|\ell_{g1},\ell_{g2})\varsigma
+   &\implies&
+   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]'\varsigma
+\\ \{in|g|out\}\varsigma
+   \land [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]\varsigma
+   && \eref{merge-inv-ok}
+\\ {} \land A(\ell_{g1:},\ell_{g2:}|ii|out)\varsigma
+   &\implies&
+   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]'\varsigma
+}
 
 \newpage
 \subsubsection{Nondeterministic Choice}
+
+\includegraphics{images/nondet-actual}
 
 \RLEQNS{
    P + Q
@@ -576,6 +658,7 @@ of invariant preservation.
 
 \subsubsection{Nondeterministic Loop}
 
+\includegraphics{images/kleene-star-actual}
 
 \RLEQNS{
    P^*
