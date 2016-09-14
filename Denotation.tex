@@ -640,71 +640,189 @@ preserve the LE invariant:
 \newpage
 \subsubsection{Nondeterministic Choice}
 
-\includegraphics{images/nondet-actual}
+\begin{figure}
+  \centering
+  \includegraphics{images/nondet-actual}
+  \caption{Nondeterministic Choice}
+  \label{fig:nondet-choice}
+\end{figure}
 
+Nondeterministic choice $P+Q$ is fairly simple.
+Provide two new labels to replace the $in$s of $P$ and $Q$
+and introduce two independent control-flow actions,
+both enabled by $in$, each of which adds one of the new labels to $ls$
+(while removing $in$, of course).
+Then the first control-flow action to run will enable its component,
+while simultaneously disabling the other control-flow action.
+Split generators are passed into $P$ and $Q$ as usual.
+The LE invariant has to assert that only one of two new labels
+can be present in $ls$ at any point in time.
 \RLEQNS{
    P + Q
    &\defs&
    [in|\ell_{g1}|\ell_{g2}|out] \land {}
    & \elabel{sem:NDC}
-\\ && \W(\quad {}\phlor A(in|ii|\ell_{g1})
-\\ && \qquad {} \lor
+\\ && \DL(\W(\quad {}\phlor A(in|ii|\ell_{g1})
+\\ && \qquad\qquad {} \lor
                      A(in|ii|\ell_{g2})
-\\ && \qquad {} \lor
+\\ && \qquad\qquad {} \lor
    P[g_{1:},\ell_{g1}/g,in]
-\\ && \qquad {} \lor
-   Q[g_{2:},\ell_{g2}/g,in]~)
+\\ && \qquad\qquad {} \lor
+   Q[g_{2:},\ell_{g2}/g,in]~))
 }
+
+LE invariant preservation
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
+   && \eref{ndc-1-inv-ok}
+\\ {} \land A(in|ii|\ell_{g1})\varsigma
+   &\implies&
+   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
+\\ \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
+   && \eref{ndc-2-inv-ok}
+\\ {} \land A(in|ii|\ell_{g2})\varsigma
+   &\implies&
+   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
+}
+
+HMMMMM! PERHAPS NDC is just $P[\g1/g] \lor P[\g2/g]$???
 
 \subsubsection{Nondeterministic Loop}
 
-\includegraphics{images/kleene-star-actual}
+\begin{figure}
+  \centering
+  % Requires \usepackage{graphicx}
+  \includegraphics{images/kleene-star-actual}
+  \caption{Nondeterministic Loop}
+  \label{fig:nondet-loop}
+\end{figure}
 
+A nondeterministic loop $P^*$  starts with a non-deterministic choice
+regarding if it will immediately terminate,
+or perform an iteration.
+In the former case we go directly from $in$ to $out$,
+while in the latter we need a new label ($\ell_g$)
+which replaces the $in$ of $P$.
+When $P$ terminates, we immediately go back to the top-level $in$
+to choose again.
 \RLEQNS{
    P^*
    &\defs&
    [in|\ell_g|out] \land {}
    & \elabel{sem:star}
-\\ && \W(\quad  \phlor A(in|ii|out)
-\\ && \qquad {}\lor A(in|ii|\ell_g)
-\\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
+\\ && \DL(\W(\quad  \phlor A(in|ii|out)
+\\ && \qquad\qquad {}\lor A(in|ii|\ell_g)
+\\ && \qquad\qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~))
 }
+Note that the slightly strange substitution $[g_{:},\ell_g,in/g,in,out]$
+is in fact sound, as $\{\g{:}|\ell_g|in\}$ is true, given $\DL$.
+
+LE invariant preservation
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|out]\varsigma
+   && \eref{ndc-exit-inv-ok}
+\\ {} \land A(in|ii|out)\varsigma
+   &\implies&
+   [in|\ell_{g1}|out]'\varsigma
+\\ \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|out]\varsigma
+   && \eref{ndc-loop-inv-ok}
+\\ {} \land A(in|ii|\ell_{g1})\varsigma
+   &\implies&
+   [in|\ell_{g1}|out]'\varsigma
+}
+
 
 \newpage
 \subsubsection{Conditional Choice}
 
+\begin{figure}
+  \centering
+  \includegraphics{images/conditional-actual}
+  \caption{Conditional Choice}
+  \label{fig:conditional}
+\end{figure}
+
+The semantics for conditional choice $P \dcond c Q$
+is very similar to that for non-deterministic choice.
+The only difference is that the two control-flow actions
+have the condition $c$, or its negation as appropriate,
+conjoined with the underlying program state skip action $ii$.
+This ensures that the control-flow action is only able to proceed
+if $in$ is in $ls$ and the condition or its negation is true
+in the current state $s$.
 \RLEQNS{
    P \dcond c Q
    &\defs&
    [in|\ell_{g1}|\ell_{g2}|out] \land {}
    & \elabel{sem:cond}
-\\ && \W(\quad {}\phlor A(in|c \land ii|\ell_{g1})
-\\ && \qquad {} \lor
+\\ && \DL(\W(\quad {}\phlor A(in|c \land ii|\ell_{g1})
+\\ && \qquad\qquad {} \lor
                      A(in|\lnot c \land ii|\ell_{g2})
-\\ && \qquad {} \lor
+\\ && \qquad\qquad {} \lor
    P[g_{1:},\ell_{g1}/g,in]
-\\ && \qquad {} \lor
-   Q[g_{2:},\ell_{g2}/g,in]~)
+\\ && \qquad\qquad {} \lor
+   Q[g_{2:},\ell_{g2}/g,in]~))
 }
 
-\begin{center}
-\includegraphics{images/conditional-actual}
-\end{center}
+
+LE invariant preservation
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
+   && \eref{cond-1-inv-ok}
+\\ {} \land A(in|c \land ii|\ell_{g1})\varsigma
+   &\implies&
+   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
+\\ \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
+   && \eref{cond-2-inv-ok}
+\\ {} \land A(in|\lnot c \land ii|\ell_{g2})\varsigma
+   &\implies&
+   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
+}
+
 \newpage
 \subsubsection{Conditional Loop}
 
+\begin{figure}
+  \centering
+  \includegraphics{images/iteration-actual}
+  \caption{Conditional Loop}
+  \label{fig:cond-loop}
+\end{figure}
 
+See the previous section about conditional choice regarding the
+role of state-condition $c$---the same idea applies here too.
 \RLEQNS{
    c \ddo P
    &\defs&
    [in|\ell_g|out] \land {}
    & \elabel{sem:iter}
-\\ && \W(\quad  \phlor A(in|\lnot c \land ii|out)
-\\ && \qquad {}\lor A(in|c \land ii|\ell_g)
-\\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
+\\ && \DL(\W(\quad  \phlor A(in|\lnot c \land ii|out)
+\\ && \qquad\qquad {}\lor A(in|c \land ii|\ell_g)
+\\ && \qquad\qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~))
 }
 
-\includegraphics{images/iteration-actual}
+LE invariant preservation
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|out]\varsigma
+   && \eref{cond-exit-inv-ok}
+\\ {} \land A(in|\lnot c \land ii|out)\varsigma
+   &\implies&
+   [in|\ell_{g1}|out]'\varsigma
+\\ \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|out]\varsigma
+   && \eref{cond-loop-inv-ok}
+\\ {} \land A(in|c \land ii|\ell_{g1})\varsigma
+   &\implies&
+   [in|\ell_{g1}|out]'\varsigma
+}
+
 
 \newpage
 \subsection{Essential Properties?}

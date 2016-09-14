@@ -149,3 +149,94 @@ QED
    &\implies&
    [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]'\varsigma
 }
+
+\subsection{Proof of ndc-1-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
+   && \elabel{ndc-1-inv-ok}
+\\ {} \land A(in|ii|\ell_{g1})\varsigma
+   &\implies&
+   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
+}
+
+\subsection{Proof of ndc-2-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
+   && \elabel{ndc-2-inv-ok}
+\\ {} \land A(in|ii|\ell_{g2})\varsigma
+   &\implies&
+   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
+}
+
+
+\subsection{Proof of ndc-exit-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|out]\varsigma
+   && \elabel{ndc-exit-inv-ok}
+\\ {} \land A(in|ii|out)\varsigma
+   &\implies&
+   [in|\ell_{g1}|out]'\varsigma
+}
+
+\subsection{Proof of ndc-loop-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|out]\varsigma
+   && \elabel{ndc-loop-inv-ok}
+\\ {} \land A(in|ii|\ell_{g1})\varsigma
+   &\implies&
+   [in|\ell_{g1}|out]'\varsigma
+}
+
+
+
+\subsection{Proof of cond-1-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
+   && \elabel{cond-1-inv-ok}
+\\ {} \land A(in|c \land ii|\ell_{g1})\varsigma
+   &\implies&
+   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
+}
+
+\subsection{Proof of cond-2-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
+   && \elabel{cond-2-inv-ok}
+\\ {} \land A(in|\lnot c \land ii|\ell_{g2})\varsigma
+   &\implies&
+   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
+}
+
+\subsection{Proof of cond-exit-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|out]\varsigma
+   && \elabel{cond-exit-inv-ok}
+\\ {} \land A(in|\lnot c \land ii|out)\varsigma
+   &\implies&
+   [in|\ell_{g1}|out]'\varsigma
+}
+
+\subsection{Proof of cond-loop-inv-ok}
+
+\RLEQNS{
+   \{in|g|out\}\varsigma
+   \land [in|\ell_{g1}|out]\varsigma
+   && \elabel{cond-loop-inv-ok}
+\\ {} \land A(in|c \land ii|\ell_{g1})\varsigma
+   &\implies&
+   [in|\ell_{g1}|out]'\varsigma
+}
