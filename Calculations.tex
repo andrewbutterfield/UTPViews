@@ -1,5 +1,24 @@
 \section{Semantic Calculations}\label{sec:calc}
 
+This semantic theory was validated by a series of test calculations
+done to ensure that it was making the right predications about program behaviour.
+This typically involved taking small programs with a few atomic actions
+and trying to simplify their semantic predicates
+down to a non-deterministic choice of atomic action sequences.
+
+This required the development of a UTP calculator tool,
+as some of the calculations proved to be very long,
+but very mechanical and tedious \cite{conf/utp/Butterfield16}.
+
+It also made it very clear that all program semantics predicates can be written
+in a standard normal form.
+
+We first address the issue of computing mumblings, i.e. the (UTP)
+sequential composition of $A$ actions.
+
+The we present results of test calculations,
+which turn out to produce our normal forms.
+
 \textbf{SHOULD COMPUTE PARTIAL NORMAL FORMS
 FOR COMPOSTITES}
 
@@ -276,6 +295,45 @@ We can also identify a pattern based on number of $a$s performed:
 \newpage
 \subsection{Essential Properties?}
 
+
+Looking forward we will want some key algebraic properties:
+\RLEQNS{
+   A(E|a|N) \textbf{ sat } I
+   &=&
+   A(E|a|N)\gamma \textbf{ sat } I\gamma
+   , \quad \mbox{arbitrary }\gamma
+\\ ((ls\setminus R)\cup A)(S)
+   &=&
+   ls(F(R,A,S)) \land P(R,A,S)
+}
+
+
+When $P\gamma$ executes:
+\begin{description}
+  \item[\elabel{P-removes-in}]
+    it will remove $in\gamma$ from $ls$ at some point;
+  \item[\elabel{P-removes-g}]
+    the only other labels it removes are in $labs(g\gamma)$;
+  \item[\elabel{P-adds-out}]
+    it adds $out\gamma$ into $ls$ at some point;
+  \item[\elabel{P-adds-g}]
+    the only other labels it adds are in $labs(g\gamma)$;
+  \item[\elabel{P-ignores-rest}]
+    and its behaviour is not affected by any label not
+    in
+    \\$\setof{in\gamma,out\gamma} \cup labs(g\gamma)$.
+\end{description}
+We can summarise this as follows:
+\begin{itemize}
+  \item $P\gamma$ actions are enabled by labels in $in\gamma,g\gamma$
+  \item $P\gamma$ actions enable actions enabled by $g\gamma,out\gamma$
+  \item Remember that the following invariant holds: $[in\gamma|g\gamma|out\gamma]$
+\end{itemize}
+
+
+
+
+
 \RLEQNS{
    X(E|a|R|A)\gamma &=& X(E\gamma|a|R\gamma|A\gamma)
    & \elabel{X-gnd-subs}
@@ -400,3 +458,120 @@ We now can easily show that we get stuttering here also:
 \EQ{reverse first two steps above}
 \\&& \W(\Skip\lor C\sigma \lor \dots)
 }
+
+\subsection{Miscellaneous}
+
+Most of this stuff should end up,
+if required,
+in a Proofs/Justification appendix.
+
+\subsubsection{Semantic Substitutions List}
+
+It can be informative to see the invariants grouped with
+the relevant actions and substitutions.
+\RLEQNS{
+   ~[in|out]
+   && A(in|a|out)
+\\ && id
+\\
+\\ ~[in|\ell_g|out]
+   && [g_{:1},\ell_g/g,out]
+\\ && [g_{:2},\ell_g/g,in]
+\\
+\\ ~[in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]
+   && A(in|ii|\ell_{g1},\ell_{g2})
+\\ && A(\ell_{g1:},\ell_{g2:}|ii|out)
+\\ && [g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\ && [g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\
+\\ ~[in|\ell_{g1}|\ell_{g2}|out]
+   && A(in|ii|\ell_{g1})
+\\ && A(in|ii|\ell_{g2})
+\\ && [g_{1:},\ell_{g1}/g,in]
+\\ && [g_{2:},\ell_{g2}/g,in]
+\\
+\\ ~[in|\ell_g|out]
+   && A(in|ii|out)
+\\ && A(in|ii|\ell_g)
+\\ && P[g_{:},\ell_g,in/g,in,out]
+\\
+\\ ~[in|\ell_{g1}|\ell_{g2}|out]
+   && A(in|c \land ii|\ell_{g1})
+\\ && A(in|\lnot c \land ii|\ell_{g2})
+\\ && [g_{1:},\ell_{g1}/g,in]
+\\ && [g_{2:},\ell_{g2}/g,in]
+\\
+\\ ~[in|\ell_g|out]
+\\ && A(in|\lnot c \land ii|out)
+\\ && A(in|c \land ii|\ell_g)
+\\ && [g_{:},\ell_g,in/g,in,out]
+}
+
+\subsubsection{Nested Invariants}
+
+For each composite,
+we show how its component substitutions affect their invariants
+and any entailment relationships that arise.
+We don't show the conditional variants of choice and iteration
+because their invariants and substitutions are the same as those
+in the corresponding non-deterministic constructs.
+
+Semantics Reminder:
+\RLEQNS{
+  \catom a
+  &\defs& [in|out] \land \W(\Skip \lor A(in|a|out))
+\\ P \cseq Q
+   &\defs&
+   [in|\ell_g|out]\land \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+\\ P \parallel Q
+   &\defs&
+   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+\\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
+\\ && \qquad {}\lor
+   P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+\\ && \qquad {}\lor
+    Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ && \qquad {}\lor
+   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+\\ P + Q
+   &\defs&
+   [in|\ell_{g1}|\ell_{g2}|out] \land {}
+\\ && \W(\quad {}\phlor A(in|ii|\ell_{g1})
+\\ && \qquad {} \lor
+                     A(in|ii|\ell_{g2})
+\\ && \qquad {} \lor
+   P[g_{1:},\ell_{g1}/g,in]
+\\ && \qquad {} \lor
+   Q[g_{2:},\ell_{g2}/g,in]~)
+\\ P^*
+   &\defs&
+   [in|\ell_g|out] \land {}
+\\ && \W(\quad  \phlor A(in|ii|out)
+\\ && \qquad {}\lor A(in|ii|\ell_g)
+\\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
+}
+
+
+\paragraph{Sequential Composition}
+
+\begin{description}
+  \item[Invariant]
+    $[in|\ell_g|out]$
+  \item[Substitutions]
+    $[g_{:1},\ell_g/g,out]$ and $[g_{:2},\ell_g/g,in]$
+  \item[Component Invariants]
+    $$\begin{array}{|l|c|c|}
+    \hline
+      \mbox{Type} & \mbox{as }P & \mbox{as }Q
+    \\\hline
+      \catom\_ & [in|\ell_g] & [\ell_g|out]
+    \\\hline
+       \_\cseq\_& [in|\ell_{g:1}|\ell_g] & [\ell_g|\ell_{g:2}|out]
+    \\\hline
+       \_\parallel\_
+       & [in|(\ell_{g:11}|\ell_{g:11:}),(\ell_{g:12}|\ell_{g:12:})|\ell_g]
+       & [\ell_g|(\ell_{g:21}|\ell_{g:21:}),(\ell_{g:22}|\ell_{g:22:})|out]
+    \\\hline
+    \end{array}$$
+\end{description}
+Hmmm \dots, no simple relationship is emerging.

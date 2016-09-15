@@ -27,25 +27,6 @@
 \subsection{Proof of A-gamma-subs}
 
 
-\subsection{Stuff}
-This appendix looks like the best place to introduce these shorthands
-\RLEQNS{
-   ls(\ell) &\defs& \ell \in ls
-\\ ls(L) &\defs& L \subseteq ls
-\\ ls(\B\ell) &\defs& \ell \notin ls
-\\ ls(\B L) &\defs& L \cap ls = \emptyset
-}
-We define what it means for an atomic action invocation
-to satisfy an invariant parameterised on the label type ($Lbl$).
-\RLEQNS{
-  ls \textbf{ lsat } I \land A(E|a|N) &\implies& ls' \textbf{ lsat } I
-}
-We can re-formulate this as a following equivalent test:
-\RLEQNS{
-   A(E|a|N) \textbf{ sat } I_{Lbl}
-   &\defs&
-   E \textbf{ lsat } I_{Lbl} \land N \textbf{ lsat } I_{Lbl}
-}
 
 
 \subsection{Proof of atom-inv-ok}
