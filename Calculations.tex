@@ -12,20 +12,136 @@ but very mechanical and tedious \cite{conf/utp/Butterfield16}.
 
 It also made it very clear that all program semantics predicates can be written
 in a standard normal form.
+We will discuss this aspect of the semantics first (\S\ref{ssec:normal-form}),
+as it embodies a key simplifying principle.
+We then address the issue of computing mumblings, i.e. the (UTP)
+sequential composition of $A$ actions (\S\ref{ssec:comp-A}.
+Finally, we present results of test calculations,
+which turn out to produce our normal forms (\S\ref{ssec:nf-calc}).
 
-We first address the issue of computing mumblings, i.e. the (UTP)
-sequential composition of $A$ actions.
+\subsection{Normal Form}\label{ssec:normal-form}
 
-The we present results of test calculations,
-which turn out to produce our normal forms.
+All the semantics above have an invariant $I_P$,
+zero or more atomic actions ($A_i$),
+plus zero or more language sub-component predicates ($P_j$)
+assembled into a predicate of the form:
+\[
+  I_P
+  \land
+  \DL(\W( A_1 \lor \dots \lor A_m
+     \lor
+     P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n ))
+\]
+where each $A_i$ is a basic action that preserves $I_P$,
+and $\varsigma_i = [G_i,I_i,O_i/g,in,out]$,
+is a sound substitution, so $\setof{I_i|G_i|O_i}$ holds.
+We can expand the definitions of $\DL$ and $\W$ to get:
+\[
+  I_P \land \setof{in|g|out}
+  \land
+  \bigvee_{i \in \Nat}
+    \left( A_1 \lor \dots \lor A_m
+          \lor
+          P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n
+    \right)^i
+\]
+We can then force the invariants in:
+\[
+    \bigvee_{i \in \Nat}
+      I_P \land \setof{in|g|out}
+      \land
+       \left( A_1 \lor \dots \lor A_m
+             \lor
+             P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n
+       \right)^i
+\]
+Each of the $P_1 \dots P_n$ have the same structure.
+We now explore the nature of the sequential compositions,
+starting with $i=2$.
+\RLEQNS{
+  && ( A_1 \lor \dots \lor A_m
+       \lor
+       P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n )
+     \seq
+     ( A_1 \lor \dots \lor A_m
+       \lor
+       P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n )
+\EQ{$;$-$\lor$-distr}
+\\&& A_1 \seq A_1 \lor \dots \lor A_1 \seq A_m
+     \lor
+     A_1 \seq P_1\varsigma_1 \lor \dots \lor A_1 \seq P_n\varsigma_n
+\\&\lor& \vdots
+\\&\lor& A_m \seq A_1 \lor \dots \lor A_m \seq A_m
+         \lor
+         A_m \seq P_1\varsigma_1 \lor \dots \lor A_m \seq P_n\varsigma_n
+\\&\lor& P_1\varsigma_1 \seq A_1 \lor \dots \lor P_1\varsigma_1 \seq A_m
+         \lor
+         P_1\varsigma_1 \seq P_1\varsigma_1 \lor \dots \lor P_1\varsigma_1 \seq P_n\varsigma_n
+\\&\lor& \vdots
+\\&\lor& P_n\varsigma_n \seq A_1 \lor \dots \lor P_n\varsigma_n \seq A_m
+         \lor
+         P_n\varsigma_n \seq P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n \seq P_n\varsigma_n
+}
+If our program is an atomic action, then $m=2$ and $n=0$, so
+we have
+\[
+  A_1 \seq A_1
+\]
+which means its semantics reduces to
+\[
+ \bigvee_{i \in \Nat }I_P \land \setof{in|g|out} \land A_1^i
+\]
+If our program is a composite whose components are atomic,
+then the $P_i$ have the above form.
+Generalising, it should be easy to see that the semantics of any construct
+will ultimately have the form
+\[
+  \Skip \lor \bigvee_m  I_m \land X_m
+\]
+where $I_m$ is some conjunction of invariants,
+$X_m$ is a sequence of $A$s sequentially composed together,
+and $m$ is an index from some appropriate set.
+This is the normal form.
+In effect the meaning of a program is a big non-deterministic choice
+between stuttering, basic actions,
+and a specific set of mumblings.
+We will make those more precise after we have investigated mumbling in more detail.
 
-\textbf{SHOULD COMPUTE PARTIAL NORMAL FORMS
-FOR COMPOSTITES}
+The $\Skip$ occurs because we have the case $i=0$ to consider above,
+and it propagates up.
+In effect we have another healthiness condition:
+\RLEQNS{
+   P &=& \Skip \lor P & \elabel{stutter-anytime}
+}
 
-\subsection{Composing $A$s}\label{ssec:comp-A}
+
+
+
+
+\subsection{Composing $A$s (a.k.a. Mumbling)}\label{ssec:comp-A}
 
 We have a problem in that actions defined using $A(\dots)$
 are not closed under standard UTP sequential composition (\eref{UTP-seq-def}).
+For example consider the following,
+where all three labels are different:
+\[
+   A(l_1|a|l_2) \seq A(l_2|b|l_3)
+\]
+The first action requires $l_1$ to be in $ls$ to run,
+and if so, removes it and adds in $l_2$.
+So the second action can then run immediately afterwards,
+and removes $l_2$ and adds in $l_3$.
+So the overall outcome is that $l_1$ needs to be in $ls$
+for this mumbling to occur, $l_1$ and $l_2$ are removed,
+and $l_3$ is added.
+We could argue that the net effect is that $l_1$
+is removed and $l_3$ is added,
+but that assumes that $l_2$ was not present at the start.
+If it was, then the net effect would still be,
+requiring $l_1$ to be present to start,
+removing $l_1$ and $l_2$, and adding in $l_3$.
+
+We cannot describe this as an instance of $A$.
 We need a more general form,
 where the labels removed are not necessarily
 exactly those that had to be present to enable the action.
@@ -67,36 +183,8 @@ If $(E_1 \cup N_1) \cap (E_2 \cup N_2)$, then
 \]
 (and vice-versa)!
 
-\subsection{Normal Form}\label{sec:normal-form}
 
-All the semantics above have an invariant $I_P$,
-zero or more atomic actions ($A_i$),
-plus zero or more language sub-component predicates ($P_j$)
-assembled into a predicate of the form:
-\[
-  I_P
-  \land
-  \W( A_1 \lor \dots \lor A_m
-     \lor
-     P_1\sigma_1 \lor \dots \lor P_n\sigma_n )
-\]
-where each $\sigma_i = [G_i,I_i,O_i/g,in,out]$,
-with all $G_i$, $I_i$ and $O_i$ being ground
-and satisfying the invariant $[I_i|labs(G_i)|O_i]$.
-
-\subsubsection{Stuttering Propagates Up}
-
-We show that for any predicate $P$ resulting from the
-semantics applied to a program,
-that the stuttering on such a predicate propagates up:
-\RLEQNS{
-   P &=& \Skip \lor P
-}
-
-
-
-\subsubsection{Nondeterministic Iteration}
-
+\subsubsection{Normal Form Revisited}
 Given that we have,
 for predicates $P$ used in program semantic definitions,
 that
@@ -157,8 +245,10 @@ as such a normal form:
 This is an easy result of the fact that $\seq$ distributes through $\lor$,
 and $\Skip$ is a unit for it as well.
 
+\subsection{Normal Form Calculations}\label{ssec:nf-calc}
 
-\subsection{Normal Form Results for Atomic components}
+\textbf{SHOULD COMPUTE PARTIAL NORMAL FORMS
+FOR COMPOSITES as a preliminary, then instantiate with atomic bits.}
 
 We now present the results of calculations of normal forms for every language
 construct, given atomic sub-components,
