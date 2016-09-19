@@ -1,5 +1,308 @@
 \section{Calculation Proofs}\label{sec:calc-proofs}
 
+\subsection{Proof of stutter-anytime}
+
+\subsection{Proof of X-then-X}
+
+\RLEQNS{
+   \lefteqn{X(E_1|a|R_1|A_1) ; X(E_2|b|R_2|A_2)} &&& \elabel{X-then-X}
+\\ &=& E_2 \cap (R_1\sminus A_1) = \emptyset
+\\ & & {} \land
+   X(E_1 \cup (E_2\sminus A_1)
+       |a\seq_s b
+       |R_1 \cup R_2
+       |(A_1 \sminus R_2) \cup  A_2)
+}
+
+\subsection{Proof of A-then-A}
+
+\RLEQNS{
+  && A(E_1|a|N_1) \seq A(E_2|a|N_2)
+\EQ{\eref{A-alt-def}}
+\\&& X(E_1|a|E_1|N_1) \seq X(E_2|a|E_2|N_2)
+\EQ{\eref{X-then-X}}
+\\&& E_2 \cap (E_1\sminus N_1) = \emptyset
+     \land
+     X(E_1 \cup (E_2\sminus N_1)
+         \mid a\seq_s b
+         \mid E_1 \cup E_2
+         \mid (N_1 \sminus E_2) \cup  N_2)
+}
+
+\subsection{Proof of A-then-X}
+
+\RLEQNS{
+  && A(E_1|a|N_1) \seq X(E_2|a|R_2|A_2)
+\EQ{\eref{A-alt-def}}
+\\&& X(E_1|a|E_1|N_1) \seq X(E_2|a|R_2|A_2)
+\EQ{\eref{X-then-X}}
+\\&& E_2 \cap (E_1\sminus N_1) = \emptyset
+     \land
+     X(E_1 \cup (E_2\sminus N_1)
+         \mid a\seq_s b
+         \mid E_1 \cup R_2
+         \mid (N_1 \sminus R_2) \cup  A_2)
+}
+
+\subsection{Proof of X-then-A}
+
+\RLEQNS{
+  && X(E_1|a|R_1|A_1) \seq A(E_2|a|N_2)
+\EQ{\eref{A-alt-def}}
+\\&& X(E_1|a|E_1|N_1) \seq X(E_2|a|E_2|N_2)
+\EQ{\eref{X-then-X}}
+\\&& E_2 \cap (R_1\sminus A_1) = \emptyset
+     \land
+     X(E_1 \cup (E_2\sminus A_1)
+         \mid a\seq_s b
+         \mid R_1 \cup E_2
+         \mid (A_1 \sminus E_2) \cup  N_2)
+}
+
+\subsection{Proof of disjoint-As}
+
+\RLEQNS{
+   \lefteqn{(E_1 \cup N_1) \cap (E_2 \cup N_2)=\emptyset} &&& \elabel{disjoint-As}
+\\ &\implies&
+  A(E_1|a|N_1) \seq A(E_2|b|N_2)
+  =
+  A(E_1\cup E_2|a\seq b|N_1\cup N_2)
+}
+We assume $(E_1 \cup N_1) \cap (E_2 \cup N_2)=\emptyset$.
+\RLEQNS{
+  && A(E_1|a|N_1) \seq A(E_2|b|N_2)
+\EQ{\eref{A-then-A}}
+\\&& E_2 \cap (E_1\sminus N_1) = \emptyset
+     \land
+     X(E_1 \cup (E_2\sminus N_1)
+         \mid a\seq_s b
+         \mid E_1 \cup E_2
+         \mid (N_1 \sminus E_2) \cup  N_2)
+\EQ{Simply set expressions using assumption}
+\\&& \emptyset = \emptyset
+     \land
+     X(E_1 \cup E_2
+         \mid a\seq_s b
+         \mid E_1 \cup E_2
+         \mid N_1  \cup  N_2)
+\EQ{\eref{A-alt-def}}
+\\&& A(E_1 \cup E_2
+         \mid a\seq_s b
+         \mid N_1  \cup  N_2)
+}
+
+\subsection{Proof of A2-not-enabled-by-A1}
+
+\RLEQNS{
+   \lefteqn{N_1 \cap E_2 = \emptyset}
+\\ &\implies&
+  A(E_1|a|N_1) \seq A(E_2|b|N_2)
+\\ && {} =
+  E_2 \cap E_1 = \emptyset
+  \land A(E_1\cup E_2|a\seq_s b|N_1\cup N_2)
+}
+We assume $N_1 \cap E_2 = \emptyset$ and proceed
+\RLEQNS{
+  && A(E_1|a|N_1) \seq A(E_2|b|N_2)
+\EQ{\eref{A-then-A}}
+\\&& E_2 \cap (E_1\sminus N_1) = \emptyset
+     \land
+     X(E_1 \cup (E_2\sminus N_1)
+         \mid a\seq_s b
+         \mid E_1 \cup E_2
+         \mid (N_1 \sminus E_2) \cup  N_2)
+\EQ{Simply set expressions using assumption}
+\\&& E_2 \cap E_1 = \emptyset
+     \land
+     X(E_1 \cup E_2
+         \mid a\seq_s b
+         \mid E_1 \cup E_2
+         \mid N_1 \cup  N_2)
+\EQ{\eref{A-alt-def}}
+\\&& E_2 \cap E_1 = \emptyset
+     \land
+     A(E_1 \cup E_2
+         \mid a\seq_s b
+         \mid N_1 \cup  N_2)
+}
+
+\subsection{Proof of UTCP-NF}
+
+\RLEQNS{
+   P
+   &=&
+   I_P \land \Skip
+      \lor
+      \bigvee_{p \in pindex}
+      (I_P \land I_n \land X(E_p|a_p|R_p|A_p) \land S_p)
+}
+for suitable choices of $pindex$, $I_p$, $E_p$, $a_p$, $R_p$, $A_p$ and $S_p$,
+depending on $P$.
+
+\subsection{Proof of nf-seq}
+
+\RLEQNS{
+   I \land (\Skip\lor\bigvee A_i) \seq J \land (\Skip\lor\bigvee B_j)
+   &=&
+   I \land J \land (\Skip\lor\bigvee (A_i \seq B_j))
+}
+
+
+
+\subsection{Proof of NF-atomic}
+
+
+\RLEQNS{
+   \catom{a}
+   &=&
+   \{[in|out]\} \land (\Skip \lor A(in|a|out))
+}
+
+\subsection{Proof of NF-skip}
+
+\RLEQNS{
+   \cskip
+   &=&
+   \{[in|out]\} \land (\Skip \lor A(in|ii|out))
+}
+
+\subsection{Proof of NF-seq}
+
+\RLEQNS{
+   P \cseq Q
+   &=& [in|\ell_g|out] \land \dots
+}
+
+\subsection{Proof of NF-a-seq-b}
+
+\RLEQNS{
+   a \cseq b
+   &=& \{[in|\ell_g|out]\} \land {}
+\\ && (~\Skip
+      \lor
+      A(in|a|\ell_g)
+      \lor
+      A(\ell_g|b|out)
+      \lor
+      A(in|a\seq b|out)~)
+}
+
+\subsection{Proof of NF-NDC}
+
+\RLEQNS{
+   P + Q
+   &=& [in|\ell_{g1}|\ell_{g2}|out] \land \dots
+}
+
+\subsection{Proof of NF-a-or-b}
+
+
+\RLEQNS{
+   a + b
+   &=& \{[in|\ell_{g1}|\ell_{g2}|out]\} \land {}
+\\ && \bigvee\left\{
+       \begin{array}{l}
+          \Skip,
+       \\ A(in|ii|\ell_{g1}),
+          A(in|ii|\ell_{g2}),
+          A(\ell_{g1}|a|out),
+          A(\ell_{g2}|b|out),
+       \\ A(in|a|out),
+          A(in|b|out)
+       \end{array}
+      \right\}
+}
+
+
+\subsection{Proof of NF-par}
+
+\RLEQNS{
+   P \parallel Q
+   &=& [in\mid([\ell_{g1}|\ell_{g1:}],[\ell_{g2}|\ell_{g2:}])\mid out]
+       \land \dots
+   & \elabel{NF-par}
+}
+
+\subsection{Proof of NF-a-par-b}
+
+
+\RLEQNS{
+   a \parallel b
+   &=& \{in\mid \ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:}\mid out\}
+        \land {}
+\\ && [in\mid([\ell_{g1}|\ell_{g1:}],[\ell_{g2}|\ell_{g2:}])\mid out]
+       \land {}
+\\ && \bigvee\left\{
+       \begin{array}{l}
+          \Skip,
+       \\ A(in|ii|\ell_{g1},\ell_{g2}),
+          A(\ell_{g1:},\ell_{g2:}|ii|out),
+       \\ A(\ell_{g1}|a|\ell_{g1:}),
+          A(\ell_{g2}|b|\ell_{g2:}),
+       \\ A(in|a|\ell_{g1:},\ell_{g2}),
+          A(in|b|\ell_{g2:},\ell_{g1}),
+       \\ A(\ell_{g1},\ell_{g2}|b;a|\ell_{g1:},\ell_{g2:}),
+          A(\ell_{g1},\ell_{g2}|a;b|\ell_{g1:},\ell_{g2:}),
+       \\ A(\ell_{g2:},\ell_{g1}|a|out),
+          A(\ell_{g1:},\ell_{g2}|b|out),
+      \\ A(in|b;a|\ell_{g1:},\ell_{g2:}),
+         A(in|a;b|\ell_{g1:},\ell_{g2:}),
+      \\ A(\ell_{g1},\ell_{g2}|b;a|out),
+         A(\ell_{g1},\ell_{g2}|a;b|out),
+      \\ A(in|b;a|out),
+         A(in|a;b|out)
+       \end{array}
+      \right\}
+}
+
+\subsection{Proof of NF-iter}
+
+\RLEQNS{
+   P^* &=& [in|\ell_g|out] \land \dots
+}
+
+\subsection{Proof of NF-a-star}
+
+\RLEQNS{
+   a^*
+   &=& \{[in|\ell_g|out]\} \land {}
+\\ && \bigvee\left\{
+       \begin{array}{l}
+          \Skip,
+       \\ \mathbf{A(in|ii|out)},
+          A(in|ii|\ell_g),
+          A(\ell_g|a|in)
+       \\ A(\ell_g|a|out),
+          A(\ell_g|a|\ell_g)
+          , A(in|a|in)
+       \\ \mathbf{A(in|a|out)},
+          A(in|a|\ell_g),
+          A(\ell_g|a^2|in)
+       \\ A(\ell_g|a^2|out,
+          A(\ell_g|a^2|\ell_g),
+          A(in|a^2|in)
+       \\ \mathbf{A(in|a^2|out)},
+          A(in|a^2|\ell_g),
+          A(\ell_g|a^3|in)
+       \\ A(\ell_g|a^3|out),
+          A(\ell_g|a^3|\ell_g),
+          A(in|a^3|in),
+       \\ \vdots
+       \end{array}
+      \right\}
+}
+
+
+
+
+\subsection{Proof of XXX}
+
+\subsection{Proof of XXX}
+
+\subsection{Proof of XXX}
+
+\subsection{Proof of XXX}
+
 \subsection{Stuff}
 This appendix looks like the best place to introduce these shorthands
 \RLEQNS{
@@ -166,7 +469,7 @@ is all the mumblings that cross from $P$ to $Q$.
 \\&& (\bigvee_n X_n) \seq (\bigvee_n X_n)
 \EQ{$\seq$-$\lor$-distr, $m,n \in N$}
 \\&& \bigvee_{m,n}  (X_m \seq X_n)
-\EQ{let $m',n' \in N\setminus\setof{n_0}$}
+\EQ{let $m',n' \in N\sminus\setof{n_0}$}
 \\&&\bigvee_{m'}  (X_{m'} \seq X_{n_0})
     \lor
     \bigvee_{n'}  (X_{n_0} \seq X_{n'})
