@@ -309,7 +309,7 @@ We adopt the following shorthand for those cases:
    &=& [in|\ell_g|out] \land \dots
    & \elabel{NF-seq}
 \\
-\\ a \cseq b
+\\ \catom a \cseq \catom b
    &=& \{[in|\ell_g|out]\} \land {}
   & \elabel{NF-a-seq-b}
 \\ && (~\Skip
@@ -328,7 +328,7 @@ We adopt the following shorthand for those cases:
    P + Q
    &=& [in|\ell_{g1}|\ell_{g2}|out] \land \dots & \elabel{NF-NDC}
 \\
-\\ a + b
+\\ \catom a + \catom b
    &=& \{[in|\ell_{g1}|\ell_{g2}|out]\} \land {}
    & \elabel{NF-a-or-b}
 \\ && \bigvee\left\{
@@ -353,7 +353,7 @@ Here $\#n$ denotes mumblings of length $n$.
        \land \dots
    & \elabel{NF-par}
 \\
-\\ a \parallel b
+\\ \catom a \parallel \catom b
    &=& \{in\mid \ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:}\mid out\}
         \land {}
 \\ && [in\mid([\ell_{g1}|\ell_{g1:}],[\ell_{g2}|\ell_{g2:}])\mid out]
@@ -390,7 +390,7 @@ are \textbf{emboldended} below.
    P^* &=& [in|\ell_g|out] \land \dots
    & \elabel{NF-iter}
 \\
-\\ a^*
+\\ \catom a^*
    &=& \{[in|\ell_g|out]\} \land {}
    & \elabel{NF-a-star}
 \\ && \bigvee\left\{
@@ -505,23 +505,10 @@ Nice to have:
 the combined invariants ensure that the normal form
 has the form:
 \[
-  P = \bigvee_n A(E_n|a_n|N+n)  \qquad \elabel{NF-only-As}
+  P = \bigvee_n A(E_n|a_n|N_n)  \qquad \elabel{NF-only-As}
 \]
 Is this the case?
 
-\subsubsection{STOP PRESS! $P^2=P$ ?}
-
-The semantics of a program $P$
-contains a stuttering step $\Skip$,
-all the single atomic actions $A(\dots)$,
-and all the feasible mumblings
-$X(\dots) = A(\dots) \seq A(\dots) \seq \dots \seq A(\dots)$.
-Calculations for law $\cskip\cseq P = P$ suggest the following conjecture:
-\begin{center}
-\fbox{$\large P \seq P = P \qquad \elabel{mumble-closure}$}
-\end{center}
-This is because combining elements of $P$ with each other results
-in either infeasibility, or some other already present mumble.
 
 \newpage
 \subsection{Miscellaneous}

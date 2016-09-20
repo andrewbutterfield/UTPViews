@@ -168,23 +168,100 @@ depending on $P$.
 
 \subsection{Proof of NF-seq}
 
+We shall introduce the following normal forms and shorthands,
+for this proof, and that for \ecite{NF-a-seq-b} below.
 \RLEQNS{
-   P \cseq Q
-   &=& [in|\ell_g|out] \land \dots
+   P &=& \bigvee_p S_p
+\\ Q &=& \bigvee_q T_q
+\\ S_p &=& X(E_p|a_p|R_p|A_p)
+\\ T_q &=& X(E_q|a_q|R_q|A_q)
+\\ \gamma_1 &=& [\g{:1},\ell_g/g,out]
+\\ \gamma_2 &=& [\g{:2},\ell_g/g,in]
+\\ I &=& [in|\ell_g|out]
+\\ D &=& \{in|g|out\}
+\\ D_1 &=& D\gamma_1 ~=~ \{in|\g{:1}|\ell_g\}
+\\ D_2 &=& D\gamma_2 ~=~ \{\ell_g|\g{:2}|out\}
 }
+Here $p$ and $q$ range over appropriate index sets.
+
+\RLEQNS{
+  && P \cseq Q
+\EQ{\eref{sem:seq}, with $\DL$ expanded}
+\\&& [in|\ell_g|out]
+     \land \setof{in|g|out}
+     \land
+     \W( P[\g{:1},\ell_g/g,out]
+         \lor
+         Q[\g{:2},\ell_g/g,in]   )
+\EQ{above shorthands, \eref{W-as-NDC}}
+\\&& I
+     \land D
+     \land
+     \bigvee_{i \in \Nat}
+       ( P\gamma_1
+         \lor
+         Q\gamma_2 )^i
+\EQ{$P$ and $Q$ are $\DL$-healthy}
+\\&& I
+     \land D
+     \land
+     \bigvee_{i \in \Nat}
+       ( (D \land P)\gamma_1
+         \lor
+         (D \land Q)\gamma_2 )^i
+\EQ{substitution, shorthand}
+\\&& I
+     \land D
+     \land
+     \bigvee_{i \in \Nat}
+       ( D_1 \land P\gamma_1
+         \lor
+         D_2 \land Q\gamma_2 )^i
+\EQ{unroll big disjunction a little}
+\\&& I
+     \land D
+     \land
+     \left(\begin{array}{l}
+        \Skip \lor {}
+     \\ D_1 \land P\gamma_1 \lor D_2 \land Q\gamma_2 \lor {}
+     \\ ( D_1 \land P\gamma_1 \lor D_2 \land Q\gamma_2 )^2 \lor {}
+     \\ \bigvee_{i \in 3,\dots}
+          ( D_1 \land P\gamma_1
+          \lor
+           D_2 \land Q\gamma_2 )^i
+     \end{array}\right)
+}
+Now, we consider the case when $i=2$.
+
 
 \subsection{Proof of NF-a-seq-b}
 
 \RLEQNS{
-   a \cseq b
-   &=& \{[in|\ell_g|out]\} \land {}
-\\ && (~\Skip
-      \lor
-      A(in|a|\ell_g)
-      \lor
-      A(\ell_g|b|out)
-      \lor
-      A(in|a\seq b|out)~)
+  && \catom a \cseq \catom b
+\EQ{Step 3 in above calculation}
+\\&& I
+     \land D
+     \land
+     \bigvee_{i \in \Nat}
+       ( \catom a\gamma_1
+         \lor
+         \catom b\gamma_2 )^i
+\EQ{\eref{NF-atomic}}
+\\&& I
+     \land D
+     \land
+     \bigvee_{i \in \Nat}
+       ( (\{[in|out]\} \land (\Skip \lor A(in|a|out)))\gamma_1
+         \lor
+         (\{[in|out]\} \land (\Skip \lor A(in|a|out)))\gamma_2 )^i
+\EQ{substitution, shorthands}
+\\&& I
+     \land D
+     \land
+     \bigvee_{i \in \Nat}
+       ( D_1 \land (\Skip \lor A(in|a|\ell_g))
+         \lor
+         D_2 \land (\Skip \lor A(\ell_g|a|out)) )^i
 }
 
 \subsection{Proof of NF-NDC}
@@ -198,7 +275,7 @@ depending on $P$.
 
 
 \RLEQNS{
-   a + b
+   \catom a + \catom b
    &=& \{[in|\ell_{g1}|\ell_{g2}|out]\} \land {}
 \\ && \bigvee\left\{
        \begin{array}{l}
@@ -227,7 +304,7 @@ depending on $P$.
 
 
 \RLEQNS{
-   a \parallel b
+   \catom a \parallel \catom b
    &=& \{in\mid \ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:}\mid out\}
         \land {}
 \\ && [in\mid([\ell_{g1}|\ell_{g1:}],[\ell_{g2}|\ell_{g2:}])\mid out]
@@ -264,7 +341,7 @@ depending on $P$.
 \subsection{Proof of NF-a-star}
 
 \RLEQNS{
-   a^*
+   \catom a^*
    &=& \{[in|\ell_g|out]\} \land {}
 \\ && \bigvee\left\{
        \begin{array}{l}

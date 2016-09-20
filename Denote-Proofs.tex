@@ -18,10 +18,90 @@
 \subsection{Proof of gnd-sub-closure}
 \subsection{Proof of gnd-sub-comp}
 \subsection{Proof of sound-sub-closure}
+
+\newpage
+\subsection{Proof of DL-seq-distr}
+
+\RLEQNS{
+  && \DL(P)\seq \DL(Q)
+\EQ{\eref{DL-def}, $D=\setof{in|g|out}$}
+\\&& (P \land D) \seq (Q \land D)
+\EQ{\eref{UTP-seq-def}}
+\\&& \exists ls_m,s_m @
+     (P \land D)[ls_m,s_m/ls',s']
+     \land
+     (Q \land D)[ls_m,s_m/ls,s]
+\EQ{substitution}
+\\&& \exists ls_m,s_m @
+     P[ls_m,s_m/ls',s'] \land D[ls_m,s_m/ls',s']
+     \land
+     Q[ls_m,s_m/ls,s] \land D[ls_m,s_m/ls,s]
+\EQ{$D$ is ground: $\setof{ls,ls',s,s'} \cap \textrm{fv}(D) = \emptyset$}
+\\&& \exists ls_m,s_m @
+     P[ls_m,s_m/ls',s'] \land D
+     \land
+     Q[ls_m,s_m/ls,s] \land D
+\EQ{shrink scope, $\land$-idem}
+\\&& (\exists ls_m,s_m @
+       P[ls_m,s_m/ls',s'] \land Q[ls_m,s_m/ls,s]) \land D
+\EQ{\eref{UTP-seq-def}}
+\\&& (P \seq  Q) \land D
+\EQ{\eref{DL-def}}
+\\&& \DL(P \seq  Q)
+}
+
 \subsection{Proof of loop-as-NDC}
 \subsection{Proof of W-monotonic}
 \subsection{Proof of W-idempotent}
+
+\newpage
 \subsection{Proof of W-seq-W-is-W}
+
+\RLEQNS{
+  && \W(P)\seq\W(P)
+\EQ{\eref{W-as-NDC}}
+\\&& (\bigvee_{i \in \Nat} P^i) \seq (\bigvee_{i \in \Nat} P^i)
+\EQ{unroll iterated disjunctions}
+\\&& (P^0 \lor P^1 \lor P^2 \lor P^3 \lor \dots)
+     \seq
+     (P^0 \lor P^1 \lor P^2 \lor P^3 \lor \dots)
+\EQ{\eref{seq-0},\eref{seq-i-plus-1}}
+\\&& (\Skip \lor P \lor P^2 \lor P^3 \lor \dots)
+     \seq
+     (\Skip \lor P \lor P^2 \lor P^3 \lor \dots)
+\EQ{$\lor$-$\seq$-distr}
+\\&&     \Skip \seq (\Skip \lor P \lor P^2 \lor P^3 \lor \dots)
+\\&\lor&     P \seq (\Skip \lor P \lor P^2 \lor P^3 \lor \dots)
+\\&\lor&   P^2 \seq (\Skip \lor P \lor P^2 \lor P^3 \lor \dots)
+\\&\lor&   P^3 \seq (\Skip \lor P \lor P^2 \lor P^3 \lor \dots)
+\\&\lor&   \dots
+\EQ{$\seq$-$\lor$-distr}
+\\&&     \Skip \seq \Skip \lor \Skip \seq P \lor \Skip \seq P^2 \lor \Skip \seq P^3 \lor \dots
+\\&\lor&      P \seq \Skip \lor P \seq P \lor P \seq P^2 \lor P \seq P^3 \lor \dots
+\\&\lor&   P^2 \seq \Skip \lor P^2 \seq P \lor P^2 \seq P^2 \lor P^2 \seq P^3 \lor \dots
+\\&\lor&   P^3 \seq \Skip \lor P^3 \seq P \lor P^3 \seq P^2 \lor P^3 \seq P^3 \lor \dots
+\\&\lor&   \dots
+\EQ{\eref{seq-unit}, \eref{seq-assoc}, \eref{seq-0}, \eref{seq-i-plus-1}}
+\\&&     \Skip \lor P \lor P^2 \lor P^3 \lor \dots
+\\&\lor&      P \lor P^2 \seq P^3 \seq P^4 \lor \dots
+\\&\lor&   P^2 \lor P^3 \lor P^4 \lor P^5 \lor \dots
+\\&\lor&   P^3 \lor P^4 \lor P^5 \lor P^6 \lor \dots
+\\&\lor&   \dots
+\EQ{$\lor$-assoc, $\lor$-idem}
+\\&& \Skip \lor P \lor P^2 \lor P^3 \lor P^4 \lor P^5 \lor P^6 \lor \dots
+\EQ{roll repeated disjunctions, \eref{W-as-NDC}}
+\\&& \W(P)
+}
+Note: this proof shows why the stuttering step $\Skip$ is crucial.
+Without it we would have that
+\[
+  (\W(P))^k  = \bigvee_{i \in k \dots} P^i
+\]
+Whereas an easy corollary of our result is that
+\RLEQNS{
+  (\W(P))^k  &=& \W(P) & \elabel{W-star-is-W}
+}
+
 \subsection{Proof of W-gnd-subst}
 \subsection{Proof of W-gnd-and-distr}
 \subsection{Proof of A-gamma-subs}

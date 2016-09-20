@@ -294,10 +294,15 @@ We have a general healthiness condition (Disjoint Labels) which asserts
 that the labels associated with $in$, $out$ and $g$
 are different:
 \RLEQNS{
-  \DL(P) &=& P \land \setof{in|g|out}
+  \DL(P) &=& P \land \setof{in|g|out} & \elabel{DL-def}
 }
 This is just the Disjoint Labels invariant of \S\ref{sssec:disjoint-labels},
 reformulated as a healthiness condition.
+Also, it is a ground predicate, and so distributes
+through sequential composition:
+\RLEQNS{
+  \DL(P\seq Q) &=& \DL(P) \seq \DL(Q) & \eref{DL-seq-distr}
+}
 
 \subsubsection{Wheels-within-Wheels}\label{sssec:WwW}
 
@@ -350,18 +355,6 @@ This leads us to define the healthiness condition as
 We note explicitly here that, in effect,
 our semantic model is based on unbounded non-determinism.
 
-However, for iteration-free programs
-we find that there is a finite $k$ such that $P^k = \false$,
-in which case the non-determinism is bounded.
-We get these finite results that seem very similar
-to the results obtained by using $run$ above.
-Using $run$ results in predicates that cannot be composed
-to get composite behaviour.
-However, using $\W$ results in a slight variation,
-which is composable!
-What turns out to be crucial
-to this outcome is the explicit stuttering option.
-
 For $\W$ to be a proper healthiness condition
 is has to be monotonic and idempotent.
 \RLEQNS{
@@ -384,6 +377,19 @@ as does any top-level conjunction with a ground predicate $K$:
    K \land \W(Q) &=& \W(K \land Q) & \elabel{W-gnd-and-distr}
 }
 
+
+
+For iteration-free programs
+we find that there is a finite $k$ such that $P^k = \false$,
+in which case the non-determinism is bounded.
+We get these finite results that seem very similar
+to the results obtained by using $run$ above.
+Using $run$ results in predicates that cannot be composed
+to get composite behaviour.
+However, using $\W$ results in a slight variation,
+which is composable!
+What turns out to be crucial
+to this outcome is the explicit stuttering option.
 
 
 
