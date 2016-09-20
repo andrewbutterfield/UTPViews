@@ -120,8 +120,11 @@
 \def\B#1{\overline{#1}}
 
 % proof/calculation stuff
-\def\say#1{\textrm{~~#1}}
+\def\say#1{\textsf{~~#1}}
 \def\EQ#1{\\&=&\rule[-6pt]{0pt}{17pt}\say{#1}}
+\def\EQm#1{\EQ{${\scriptscriptstyle\langle\!\langle}%
+                \small ~~{#1}~~%
+                {\scriptscriptstyle\rangle\!\rangle}$}}
 \def\EOLC#1{\textrm{ --- ``#1''}}
 
 \def\llawnamebr{\mbox{\raisebox{2pt}{${\scriptscriptstyle\langle\!\langle\cdot}$}}}
