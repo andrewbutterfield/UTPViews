@@ -93,21 +93,33 @@ which means its semantics reduces to
 \]
 If our program is a composite whose components are atomic,
 then the $P_i$ have the above form.
-Generalising, it should be easy to see that the semantics of any construct
+Generalising, it should be easy to see that the semantics of any construct $P$
 will ultimately have the form
 \[
-  \Skip \lor \bigvee_m  I_m \land X_m
+  \bigvee_p  I_p \land X_p)
 \]
-where $I_m$ is some conjunction of invariants,
-$X_m$ is a sequence of $A$s sequentially composed together,
-and $m$ is an index from some appropriate set.
-This is the normal form.
+Here $p$ is an index from some appropriate set,
+determined by the structure of $P$.
+
+The $I_p$ are some conjunction of invariants
+that includes $I_P$, the top-level invariant for $P$.
+and $X_p$ is a sequence of $A$s sequentially composed together.
+By convention, we assume a distinguished index value $p_0$,
+and take $I_{p_0} = I_P$ and $X_{p_0} = \Skip$.
+To summarise:
+\RLEQNS{
+   I_{p_0}  &=& I_P  & \elabel{I-p-0}
+\\ X_{p_0} &=& \Skip   & \elabel{X-p-0}
+\\ P        &=& \bigvee_p  (I_p \land X_p)
+   & \elabel{UTCP-NF}
+}
+
 In effect the meaning of a program is a big non-deterministic choice
 between stuttering, basic actions,
 and a specific set of mumblings.
 We will make those more precise after we have investigated mumbling in more detail.
 
-The $\Skip$ occurs because we have the case $i=0$ to consider above,
+The $X_{m_0} =\Skip$ occurs because we have the case $i=0$ to consider above,
 and it propagates up.
 In effect we have another healthiness condition:
 \RLEQNS{

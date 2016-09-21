@@ -695,6 +695,14 @@ LE invariant preservation
 
 HMMMMM! PERHAPS NDC is just $P[\g1/g] \lor P[\g2/g]$???
 
+\RLEQNS{
+   P+Q
+   &\defs&
+   [in|out]
+   \land
+   \DL(\W( P[\g1/g] \lor Q[\g2/g]))
+}
+
 \subsubsection{Nondeterministic Loop}
 
 \begin{figure}
@@ -829,5 +837,16 @@ LE invariant preservation
    [in|\ell_{g1}|out]'\varsigma
 }
 
+\subsubsection{Key Semantic Properties}
+
+\begin{description}
+  \item[Label Movement]
+    We need to show that in any construct,
+    no basic action is enabled by $out$
+    and that it is only added into $ls$.
+    This property holds under any sound substitution $\varsigma$ as well.
+    We can't say a complementary thing about $in$ because of the definition
+    of iteration, where $in$ replaces $out$ in the loop body.
+\end{description}
 
 \subsection{Semantics Summary}\label{ssec:sem-summary}

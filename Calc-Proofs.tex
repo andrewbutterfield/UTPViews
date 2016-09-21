@@ -175,7 +175,7 @@ So all terms with $i\geq 2$ vanish so our result is
 \RLEQNS{
   && \catom a
 \EQ{\eref{sem:atomic},\eref{DL-def},\eref{W-as-NDC}}
-\\&& ~[in|out] \land \setof{in|g|out} 
+\\&& ~[in|out] \land \setof{in|g|out}
      \land (\Skip \lor A(in|a|out))
 \EQ{$g$ does not occur anywhere else}
 \\&& ~[in|out] \land \setof{in|out}
@@ -198,8 +198,8 @@ So all terms with $i\geq 2$ vanish so our result is
 We shall introduce the following normal forms and shorthands,
 for this proof, and that for \ecite{NF-a-seq-b} below.
 \RLEQNS{
-   P &=& \bigvee_p S_p
-\\ Q &=& \bigvee_q T_q
+   P &=& I_P \land \bigvee_p (I_p \land S_p)
+\\ Q &=& I_Q \land \bigvee_q (I_q \land T_q)
 \\ S_p &=& X(E_p|a_p|R_p|A_p)
 \\ T_q &=& X(E_q|a_q|R_q|A_q)
 \\ \gamma_1 &=& [\g{:1},\ell_g/g,out]
@@ -268,7 +268,7 @@ Now, we consider the case when $i=2$.
 \\&\lor& D_1 \land P\gamma_1 \seq D_2 \land Q\gamma_2
 \\&\lor& D_2 \land Q\gamma_2 \seq D_1 \land P\gamma_1
 \\&\lor& D_2 \land Q\gamma_2 \seq D_2 \land Q\gamma_2
-\EQ{\eref{GND-and-seq-L},\eref{GND-and-seq-R},$\land$-idem} 
+\EQ{\eref{GND-and-seq-L},\eref{GND-and-seq-R},$\land$-idem}
 \\&    & D_1 \land (P\gamma_1 \seq P\gamma_1)
 \\&\lor& D_1 \land D_2 \land (P\gamma_1 \seq Q\gamma_2)
 \\&\lor& D_2 \land D_1 \land (Q\gamma_2 \seq P\gamma_1)
@@ -285,20 +285,39 @@ Now, we consider the case when $i=2$.
 \\&\lor& D_2 \land Q\gamma_2
 \EQ{re-arrange}
 \\&    & D_1 \land P\gamma_1 \lor D_2 \land Q\gamma_2
-\\&\lor& D_1 \land D_2 \land 
+\\&\lor& D_1 \land D_2 \land
         (~ P\gamma_1 \seq Q\gamma_2
           \lor
           Q\gamma_2 \seq P\gamma_1 ~)
 }
-Now we note that all of is in a context
-where $I \land D$ and conjoined,
+Now we note that all of this is in a context
+where $I \land D$ are conjoined,
 so we shall look at the two mixed terms above in such a context.
+
+\newpage
 First, the $P$-then-$Q$ term:
 \RLEQNS{
   && I \land D \land D_1 \land D_2 \land (P\gamma_1 \seq Q\gamma_2)
-\EQ{\dots}
+\EQ{normal forms as per shorthands}
+\\&& I \land D \land D_1 \land D_2
+       \land ( (I_P \land \bigvee_p (I_p \land S_p))\gamma_1
+               \seq
+               (I_Q \land \bigvee_q (I_q \land T_q))\gamma_2 )
+\EQ{substitution,\eref{seq-gnd-distr},\eref{skip-gamma}}
+\\&& I \land D \land D_1 \land D_2
+       \land ( (I_P\gamma_1 \land \bigvee_p (I_p\gamma_1 \land S_p\gamma_1))
+               \seq
+               (I_Q\gamma_2 \land \bigvee_q (I_q\gamma_2 \land T_q\gamma_2)) )
+\\
+\\&& [in|\ell_g|out]
+     \land \{in|g|out\}
+     \land \{in|\g{:1}|\ell_g\}
+     \land \{\ell_g|\g{:2}|out\}
+\\&\land& (P[\g{:1},\ell_g/g,out] \seq Q[\g{:2},\ell_g/g,in])
 }
-\paragraph{Lemma B}
+
+
+
 We show that $P\gamma_1 \seq Q\gamma_2$
 is all the mumblings that cross from $P$ to $Q$.
 \RLEQNS{
@@ -315,9 +334,14 @@ is all the mumblings that cross from $P$ to $Q$.
 Then, the $Q$-then-$P$ term:
 \RLEQNS{
   && I \land D \land D_1 \land D_2 \land (Q\gamma_2 \seq P\gamma_1)
-\EQ{\dots}
+\EQ{expand shorthands}
+\\&& [in|\ell_g|out]
+     \land \{in|g|out\}
+     \land \{in|\g{:1}|\ell_g\}
+     \land \{\ell_g|\g{:2}|out\}
+\\&\land& (Q\{\ell_g|\g{:2}|out\} \seq \{in|\g{:1}|\ell_g\})
 }
-\paragraph{Lemma A}
+
 We show that $Q\gamma_2\seq P\gamma_1$ vanishes.
 
 We note that we have the following instances of $\DL$:
@@ -571,9 +595,3 @@ and $D_2$ holding as well.
      \lor
      Q\gamma_2
 }
-
-
-
-
-
-
