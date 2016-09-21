@@ -139,6 +139,59 @@ We assume $N_1 \cap E_2 = \emptyset$ and proceed
 for suitable choices of $pindex$, $I_p$, $E_p$, $a_p$, $R_p$, $A_p$ and $S_p$,
 depending on $P$.
 
+
+\subsection{Proof of IandX-then-IandX}
+
+\RLEQNS{
+  && (I_1 \land X_1) \seq (I_2 \land X_2)
+\EQ{\eref{UTP-seq-def}}
+\\&& \exists ls_m,s_m @
+   (I_1 \land X_1)[ls_m,s_m/ls',s']
+   \land
+   (I_2 \land X_2)[ls_m,s_m/ls,s]
+\EQ{substitution}
+\\&& \exists ls_m,s_m @
+\\&& \quad I_1[ls_m,s_m/ls',s'] \land X_1[ls_m,s_m/ls',s']
+   \land
+   I_2[ls_m,s_m/ls,s] \land X_2[ls_m,s_m/ls,s]
+\EQ{$ls',s',s$ not free in $I_i$}
+\\&& \exists ls_m,s_m @
+   I_1 \land X_1[ls_m,s_m/ls',s']
+   \land
+   I_2[ls_m/ls] \land X_2[ls_m,s_m/ls,s]
+\EQ{shrink scope}
+\\&& I_1 \land \exists ls_m,s_m @
+   X_1[ls_m,s_m/ls',s']
+   \land
+   I_2[ls_m/ls] \land X_2[ls_m,s_m/ls,s]
+\EQm{X_i = X_i \land ls'=(ls\sminus R_i)\cup A_i}
+\\&& I_1 \land \exists ls_m,s_m @
+\\&& \quad (X_1 \land ls'=(ls\sminus R_1)\cup A_1)[ls_m,s_m/ls',s']
+   \land {}
+\\&& \quad I_2[ls_m/ls]
+  \land X_2[ls_m,s_m/ls,s]
+\EQ{substitution}
+\\&& I_1 \land \exists ls_m,s_m @
+\\&& \quad X_1[ls_m,s_m/ls',s'] \land ls_m=(ls\sminus R_1)\cup A_1
+   \land {}
+\\&& \quad I_2[ls_m/ls]
+  \land X_2[ls_m,s_m/ls,s]
+\EQ{equality replacement}
+\\&& I_1 \land \exists ls_m,s_m @
+\\&& \quad X_1[ls_m,s_m/ls',s']
+   \land {}
+\\&& \quad I_2[(ls\sminus R_1)\cup A_1/ls]
+  \land X_2[ls_m,s_m/ls,s]
+\EQ{shrink scope}
+\\&& I_1 \land I_2[(ls\sminus R_1)\cup A_1/ls] \land
+  \exists ls_m,s_m @
+    X_1[ls_m,s_m/ls',s']
+   \land X_2 [ls_m,s_m/ls,s]
+\EQ{\eref{UTP-seq-def}}
+\\&& I_1 \land I_2[(ls\sminus R_1)\cup A_1/ls] \land (X_1 \seq  X_2)
+}
+
+
 \subsection{Proof of nf-seq}
 
 \RLEQNS{
@@ -198,8 +251,8 @@ So all terms with $i\geq 2$ vanish so our result is
 We shall introduce the following normal forms and shorthands,
 for this proof, and that for \ecite{NF-a-seq-b} below.
 \RLEQNS{
-   P &=& I_P \land \bigvee_p (I_p \land S_p)
-\\ Q &=& I_Q \land \bigvee_q (I_q \land T_q)
+   P &=& \bigvee_p (I_p \land S_p)
+\\ Q &=& \bigvee_q (I_q \land T_q)
 \\ S_p &=& X(E_p|a_p|R_p|A_p)
 \\ T_q &=& X(E_q|a_q|R_q|A_q)
 \\ \gamma_1 &=& [\g{:1},\ell_g/g,out]
@@ -300,14 +353,21 @@ First, the $P$-then-$Q$ term:
   && I \land D \land D_1 \land D_2 \land (P\gamma_1 \seq Q\gamma_2)
 \EQ{normal forms as per shorthands}
 \\&& I \land D \land D_1 \land D_2
-       \land ( (I_P \land \bigvee_p (I_p \land S_p))\gamma_1
+       \land ( (\bigvee_p (I_p \land S_p))\gamma_1
                \seq
-               (I_Q \land \bigvee_q (I_q \land T_q))\gamma_2 )
+               (\bigvee_q (I_q \land T_q))\gamma_2 )
 \EQ{substitution,\eref{seq-gnd-distr},\eref{skip-gamma}}
 \\&& I \land D \land D_1 \land D_2
-       \land ( (I_P\gamma_1 \land \bigvee_p (I_p\gamma_1 \land S_p\gamma_1))
+       \land ( \bigvee_p (I_p\gamma_1 \land S_p\gamma_1)
                \seq
-               (I_Q\gamma_2 \land \bigvee_q (I_q\gamma_2 \land T_q\gamma_2)) )
+               \bigvee_q (I_q\gamma_2 \land T_q\gamma_2) )
+\EQ{$\seq$-$\lor$-distr}
+\\&& I \land D \land D_1 \land D_2
+       \land \bigvee_{p,q} 
+              ( I_p\gamma_1 \land S_p\gamma_1
+               \seq
+               I_q\gamma_2 \land T_q\gamma_2 ) 
+\\
 \\
 \\&& [in|\ell_g|out]
      \land \{in|g|out\}

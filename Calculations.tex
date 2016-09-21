@@ -158,7 +158,7 @@ We call this eXtended atomic action $X$ and it is defined as follows:
 \RLEQNS{
    X(E|a|R|A)
    &\defs&
-   E \subseteq ls \land s' \in \sem a s \land ls' = (ls \sminus R) \cup A
+   E \subseteq ls \land a \land ls' = (ls \sminus R) \cup A
    & \elabel{X-def}
 }
 We can then re-define $A$ in terms of $X$:
@@ -228,47 +228,65 @@ are disjoint from those added by the first:
   E_2 \cap E_1 = \emptyset
   \land A(E_1\cup E_2|a\seq_s b|N_1\cup N_2)
 }
+Many of the latter two cases will be ruled out as impossible in 
+practise, due to the label invariants.
 
 
 \newpage
 \subsubsection{Normal Form Revisited}
 
-We can now be much more precise about the normal form.
-
-Every program $P$ can be transformed,
-in principle at least,
-to the form
+We can now be much more precise about the normal form,
+in that we can now state that the $X$ in \eref{UTCP-NF} above
+are really predicates of the form resulting from \eref{X-then-X}:
 \RLEQNS{
    P
    &=&
-   I_P \land \Skip
-      \lor
-      \bigvee_{p \in pindex}
-      (I_P \land I_n \land X(E_p|a_p|R_p|A_p) \land S_p)
-   & \elabel{UTCP-NF}
+   \bigvee_{p \in pindex}
+      (I_p \land X(E_p|a_p|R_p|A_p) \land S_p)
+   & \elabel{UTCP-NF-X-and-S}
 }
 for suitable choices of $pindex$, $I_p$, $E_p$, $a_p$, $R_p$, $A_p$ and $S_p$,
 depending on $P$.
 In particular, we find that the $E_p$ and $A_p$ all satisfy the relevant
 label-set invariants.
+The the $S_p$ term  is a ground-expression,
+and is statically decidable as $\true$ or $\false$.
+So, we only need the terms where they evaluate to true,
+and so they need not appear explicitly: 
+\RLEQNS{
+   P
+   &=&
+   \bigvee_{p \in pindex'}
+      (I_p \land X(E_p|a_p|R_p|A_p))
+   & \elabel{UTCP-NF-X-only}
+}
+where $pindex'$ is $pindex$ less those cases where $S_p = \false$.
 
+A common case that emerges when we do calculations
+is the need to compute sequential compositions
+of terms that are an LE-invariant in conjunction with an $X$-term:
+\RLEQNS{
+   (I_1 \land X_1) \seq (I_2 \land X_2)
+   &=&
+   I_1 \land I_2[(ls\sminus R_1)\cup A_1/ls] \land (X_1 \seq  X_2)
+   & \elabel{IandX-then-IandX}
+\\ &=& I_{12} \land (X_1 \seq X_2)
+\\ && \textbf{where } I_{ij} = I_i \land I_j[(ls\sminus R_i)\cup A_i/ls]
+}
+In essence the invariants come out with the second
+one adjusted to accounts for the label changes made by $X_1$.
 
-    For any complete program that does not use iteration constructs,
-    this expansion is finite.
+\subsubsection{Musings on the Normal Form}
 
-    For any complete program the $S_p$
-    term in $X(E_p|a_p|R_p|A_p) \land S_p$
-    is a ground-expression, and is statically decidable as $\true$ or $\false$.
-    If $\true$, we find that the above term
-    can be be simplified to one of the form $A(E_p|a_p|A_p)$.
-    We do not prove this, but note that we have observed it as a result
-    of test calculations and these lead us to believe it is true in general.
+For any complete program that does not use iteration constructs,
+this expansion is finite.
 
-This can be shown by an inductive argument over the language syntax,
-noting that the sequential composition of two such forms
-can itself be transformed into such a form.
-In effect this defines a \emph{normal form} for our semantics.
-
+For any complete program 
+we find often find that the $X$-terms
+can be be simplified, using invariants,
+to the $A$-form.
+We do not prove this, but note that we have observed it as a result
+of test calculations and these lead us to believe it is true in general.
 
 An important law we shall require is that the UTP sequential
 composition of two normal forms can itself be expressed
