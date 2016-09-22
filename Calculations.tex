@@ -183,6 +183,7 @@ characterises all those cases were the second $X$ is enabled
 immediately after the first $X$ terminates
 (i.e., without any outside interference).
 
+
 From this we immediately get the following laws:
 \RLEQNS{
    \lefteqn{A(E_1|a|N_1) \seq A(E_2|a|N_2)} &&& \elabel{A-then-A}
@@ -228,9 +229,29 @@ are disjoint from those added by the first:
   E_2 \cap E_1 = \emptyset
   \land A(E_1\cup E_2|a\seq_s b|N_1\cup N_2)
 }
-Many of the latter two cases will be ruled out as impossible in 
+Many of the latter two cases will be ruled out as impossible in
 practise, due to the label invariants.
 
+We can also illustrate what happens when we compose and $X$ or $A$ with
+itself:
+\RLEQNS{
+   X(E|a|R|A) \seq X(E|a|R|A)
+   &=&
+   (E\sminus A) \cap R = \emptyset
+   \land
+   X(E|a^2|R|A)
+   & \elabel{X-twice}
+\\ A(E|a|N) \seq A(E|a|N)
+   &=&
+   E \subseteq N \land A(E|a^2|N)
+   & \elabel{A-twice}
+}
+
+Finally, as for $A$,
+we note that ground-substitutions can be driven inside $X$:
+\RLEQNS{
+   X(E|a|R|A)\gamma &=& X(E\gamma|a|R\gamma|A\gamma) & \elabel{X-gamma-subs}
+}
 
 \newpage
 \subsubsection{Normal Form Revisited}
@@ -252,7 +273,7 @@ label-set invariants.
 The the $S_p$ term  is a ground-expression,
 and is statically decidable as $\true$ or $\false$.
 So, we only need the terms where they evaluate to true,
-and so they need not appear explicitly: 
+and so they need not appear explicitly:
 \RLEQNS{
    P
    &=&
@@ -281,7 +302,7 @@ one adjusted to accounts for the label changes made by $X_1$.
 For any complete program that does not use iteration constructs,
 this expansion is finite.
 
-For any complete program 
+For any complete program
 we find often find that the $X$-terms
 can be be simplified, using invariants,
 to the $A$-form.

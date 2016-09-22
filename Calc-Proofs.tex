@@ -126,6 +126,30 @@ We assume $N_1 \cap E_2 = \emptyset$ and proceed
          \mid N_1 \cup  N_2)
 }
 
+\subsection{Proof of X-twice}
+
+\RLEQNS{
+   X(E|a|R|A) \seq X(E|a|R|A)
+   &=&
+   (E\sminus A) \cap R = \emptyset
+   \land
+   X(E|a^2|R|A)
+}
+
+\subsection{Proof of A-twice}
+
+\RLEQNS{
+   A(E|a|N) \seq A(E|a|N)
+   &=&
+   E \subseteq N \land A(E|a^2|N)
+}
+
+\subsection{Proof of X-gamma-subs}
+
+\RLEQNS{
+   X(E|a|R|A)\gamma &=& X(E\gamma|a|R\gamma|A\gamma)
+}
+
 \subsection{Proof of UTCP-NF}
 
 \RLEQNS{
@@ -311,6 +335,9 @@ Here $p$ and $q$ range over appropriate index sets.
            D_2 \land Q\gamma_2 )^i
      \end{array}\right)
 }
+
+\subsubsection{NF-seq when $i=2$}
+
 Now, we consider the case when $i=2$.
 \RLEQNS{
   && ( D_1 \land P\gamma_1 \lor D_2 \land Q\gamma_2 )
@@ -348,6 +375,8 @@ where $I \land D$ are conjoined,
 so we shall look at the two mixed terms above in such a context.
 
 \newpage
+\paragraph{P-then-Q}
+
 First, the $P$-then-$Q$ term:
 \RLEQNS{
   && I \land D \land D_1 \land D_2 \land (P\gamma_1 \seq Q\gamma_2)
@@ -363,34 +392,70 @@ First, the $P$-then-$Q$ term:
                \bigvee_q (I_q\gamma_2 \land T_q\gamma_2) )
 \EQ{$\seq$-$\lor$-distr}
 \\&& I \land D \land D_1 \land D_2
-       \land \bigvee_{p,q} 
+       \land \bigvee_{p,q}
               ( I_p\gamma_1 \land S_p\gamma_1
                \seq
-               I_q\gamma_2 \land T_q\gamma_2 ) 
-\\
-\\
-\\&& [in|\ell_g|out]
-     \land \{in|g|out\}
-     \land \{in|\g{:1}|\ell_g\}
-     \land \{\ell_g|\g{:2}|out\}
+               I_q\gamma_2 \land T_q\gamma_2 )
+\EQ{\eref{IandX-then-IandX}, noting \eref{seq-gnd-distr},\eref{X-gamma-subs}}
+\\&& I \land D \land D_1 \land D_2
+   \land \bigvee_{p,q}
+       I_p\gamma_1
+       \land
+       I_q\gamma_2[(ls\sminus R_p\gamma_1)\cup A_p\gamma_1/ls]
+       \land
+       ( S_p\gamma_1 \seq T_q\gamma_2 )
+\EQ{\eref{X-then-X}, \eref{X-gamma-subs}}
+\\&& I \land D \land D_1 \land D_2
+   \land \bigvee_{p,q}
+       I_p\gamma_1
+       \land
+       I_q\gamma_2[(ls\sminus R_p\gamma_1)\cup A_p\gamma_1/ls]
+       \land
+\\&& E_q\gamma_2 \cap (R_p\gamma_1\sminus A_p\gamma_1) = \emptyset
+\\ && {} \land
+   X(E_p\gamma_1 \cup (E_q\gamma_2\sminus A_p\gamma_1)
+       \mid a\seq_s b
+       \mid R_p\gamma_1 \cup R_q\gamma_2
+       \mid (A_p\gamma_1 \sminus R_q\gamma_2) \cup  A_q\gamma_2)
+}
+We now look at a given pair $p,q$ and expand all the shorthands.
+\RLEQNS{
+   I   &=& [in|\ell_g|out]
+\\ D   &=& \{in|g|out\}
+\\ D_1 &=& \{in|\g{:1}|\ell_g\}
+\\ D_2 &=& \{\ell_g|\g{:2}|out\}
+\\ I_p\gamma_1 &=& I_p[\g{:1},\ell_g/g,out]
+\\ I_q\gamma_2 &=& I_q[\g{:2},\ell_g/g,in]
+\\ S_p\gamma_1 &=& X(E_p\gamma_1|a|R_p\gamma_1|A_p\gamma_1)
+\\ T_q\gamma_2 &=& X(E_q\gamma_2|a|R_q\gamma_2|A_q\gamma_2)
 \\&\land& (P[\g{:1},\ell_g/g,out] \seq Q[\g{:2},\ell_g/g,in])
 }
-
-
-
-We show that $P\gamma_1 \seq Q\gamma_2$
-is all the mumblings that cross from $P$ to $Q$.
+To make it easier to see what is going on we do the following notation
+trick (in common use in the UTP book, by the way):
 \RLEQNS{
-  && P\gamma_1\seq Q\gamma_2
-\EQ{normal forms}
-\\&& (\bigvee_p S_p\gamma_1) \seq (\bigvee_q T_q\gamma_2)
-\EQ{$\seq$-$\lor$-distr}
-\\&& \bigvee_{p,q}(S_p\gamma_1  \seq  T_q\gamma_2)
-\EQ{$X$-composability}
-\\&& \bigvee_{p,q}(S_p\gamma_1  \seq  T_q\gamma_2)
-\\&& \textbf{where } A_p = \setof{out} \land E_q = \setof{in}
+  E\gamma &=& E[G,I,O/g,in,out] \quad=\quad E(G,I,O)
+\\ E &=& E(g,in,out)
+}
+We have side-condition:
+\[
+ E_q(\g{:2},\ell_g,out)
+ \cap (~ R_p(\g{:1},in,\ell_g)
+        \sminus
+        A_p(\g{:1},in,\ell_g)~)
+  = \emptyset
+\]
+and outcome:
+\RLEQNS{
+  & X( & E_p(\g{:1},in,\ell_g) \cup
+         (~E_q(\g{:2},\ell_g,out)\sminus A_p(\g{:1},in,\ell_g)~)
+\\&\mid& a_p \seq_s a_q
+\\&\mid& R_p(\g{:1},in,\ell_g) \cup R_q(\g{:2},\ell_g,out)
+\\&\mid& (A_p(\g{:1},in,\ell_g) \sminus R_q(\g{:2},\ell_g,out))
+         \cup  A_q(\g{:2},\ell_g,out)
+\\&)&
 }
 
+\paragraph{Q-then-P}
 Then, the $Q$-then-$P$ term:
 \RLEQNS{
   && I \land D \land D_1 \land D_2 \land (Q\gamma_2 \seq P\gamma_1)
