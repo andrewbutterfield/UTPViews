@@ -653,16 +653,18 @@ preserve the LE invariant:
   \label{fig:nondet-choice}
 \end{figure}
 
-Nondeterministic choice $P+Q$ is fairly simple.
-Provide two new labels to replace the $in$s of $P$ and $Q$
-and introduce two independent control-flow actions,
-both enabled by $in$, each of which adds one of the new labels to $ls$
-(while removing $in$, of course).
-Then the first control-flow action to run will enable its component,
-while simultaneously disabling the other control-flow action.
-Split generators are passed into $P$ and $Q$ as usual.
-The LE invariant has to assert that only one of two new labels
-can be present in $ls$ at any point in time.
+Nondeterministic choice $P+Q$ is very simple:
+we simply split the generator and pass one part
+into each component. We do not need to relabel $in$
+or $out$.
+The first atomic action enabled by $in$ to
+run in either component will disable all other such actions in both components,
+because it will remove $in$ from the label-set.
+
+\textbf{WE NEED TO CHECK - WHAT ABOUT $in$ to $in$ mumblings, as per iteration???? Maybe the old def is the right one!}
+
+%[Denote-BITS.tex]{NDC-sem}
+
 \RLEQNS{
    P + Q
    &\defs&
@@ -677,21 +679,7 @@ can be present in $ls$ at any point in time.
    Q[g_{2:},\ell_{g2}/g,in]~))
 }
 
-LE invariant preservation
-\RLEQNS{
-   \{in|g|out\}\varsigma
-   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
-   && \eref{ndc-1-inv-ok}
-\\ {} \land A(in|ii|\ell_{g1})\varsigma
-   &\implies&
-   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
-\\ \{in|g|out\}\varsigma
-   \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
-   && \eref{ndc-2-inv-ok}
-\\ {} \land A(in|ii|\ell_{g2})\varsigma
-   &\implies&
-   [in|\ell_{g1}|\ell_{g2}|out]'\varsigma
-}
+LE invariant preservation - not required
 
 HMMMMM! PERHAPS NDC is just $P[\g1/g] \lor P[\g2/g]$???
 
@@ -759,6 +747,20 @@ LE invariant preservation
   \caption{Conditional Choice}
   \label{fig:conditional}
 \end{figure}
+
+
+\textbf{Brought here}
+\emph{Nondeterministic choice $P+Q$ is fairly simple.
+Provide two new labels to replace the $in$s of $P$ and $Q$
+and introduce two independent control-flow actions,
+both enabled by $in$, each of which adds one of the new labels to $ls$
+(while removing $in$, of course).
+Then the first control-flow action to run will enable its component,
+while simultaneously disabling the other control-flow action.
+Split generators are passed into $P$ and $Q$ as usual.
+The LE invariant has to assert that only one of two new labels
+can be present in $ls$ at any point in time.
+}
 
 The semantics for conditional choice $P \dcond c Q$
 is very similar to that for non-deterministic choice.
