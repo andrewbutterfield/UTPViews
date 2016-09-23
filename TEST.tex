@@ -1,0 +1,25 @@
+\documentclass[a4paper]{report}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{catchfilebetweentags}
+
+\begin{document}
+
+\title{TEST}
+
+\author{Andrew Butterfield}
+
+\maketitle
+
+\ExecuteMetaData[BITS.tex]{bit1}
+
+\[ 
+\ExecuteMetaData[BITS.tex]{bit2}
+\leq
+\ExecuteMetaData[BITS.tex]{bit3}
+\]
+
+
+\input{BITS}
+
+\end{document}

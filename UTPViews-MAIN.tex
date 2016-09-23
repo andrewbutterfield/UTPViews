@@ -13,6 +13,8 @@
 \usepackage{listings}
 \usepackage{lstlhs}
 
+\usepackage{catchfilebetweentags}
+
 
 \setlength{\parskip}{3pt} % 1ex plus 0.5ex minus 0.2ex}
 \setlength{\parindent}{0pt}
@@ -31,20 +33,20 @@ Jim Woodcock
 \maketitle
 \tableofcontents
 %
-\newpage
-\input{Intro}
-\newpage
-\input{Related}
-\newpage
-\input{Syntax}
+%\newpage
+%\input{Intro}
+%\newpage
+%\input{Related}
+%\newpage
+%\input{Syntax}
 \newpage
 \input{Labels}
-\newpage
-\input{Denotation}
-\newpage
-\input{Calculations}
-\newpage
-\input{Laws}
+%\newpage
+%\input{Denotation}
+%\newpage
+%\input{Calculations}
+%\newpage
+%\input{Laws}
 %\newpage
 %\input{Operational}
 %\newpage
@@ -57,10 +59,14 @@ Jim Woodcock
 \bibliography{UTPViews-MAIN}
 
 \appendix
-%\newpage
-%\input{Label-Proofs}
 \newpage
-\input{Law-Proofs}
+\input{Label-Proofs}
+%\newpage
+%\input{Denote-Proofs}
+%\newpage
+%\input{Calc-Proofs}
+%\newpage
+%\input{Law-Proofs}
 %\newpage
 %\input{old-Proofs}
 %\newpage
@@ -75,5 +81,7 @@ Jim Woodcock
 %\newpage
 %\input{Views.lhs}
 %\input{Views}
+
+\input{BITS}
 
 \end{document}
