@@ -294,7 +294,7 @@ We have a general healthiness condition (Disjoint Labels) which asserts
 that the labels associated with $in$, $out$ and $g$
 are different:
 \RLEQNS{
-  \DL(P) &=& P \land \setof{in|g|out} & \elabel{DL-def}
+  \DL(P) &\defs& P \land \setof{in|g|out} & \elabel{DL-def}
 }
 This is just the Disjoint Labels invariant of \S\ref{sssec:disjoint-labels},
 reformulated as a healthiness condition.
@@ -303,6 +303,29 @@ through sequential composition:
 \RLEQNS{
   \DL(P\seq Q) &=& \DL(P) \seq \DL(Q) & \eref{DL-seq-distr}
 }
+
+\subsubsection{Label Exclusivity}\label{sssec:label-exclude}
+
+We also have a general healthiness condition
+that strengthens $\DL$ above,
+and asserts that at any point in time,
+the labels $in$ and $out$ are never in $ls$ together
+and the are never present if any label from $g$ is in $ls$:
+\RLEQNS{
+  \LE(P) &\defs& P \land [in|g|out] & \elabel{EL-def}
+}
+This is not a ground predicate, and so does not distribute
+through sequential composition.
+However a weaker law does apply:
+\RLEQNS{
+  (P \land [in|g|out]) \seq (Q \land [in|g|out])
+  &=&
+  [in|g|out] \land ( P \seq ( Q \land [in|g|out]) )
+  & \elabel{EL-seq}
+}
+
+
+
 
 \subsubsection{Wheels-within-Wheels}\label{sssec:WwW}
 
@@ -319,7 +342,7 @@ as would be required if they were within an iteration.
 Instead it was realised that every construct (atomic and composite)
 would have to be within an infinite loop.%
 \RLEQNS{
-    \true * P &\elabel{W-as-loop}
+    \true * P &\elabel{WWW-as-loop}
 }%
 This wrapping of the basic property in an infinite loop
 would occur at every level of the program hierarchy,
@@ -350,31 +373,31 @@ This leads us to define the healthiness condition as
 \RLEQNS{
    P^0 & \defs& \Skip           & \elabel{seq-0}
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
-\\ \W(P) & \defs  & \bigvee_{i \in \Nat} P^i &\elabel{W-as-NDC}
+\\ \WWW(P) & \defs  & \bigvee_{i \in \Nat} P^i &\elabel{WWW-as-NDC}
 }%
 We note explicitly here that, in effect,
 our semantic model is based on unbounded non-determinism.
 
-For $\W$ to be a proper healthiness condition
+For $\WWW$ to be a proper healthiness condition
 is has to be monotonic and idempotent.
 \RLEQNS{
-   P \refinedby Q &\implies& \W(P) \refinedby \W(Q)
-   & \elabel{W-monotonic}
-\\ \W(\W(P)) &=& \W(P) & \elabel{W-idempotent}
+   P \refinedby Q &\implies& \WWW(P) \refinedby \WWW(Q)
+   & \elabel{WWW-monotonic}
+\\ \WWW(\WWW(P)) &=& \WWW(P) & \elabel{WWW-idempotent}
 }
 The latter is easy to show once we realise that composing the result
-of $\W(P)$ with itself results in no change:
+of $\WWW(P)$ with itself results in no change:
 \RLEQNS{
-   \W(P) \seq \W(P) &=& \W(P)  & \elabel{W-seq-W-is-W}
+   \WWW(P) \seq \WWW(P) &=& \WWW(P)  & \elabel{WWW-seq-WWW-is-WWW}
 }
-Given the definition of $\W$, it is easy to see that ground
+Given the definition of $\WWW$, it is easy to see that ground
 substitution distributes in:
 \RLEQNS{
-   \W(P)\gamma &=& \W(P\gamma) & \elabel{W-gnd-subst}
+   \WWW(P)\gamma &=& \WWW(P\gamma) & \elabel{WWW-gnd-subst}
 }
 as does any top-level conjunction with a ground predicate $K$:
 \RLEQNS{
-   K \land \W(Q) &=& \W(K \land Q) & \elabel{W-gnd-and-distr}
+   K \land \WWW(Q) &=& \WWW(K \land Q) & \elabel{WWW-gnd-and-distr}
 }
 
 
@@ -386,29 +409,44 @@ We get these finite results that seem very similar
 to the results obtained by using $run$ above.
 Using $run$ results in predicates that cannot be composed
 to get composite behaviour.
-However, using $\W$ results in a slight variation,
+However, using $\WWW$ results in a slight variation,
 which is composable!
 What turns out to be crucial
 to this outcome is the explicit stuttering option.
 
+\subsubsection{WwW Healthiness}
 
+We also note that $\DL$ and $\WWW$ commute,
+whereas $\LE$ and $\WWW$ do not:
+\RLEQNS{
+   \DL(\WWW(P)) &=& \WWW(\DL(P)) & \elabel{DL-WWW-commute}
+\\ \LE(\WWW(P))  &=&  I \land \bigvee_{i \in \Nat} P^i
+\\ &\neq& & \elabel{LE-WWW-no-commute}
+\\ \WWW(\LE(P)) &=& \bigvee_{i \in \Nat} (I \land P)^i
+}
+
+With this in mind we define our overall
+healthiness condition as
+\RLEQNS{
+   \W(P) &\defs& \DL(\LE(\WWW(P))) & \elabel{W-def}
+}
 
 \subsection{UTP Denotational Semantics}\label{ssec:UTP-denote}
 
 The denotational semantic definitions below will have
-$\W(P)$ as a component,
+$\WWW(P)$ as a component,
 where $P$ will turn out to be a disjunction of lifted atomic actions,
 one of which will be $\Skip$.
 \[
   P = \Skip \lor A_1 \lor A_2 \lor A_3 \lor \dots
 \]
-The effect of this is that $\W(P)$ itself
+The effect of this is that $\WWW(P)$ itself
 will be a disjunction of elements that are
 either $\Skip$, one of those actions making up $P$
 or the sequential composition, using $\seq$,
 of a sequence of two or more of those actions.
 \RLEQNS{
-   \W(P) &=& \bigvee_{i \in \Nat} P^i
+   \WWW(P) &=& \bigvee_{i \in \Nat} P^i
 \\ &=& \Skip \lor A_1 \lor A_2 \lor A_3 \lor \dots
 \\ &\lor& A_1^2 \lor A_2^2 \lor A_3^2 \lor \dots
 \\ &\lor& A_1\seq A_2 \lor A_2 \seq A_1 \lor \dots

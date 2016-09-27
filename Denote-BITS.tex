@@ -1,60 +1,77 @@
 \section{ Denotation BITS}
 
 \RLEQNS{
+  \DL(P) &\defs& P \land \setof{in|g|out} & \elabel{DL-def}
+}
+\RLEQNS{
+  \LE(P) &\defs& P \land [in|g|out] & \elabel{EL-def}
+}
+\RLEQNS{
+   P^0 & \defs& \Skip           & \elabel{seq-0}
+\\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
+\\ \WWW(P) & \defs  & \bigvee_{i \in \Nat} P^i &\elabel{WWW-as-NDC}
+}%
+\RLEQNS{
+   \W(P) &\defs& \DL(\LE(\WWW(P))) & \elabel{W-def}
+}
+\RLEQNS{
+   A(E|a|N)
+   &\defs&
+   E \subseteq ls \land a \land ls'=(ls\setminus E) \cup N
+   & \elabel{A-def}
+}
+\RLEQNS{
   \catom a
-  &\defs& [in|out] \land \DL(\W(A(in|a|out))) & \elabel{sem:atomic}
-\\ P \cseq Q
+  &\defs& \W(A(in|a|out))) & \elabel{sem:atomic}
+}
+\RLEQNS{
+   P \cseq Q
    &\defs&
-   [in|\ell_g|out] \land {}
-\\&& \DL(\W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in]))
+   \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
    & \elabel{sem:seq}
-\\ P \parallel Q
+}
+\RLEQNS{
+   P \parallel Q
    &\defs&
-   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
+   \W(~A(in|ii|\ell_{g1},\ell_{g2}) \lor {}
    & \elabel{sem:par}
-\\&& \DL(\W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
-\\ && \qquad\qquad {}\lor
-   P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-\\ && \qquad\qquad {}\lor
-    Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\ && \qquad\qquad {}\lor
-   A(\ell_{g1:},\ell_{g2:}|ii|out)~))
-\\ P + Q
+\\&& \phW P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out] \lor {}
+\\&& \phW Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out] \lor {}
+\\&& \phW A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+}
+\RLEQNS{
+   P + Q
    &\defs&
-   [in|\ell_{g1}|\ell_{g2}|out] \land {}
+   \W(~P[g_{1}/g] \lor Q[g_{2}/g]~)
    & \elabel{sem:NDC}
-\\ && \DL(\W(\quad {}\phlor A(in|ii|\ell_{g1})
-\\ && \qquad\qquad {} \lor
-                     A(in|ii|\ell_{g2})
-\\ && \qquad\qquad {} \lor
-   P[g_{1:},\ell_{g1}/g,in]
-\\ && \qquad\qquad {} \lor
-   Q[g_{2:},\ell_{g2}/g,in]~))
-\\ P^*
+}
+\RLEQNS{
+   P^*
    &\defs&
-   [in|\ell_g|out] \land {}
+   \W(~A(in|ii|\ell_{g:}) \lor {}
    & \elabel{sem:star}
-\\ && \DL(\W(\quad  \phlor A(in|ii|out)
-\\ && \qquad\qquad {}\lor A(in|ii|\ell_g)
-\\ && \qquad\qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~))
-\\ P \dcond c Q
+\\ && \phW A(\ell_{g:}|ii|\ell_g) \lor {}
+\\ && \phW A(\ell_{g:}|ii|out) \lor {}
+\\ && \phW P[\g{::},\ell_g,\ell_{g:}/g,in,out]~)
+}
+\RLEQNS{
+   P \dcond c Q
    &\defs&
-   [in|\ell_{g1}|\ell_{g2}|out] \land {}
+   \W(~A(in|c \land ii|\ell_{g1}) \lor {}
    & \elabel{sem:cond}
-\\ && \DL(\W(\quad {}\phlor A(in|c \land ii|\ell_{g1})
-\\ && \qquad\qquad {} \lor
-                     A(in|\lnot c \land ii|\ell_{g2})
-\\ && \qquad\qquad {} \lor
-   P[g_{1:},\ell_{g1}/g,in]
-\\ && \qquad\qquad {} \lor
-   Q[g_{2:},\ell_{g2}/g,in]~))
-\\ c \ddo P
+\\ && \phW A(in|\lnot c \land ii|\ell_{g2}) \lor {}
+\\ && \phW P[g_{1:},\ell_{g1}/g,in] \lor {}
+\\ && \phW Q[g_{2:},\ell_{g2}/g,in]~)
+\\ && {} \land_? [\ell_{g1}|\ell_{g2}] \mbox{ \textit{\small necessary?}}
+}
+\RLEQNS{
+   c \ddo P
    &\defs&
-   [in|\ell_g|out] \land {}
+   \W(~A(in|ii|\ell_{g:}) \lor {}
    & \elabel{sem:iter}
-\\ && \DL(\W(\quad  \phlor A(in|\lnot c \land ii|out)
-\\ && \qquad\qquad {}\lor A(in|c \land ii|\ell_g)
-\\ && \qquad\qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~))
+\\ &&\phW A(\ell_{g:}|\lnot c \land ii|out) \lor {}
+\\ &&\phW A(\ell_{g:}|c \land ii|\ell_g) \lor {}
+\\ &&\phW P[\g{::},\ell_g,\ell_{g:}/g,in,out]~)
 }
 
 \subsection{Non-Det Choice (old)}
@@ -76,7 +93,7 @@
 %\RLEQNS{
 %   P + Q
 %   &\defs&
-%   [in|out] \land \DL(\W( P[g_{1}/g] \lor Q[g_{2}/g]~))
+%   [in|out] \land \W( P[g_{1}/g] \lor Q[g_{2}/g]~))
 %   & \elabel{sem:NDC}
 %}
 %%</NDC-sem>
@@ -87,7 +104,7 @@
 %   &\defs&
 %   [in|\ell_{g1}|\ell_{g2}|out] \land {}
 %   & \elabel{sem:NDC}
-%\\ && \DL(\W(\quad {}\phlor A(in|ii|\ell_{g1})
+%\\ && \W(\quad {}\phlor A(in|ii|\ell_{g1})
 %\\ && \qquad\qquad {} \lor
 %                     A(in|ii|\ell_{g2})
 %\\ && \qquad\qquad {} \lor
