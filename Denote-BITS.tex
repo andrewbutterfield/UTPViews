@@ -1,45 +1,45 @@
 \section{ Denotation BITS}
 
 \RLEQNS{
-  \lhsDL &\defs& \rhsDL & \elabel{\lblDL}
+  \lhsDL &\defs& \rhsDL & \eref{\lblDL}
 }
 \RLEQNS{
-  \lhsLE &\defs& \rhsLE & \elabel{\lblLE}
+  \lhsLE &\defs& \rhsLE & \eref{\lblLE}
 }
 \RLEQNS{
-   P^0 & \defs& \Skip           & \elabel{seq-0}
-\\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
-\\ \lhsWWW &\defs& \rhsWWW & \elabel{\lblWWW}
+   P^0 & \defs& \Skip           & \eref{seq-0}
+\\ P^{i+1} & \defs& P \seq P^i  & \eref{seq-i-plus-1}
+\\ \lhsWWW &\defs& \rhsWWW & \eref{\lblWWW}
 }%
 \RLEQNS{
-   \lhsW &\defs& \rhsW & \elabel{\lblW}
+   \lhsW &\defs& \rhsW & \eref{\lblW}
 }
 \RLEQNS{
-   \lhsA &\defs& \rhsA & \elabel{\lblA}
+   \lhsA &\defs& \rhsA & \eref{\lblA}
 }
 \RLEQNS{
-  \lhsCA &\defs& \rhsCA & \elabel{\lblCA}
+  \lhsCA &\defs& \rhsCA & \eref{\lblCA}
 }
 \RLEQNS{
-   \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
+   \lhsSEQ &\defs& \rhsSEQ & \eref{\lblSEQ}
 }
 \RLEQNS{
    \lhsPAR
    &\defs&
    \leftW \rhsaPAR \lor {}
-   & \elabel\lblPAR
+   & \eref\lblPAR
 \\&& \phW \rhsbPAR \lor {}
 \\&& \phW \rhscPAR \lor {}
 \\&& \phW \rhsdPAR \rghtW
 }
 \RLEQNS{
-   \lhsNDC &\defs& \rhsNDC & \elabel{\lblNDC}
+   \lhsNDC &\defs& \rhsNDC & \eref{\lblNDC}
 }
 \RLEQNS{
    \lhsSTAR
    &\defs&
    \leftW \rhsaSTAR \lor {}
-   & \elabel\lblSTAR
+   & \eref\lblSTAR
 \\&& \phW \rhsbSTAR \lor {}
 \\&& \phW \rhscSTAR \lor {}
 \\&& \phW \rhsdSTAR \rghtW
@@ -48,7 +48,7 @@
    \lhsCND
    &\defs&
    \leftW \rhsaCND \lor {}
-   & \elabel\lblCND
+   & \eref\lblCND
 \\&& \phW \rhsbCND \lor {}
 \\&& \phW \rhscCND \lor {}
 \\&& \phW \rhsdCND \rghtW
@@ -58,7 +58,7 @@
    \lhsITER
    &\defs&
    \leftW \rhsaITER \lor {}
-   & \elabel\lblITER
+   & \eref\lblITER
 \\&& \phW \rhsbITER \lor {}
 \\&& \phW \rhscITER \lor {}
 \\&& \phW \rhsdITER \rghtW

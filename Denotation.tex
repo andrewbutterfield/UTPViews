@@ -544,7 +544,7 @@ is simply an atomic action that leaves the program state $s$ unchanged:
 %\newpage
 \subsubsection{Sequential Composition}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics[scale=0.85]{images/seq-comp-actual}
   \caption{Sequential Composition}
@@ -590,7 +590,7 @@ of invariant preservation (c.f., \eref{atom-inv-ok}).
 \newpage
 \subsubsection{Parallel Composition}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics{images/parallel-label-gen}\\
   \caption{Generating labels of Parallel Composition}
@@ -662,7 +662,7 @@ preserve the LE invariant:
 \newpage
 \subsubsection{Nondeterministic Choice}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics{images/nondet-actual}
   \caption{Nondeterministic Choice}
@@ -677,9 +677,6 @@ The first atomic action enabled by $in$ to
 run in either component will disable all other such actions in both components,
 because it will remove $in$ from the label-set.
 
-\textbf{WE NEED TO CHECK - WHAT ABOUT $in$ to $in$ mumblings, as per iteration???? Maybe the old def is the right one!}
-
-%[Denote-BITS.tex]{NDC-sem}
 
 \RLEQNS{
    \lhsNDC &\defs& \rhsNDC & \elabel{\lblNDC}
@@ -689,10 +686,10 @@ because it will remove $in$ from the label-set.
 LE invariant preservation - not required
 
 
-
+\newpage
 \subsubsection{Nondeterministic Loop}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   % Requires \usepackage{graphicx}
   \includegraphics{images/kleene-star-actual}
@@ -737,7 +734,7 @@ LE invariant preservation
 \newpage
 \subsubsection{Conditional Choice}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics{images/conditional-actual}
   \caption{Conditional Choice}
@@ -797,7 +794,7 @@ LE invariant preservation
 \newpage
 \subsubsection{Conditional Loop}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics{images/iteration-actual}
   \caption{Conditional Loop}
@@ -833,16 +830,15 @@ LE invariant preservation
    [in|\ell_{g1}|out]'\varsigma
 }
 
-\subsubsection{Key Semantic Properties}
+\newpage
+\subsection{Key Semantic Properties}
 
 \begin{description}
   \item[Label Movement]
     We need to show that in any construct,
     no basic action is enabled by $out$
     and that it is only added into $ls$.
-    This property holds under any sound substitution $\varsigma$ as well.
-    We can't say a complementary thing about $in$ because of the definition
-    of iteration, where $in$ replaces $out$ in the loop body.
+    A complementary property holds for $in$,
+    which is only removed from $ls$.
+    These properties hold under any sound substitution $\varsigma$ as well.
 \end{description}
-
-\subsection{Semantics Summary}\label{ssec:sem-summary}
