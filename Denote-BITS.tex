@@ -1,77 +1,67 @@
 \section{ Denotation BITS}
 
 \RLEQNS{
-  \DL(P) &\defs& P \land \setof{in|g|out} & \elabel{DL-def}
+  \lhsDL &\defs& \rhsDL & \elabel{\lblDL}
 }
 \RLEQNS{
-  \LE(P) &\defs& P \land [in|g|out] & \elabel{EL-def}
+  \lhsLE &\defs& \rhsLE & \elabel{\lblLE}
 }
 \RLEQNS{
    P^0 & \defs& \Skip           & \elabel{seq-0}
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
-\\ \WWW(P) & \defs  & \bigvee_{i \in \Nat} P^i &\elabel{WWW-as-NDC}
+\\ \lhsWWW &\defs& \rhsWWW & \elabel{\lblWWW}
 }%
 \RLEQNS{
-   \W(P) &\defs& \DL(\LE(\WWW(P))) & \elabel{W-def}
+   \lhsW &\defs& \rhsW & \elabel{\lblW}
 }
 \RLEQNS{
-   A(E|a|N)
+   \lhsA &\defs& \rhsA & \elabel{\lblA}
+}
+\RLEQNS{
+  \lhsCA &\defs& \rhsCA & \elabel{\lblCA}
+}
+\RLEQNS{
+   \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
+}
+\RLEQNS{
+   \lhsPAR
    &\defs&
-   E \subseteq ls \land a \land ls'=(ls\setminus E) \cup N
-   & \elabel{A-def}
+   \leftW \rhsaPAR \lor {}
+   & \elabel\lblPAR
+\\&& \phW \rhsbPAR \lor {}
+\\&& \phW \rhscPAR \lor {}
+\\&& \phW \rhsdPAR \rghtW
 }
 \RLEQNS{
-  \catom a
-  &\defs& \W(A(in|a|out))) & \elabel{sem:atomic}
+   \lhsNDC &\defs& \rhsNDC & \elabel{\lblNDC}
 }
 \RLEQNS{
-   P \cseq Q
+   \lhsSTAR
    &\defs&
-   \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
-   & \elabel{sem:seq}
+   \leftW \rhsaSTAR \lor {}
+   & \elabel\lblSTAR
+\\&& \phW \rhsbSTAR \lor {}
+\\&& \phW \rhscSTAR \lor {}
+\\&& \phW \rhsdSTAR \rghtW
 }
 \RLEQNS{
-   P \parallel Q
+   \lhsCND
    &\defs&
-   \W(~A(in|ii|\ell_{g1},\ell_{g2}) \lor {}
-   & \elabel{sem:par}
-\\&& \phW P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out] \lor {}
-\\&& \phW Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out] \lor {}
-\\&& \phW A(\ell_{g1:},\ell_{g2:}|ii|out)~)
+   \leftW \rhsaCND \lor {}
+   & \elabel\lblCND
+\\&& \phW \rhsbCND \lor {}
+\\&& \phW \rhscCND \lor {}
+\\&& \phW \rhsdCND \rghtW
+\\&& \land_? \invCND \mbox{ \textit{\small necessary?}}
 }
 \RLEQNS{
-   P + Q
+   \lhsITER
    &\defs&
-   \W(~P[g_{1}/g] \lor Q[g_{2}/g]~)
-   & \elabel{sem:NDC}
-}
-\RLEQNS{
-   P^*
-   &\defs&
-   \W(~A(in|ii|\ell_{g:}) \lor {}
-   & \elabel{sem:star}
-\\ && \phW A(\ell_{g:}|ii|\ell_g) \lor {}
-\\ && \phW A(\ell_{g:}|ii|out) \lor {}
-\\ && \phW P[\g{::},\ell_g,\ell_{g:}/g,in,out]~)
-}
-\RLEQNS{
-   P \dcond c Q
-   &\defs&
-   \W(~A(in|c \land ii|\ell_{g1}) \lor {}
-   & \elabel{sem:cond}
-\\ && \phW A(in|\lnot c \land ii|\ell_{g2}) \lor {}
-\\ && \phW P[g_{1:},\ell_{g1}/g,in] \lor {}
-\\ && \phW Q[g_{2:},\ell_{g2}/g,in]~)
-\\ && {} \land_? [\ell_{g1}|\ell_{g2}] \mbox{ \textit{\small necessary?}}
-}
-\RLEQNS{
-   c \ddo P
-   &\defs&
-   \W(~A(in|ii|\ell_{g:}) \lor {}
-   & \elabel{sem:iter}
-\\ &&\phW A(\ell_{g:}|\lnot c \land ii|out) \lor {}
-\\ &&\phW A(\ell_{g:}|c \land ii|\ell_g) \lor {}
-\\ &&\phW P[\g{::},\ell_g,\ell_{g:}/g,in,out]~)
+   \leftW \rhsaITER \lor {}
+   & \elabel\lblITER
+\\&& \phW \rhsbITER \lor {}
+\\&& \phW \rhscITER \lor {}
+\\&& \phW \rhsdITER \rghtW
 }
 
 \subsection{Non-Det Choice (old)}
