@@ -290,34 +290,28 @@ and Wheels-within-Wheels respectively.
 
 \subsubsection{Disjoint Labels}\label{sssec:disj-labels}
 
-We have a general healthiness condition (Disjoint Labels) which asserts
-that the labels associated with $in$, $out$ and $g$
-are different:
+We have a general healthiness condition (Disjoint Labels) which asserts that
+the labels associated with $in$, $out$ and $g$ are different:
 \RLEQNS{
-  \DL(P) &\defs& P \land \setof{in|g|out} & \elabel{DL-def}
+  \lhsDL &\defs& \rhsDL & \elabel{\lblDL}
 }
-This is just the Disjoint Labels invariant of \S\ref{sssec:disjoint-labels},
-reformulated as a healthiness condition.
-Also, it is a ground predicate, and so distributes
-through sequential composition:
+ This is just the Disjoint Labels invariant of
+\S\ref{sssec:disjoint-labels}, reformulated as a healthiness condition. Also,
+it is a ground predicate, and so distributes through sequential composition:
 \RLEQNS{
   \DL(P\seq Q) &=& \DL(P) \seq \DL(Q) & \eref{DL-seq-distr}
 }
 
 \subsubsection{Label Exclusivity}\label{sssec:label-exclude}
 
-We also have a general healthiness condition
-that strengthens $\DL$ above,
-and asserts that at any point in time,
-the labels $in$ and $out$ are never in $ls$ together
-and the are never present if any label from $g$ is in $ls$:
+We also have a general healthiness condition that strengthens $\DL$ above,
+and asserts that at any point in time, the labels $in$ and $out$ are never in
+$ls$ together and the are never present if any label from $g$ is in $ls$:
 \RLEQNS{
-  \LE(P) &\defs& P \land [in|g|out] & \elabel{EL-def}
+  \lhsLE &\defs& \rhsLE & \elabel{\lblLE}
 }
-This is not a ground predicate, and so does not distribute
-through sequential composition.
-However a weaker law does apply:
-\RLEQNS{
+ This is not a ground predicate, and so does not distribute through
+sequential composition. However a weaker law does apply: \RLEQNS{
   (P \land [in|g|out]) \seq (Q \land [in|g|out])
   &=&
   [in|g|out] \land ( P \seq ( Q \land [in|g|out]) )
@@ -368,15 +362,14 @@ we  see that
 \RLEQNS{
   \true * (\Skip \lor P) &=& \bigvee_{i \in \Nat} P^i
   & \elabel{loop-as-NDC}
-}
-This leads us to define the healthiness condition as
+} This leads us to define the healthiness condition as
 \RLEQNS{
    P^0 & \defs& \Skip           & \elabel{seq-0}
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
-\\ \WWW(P) & \defs  & \bigvee_{i \in \Nat} P^i &\elabel{WWW-as-NDC}
-}%
-We note explicitly here that, in effect,
-our semantic model is based on unbounded non-determinism.
+\\ \lhsWWW &\defs& \rhsWWW & \elabel{\lblWWW}
+}
+ We note explicitly here that, in effect, our semantic model is based on
+unbounded non-determinism.
 
 For $\WWW$ to be a proper healthiness condition
 is has to be monotonic and idempotent.
@@ -425,10 +418,9 @@ whereas $\LE$ and $\WWW$ do not:
 \\ \WWW(\LE(P)) &=& \bigvee_{i \in \Nat} (I \land P)^i
 }
 
-With this in mind we define our overall
-healthiness condition as
+With this in mind we define our overall healthiness condition as
 \RLEQNS{
-   \W(P) &\defs& \DL(\LE(\WWW(P))) & \elabel{W-def}
+   \lhsW &\defs& \rhsW & \elabel{\lblW}
 }
 
 \subsection{UTP Denotational Semantics}\label{ssec:UTP-denote}
@@ -475,21 +467,16 @@ Then we give the semantics of each language construct in turn.
 
 \subsubsection{Basic Action}\label{sssec:basic-action}
 
-Basic Action $A(E|a|N)$ is enabled when all the labels in $E$
-are present in the global label-set
-and atomic action $a$ does not evaluate to $\false$
-in the current program state.
-If so enabled,  it performs action $a$, removes the labels in $E$
-from the label-set, and adds in those in $N$.
+Basic Action $A(E|a|N)$ is enabled when all the labels in $E$ are present in
+the global label-set and atomic action $a$ does not evaluate to $\false$ in
+the current program state. If so enabled,  it performs action $a$, removes
+the labels in $E$ from the label-set, and adds in those in $N$.
 \RLEQNS{
-   A(E|a|N)
-   &\defs&
-   E \subseteq ls \land a \land ls'=(ls\setminus E) \cup N
-   & \elabel{A-def}
+   \lhsA &\defs& \rhsA & \elabel{\lblA}
 }
-This is a basic building block that is used in subsequent
-definitions, both for lifting atomic state change actions,
-and for defining control-flow label management.
+ This is a basic building block that is used in subsequent definitions, both
+for lifting atomic state change actions, and for defining control-flow label
+management.
 
 A key property of basic actions is that ground substitutions
 can be driven inside
@@ -515,16 +502,14 @@ simply $\setof{in}$, and the new label introduced once complete
 is $\setof{out}$.
 It has no subcomponents, so it does not use the label generator $g$.
 
-The key invariant here is that $in$ and $out$ are never simultaneously
-in $ls$.
-So we simply wrap the corresponding action with the healthiness conditions
-and conjoin our invariant:
+The key invariant here is that $in$ and $out$ are never simultaneously in
+$ls$. So we simply wrap the corresponding action with the healthiness
+conditions and conjoin our invariant:
 \RLEQNS{
-  \catom a
-  &\defs& [in|out] \land \DL(\W(A(in|a|out))) & \elabel{sem:atomic}
+  \lhsCA &\defs& \rhsCA & \elabel{\lblCA}
 }
-Note here that we write $x$ rather than $\setof{x}$, as a shorthand.
-This is why the notation for $A$ uses vertical bars to separate arguments.
+ Note here that we write $x$ rather than $\setof{x}$, as a shorthand. This
+is why the notation for $A$ uses vertical bars to separate arguments.
 
 We need to show that $A(in|a|out)$ preserves the specified
 invariant, under any arbitrary sound substitution $\varsigma$:
@@ -590,12 +575,9 @@ and healthify.
 For all of this to work we require the LE invariant
 to ensure that only one of $in$, $\ell_g$ or $out$
 are ever present in $ls$.
+
 \RLEQNS{
-   P \cseq Q
-   &\defs&
-   [in|\ell_g|out]
-   \land \DL(\W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in]))
-   & \elabel{sem:seq}
+   \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
 }
 
 If $A$ actions inside $P$ and $Q$ preserve the invariant,
@@ -652,17 +634,13 @@ replacements for $out$ (see also \S\ref{sssec:label-exclusivity}).
 \newpage
 Putting all of this together gives the following definition
 \RLEQNS{
-   P \parallel Q
+   \lhsPAR
    &\defs&
-   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
-   & \elabel{sem:par}
-\\&& \DL(\W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
-\\ && \qquad\qquad {}\lor
-   P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-\\ && \qquad\qquad {}\lor
-    Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\ && \qquad\qquad {}\lor
-   A(\ell_{g1:},\ell_{g2:}|ii|out)~))
+   \leftW \rhsaPAR \lor {}
+   & \elabel\lblPAR
+\\&& \phW \rhsbPAR \lor {}
+\\&& \phW \rhscPAR \lor {}
+\\&& \phW \rhsdPAR \rghtW
 }
 We need to demonstrate that the Split and Merge actions
 preserve the LE invariant:
@@ -704,30 +682,13 @@ because it will remove $in$ from the label-set.
 %[Denote-BITS.tex]{NDC-sem}
 
 \RLEQNS{
-   P + Q
-   &\defs&
-   [in|\ell_{g1}|\ell_{g2}|out] \land {}
-   & \elabel{sem:NDC}
-\\ && \DL(\W(\quad {}\phlor A(in|ii|\ell_{g1})
-\\ && \qquad\qquad {} \lor
-                     A(in|ii|\ell_{g2})
-\\ && \qquad\qquad {} \lor
-   P[g_{1:},\ell_{g1}/g,in]
-\\ && \qquad\qquad {} \lor
-   Q[g_{2:},\ell_{g2}/g,in]~))
+   \lhsNDC &\defs& \rhsNDC & \elabel{\lblNDC}
 }
+
 
 LE invariant preservation - not required
 
-HMMMMM! PERHAPS NDC is just $P[\g1/g] \lor P[\g2/g]$???
 
-\RLEQNS{
-   P+Q
-   &\defs&
-   [in|out]
-   \land
-   \DL(\W( P[\g1/g] \lor Q[\g2/g]))
-}
 
 \subsubsection{Nondeterministic Loop}
 
@@ -748,17 +709,14 @@ which replaces the $in$ of $P$.
 When $P$ terminates, we immediately go back to the top-level $in$
 to choose again.
 \RLEQNS{
-   P^*
+   \lhsSTAR
    &\defs&
-   [in|\ell_g|out] \land {}
-   & \elabel{sem:star}
-\\ && \DL(\W(\quad  \phlor A(in|ii|out)
-\\ && \qquad\qquad {}\lor A(in|ii|\ell_g)
-\\ && \qquad\qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~))
+   \leftW \rhsaSTAR \lor {}
+   & \elabel\lblSTAR
+\\&& \phW \rhsbSTAR \lor {}
+\\&& \phW \rhscSTAR \lor {}
+\\&& \phW \rhsdSTAR \rghtW
 }
-Note that the slightly strange substitution $[g_{:},\ell_g,in/g,in,out]$
-is in fact sound, as $\{\g{:}|\ell_g|in\}$ is true, given $\DL$.
-
 LE invariant preservation
 \RLEQNS{
    \{in|g|out\}\varsigma
@@ -809,17 +767,14 @@ This ensures that the control-flow action is only able to proceed
 if $in$ is in $ls$ and the condition or its negation is true
 in the current state $s$.
 \RLEQNS{
-   P \dcond c Q
+   \lhsCND
    &\defs&
-   [in|\ell_{g1}|\ell_{g2}|out] \land {}
-   & \elabel{sem:cond}
-\\ && \DL(\W(\quad {}\phlor A(in|c \land ii|\ell_{g1})
-\\ && \qquad\qquad {} \lor
-                     A(in|\lnot c \land ii|\ell_{g2})
-\\ && \qquad\qquad {} \lor
-   P[g_{1:},\ell_{g1}/g,in]
-\\ && \qquad\qquad {} \lor
-   Q[g_{2:},\ell_{g2}/g,in]~))
+   \leftW \rhsaCND \lor {}
+   & \elabel\lblCND
+\\&& \phW \rhsbCND \lor {}
+\\&& \phW \rhscCND \lor {}
+\\&& \phW \rhsdCND \rghtW
+\\&& \land_? \invCND \mbox{ \textit{\small necessary?}}
 }
 
 
@@ -852,14 +807,15 @@ LE invariant preservation
 See the previous section about conditional choice regarding the
 role of state-condition $c$---the same idea applies here too.
 \RLEQNS{
-   c \ddo P
+   \lhsITER
    &\defs&
-   [in|\ell_g|out] \land {}
-   & \elabel{sem:iter}
-\\ && \DL(\W(\quad  \phlor A(in|\lnot c \land ii|out)
-\\ && \qquad\qquad {}\lor A(in|c \land ii|\ell_g)
-\\ && \qquad\qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~))
+   \leftW \rhsaITER \lor {}
+   & \elabel\lblITER
+\\&& \phW \rhsbITER \lor {}
+\\&& \phW \rhscITER \lor {}
+\\&& \phW \rhsdITER \rghtW
 }
+
 
 LE invariant preservation
 \RLEQNS{
