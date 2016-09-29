@@ -297,7 +297,8 @@ the labels associated with $in$, $out$ and $g$ are different:
 }
  This is just the Disjoint Labels invariant of
 \S\ref{sssec:disjoint-labels}, reformulated as a healthiness condition. Also,
-it is a ground predicate, and so distributes through sequential composition:
+it involves a ground predicate that distributes through sequential composition,
+which means the healthiness condition does as well:
 \RLEQNS{
   \DL(P\seq Q) &=& \DL(P) \seq \DL(Q) & \eref{DL-seq-distr}
 }
@@ -306,18 +307,20 @@ it is a ground predicate, and so distributes through sequential composition:
 
 We also have a general healthiness condition that strengthens $\DL$ above,
 and asserts that at any point in time, the labels $in$ and $out$ are never in
-$ls$ together and the are never present if any label from $g$ is in $ls$:
+$ls$ together and they are never present if any label from $g$ is:
 \RLEQNS{
   \lhsLE &\defs& \rhsLE & \elabel{\lblLE}
 }
- This is not a ground predicate, and so does not distribute through
-sequential composition. However a weaker law does apply: \RLEQNS{
-  (P \land [in|g|out]) \seq (Q \land [in|g|out])
+This is not a ground predicate, and so does not distribute through
+sequential composition. However a weaker law does apply:
+\RLEQNS{
+  \LE(P) \seq \LE(Q)
   &=&
-  [in|g|out] \land ( P \seq ( Q \land [in|g|out]) )
+  \LE(P \seq \LE(Q))
   & \elabel{EL-seq}
 }
-
+In the sequel we will often use $I$
+as shorthand for $[in|g|out]$.
 
 
 
@@ -351,18 +354,24 @@ as placing a basic action inside such a loop,
 but within a non-deterministic choice between it
 and a \emph{stuttering} step, denoted by UTP skip:
 \RLEQNS{
-  \catom a &\defs& \true * (\Skip \lor A(in|a|out))
+  \catom a &=& \true * (\Skip \lor A(in|a|out))
 }
 A result of this is that this stuttering step gets
 propagated up to enclosing composites,
 so in effect we see $\true * C = \true * (\Skip\lor C)$
 where $C$ is any predicate denoting the semantics of a command.
-In effect,
-we  see that
+Given that our loop bodies always have such a disjunction,
+it then becomes interesting to ask what this looks like:
 \RLEQNS{
   \true * (\Skip \lor P) &=& \bigvee_{i \in \Nat} P^i
   & \elabel{loop-as-NDC}
-} This leads us to define the healthiness condition as
+}
+We find that such a loop is equivalent to a non-deterministic
+choice over the number of times that $P$ is repeated,
+including zero.
+
+We choose to \emph{define} the healthiness condition as
+this large choice.
 \RLEQNS{
    P^0 & \defs& \Skip           & \elabel{seq-0}
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
@@ -425,6 +434,34 @@ With this in mind we define our overall healthiness condition as
 
 \subsection{UTP Denotational Semantics}\label{ssec:UTP-denote}
 
+
+
+To proceed we shall first introduce the notation of a Basic Action,
+which is the lifting of an atomic shared state transformer $a$
+into something that waits for itself to be enabled by appropriate labels.
+Then we give the semantics of each language construct in turn.
+
+
+\subsubsection{Basic Action}\label{sssec:basic-action}
+
+Basic Action $A(E|a|N)$ is enabled when all the labels in $E$ are present in
+the global label-set and atomic action $a$ does not evaluate to $\false$ in
+the current program state. If so enabled,  it performs action $a$, removes
+the labels in $E$ from the label-set, and adds in those in $N$.
+\RLEQNS{
+   \lhsA &\defs& \rhsA & \elabel{\lblA}
+}
+ This is a basic building block that is used in subsequent definitions, both
+for lifting atomic state change actions, and for defining control-flow label
+management.
+
+A key property of basic actions is that ground substitutions
+can be driven inside
+\RLEQNS{
+   A(E|a|N)\gamma &=& A(E\gamma|a|N\gamma)
+   & \elabel{A-gamma-subs}
+}
+
 The denotational semantic definitions below will have
 $\WWW(P)$ as a component,
 where $P$ will turn out to be a disjunction of lifted atomic actions,
@@ -457,33 +494,6 @@ semantics of Brookes\cite{DBLP:journals/iandc/Brookes96}.
 So, in this theory, $\seq$ can be thought of as \emph{mumbling composition}.
 In a similar vein, the $\Skip$ predicate represents
 all the possible stuttering steps in Brookes' semantics.
-
-
-To proceed we shall first introduce the notation of a Basic Action,
-which is the lifting of an atomic shared state transformer $a$
-into something that waits for itself to be enabled by appropriate labels.
-Then we give the semantics of each language construct in turn.
-
-
-\subsubsection{Basic Action}\label{sssec:basic-action}
-
-Basic Action $A(E|a|N)$ is enabled when all the labels in $E$ are present in
-the global label-set and atomic action $a$ does not evaluate to $\false$ in
-the current program state. If so enabled,  it performs action $a$, removes
-the labels in $E$ from the label-set, and adds in those in $N$.
-\RLEQNS{
-   \lhsA &\defs& \rhsA & \elabel{\lblA}
-}
- This is a basic building block that is used in subsequent definitions, both
-for lifting atomic state change actions, and for defining control-flow label
-management.
-
-A key property of basic actions is that ground substitutions
-can be driven inside
-\RLEQNS{
-   A(E|a|N)\gamma &=& A(E\gamma|a|N\gamma)
-   & \elabel{A-gamma-subs}
-}
 
 
 \newpage
