@@ -45,6 +45,7 @@
 \def\lblPAR{sem:par}
 
 \def\lhsNDC{P+Q}
+\def\invNDC{[\g1|\g2]}
 \def\rhsNDC{\W(~P[g_{1}/g] \lor Q[g_{2}/g]~)}
 \def\lblNDC{sem:NDC}
 
@@ -56,11 +57,11 @@
 \def\lblSTAR{sem:star}
 
 \def\lhsCND{P \dcond c Q}
-\def\invCND{[\ell_{g1}|\ell_{g2}]}
+\def\invCND{[\ell_{g1}|\g{1:}|\ell_{g2}|\g{2:}]}
 \def\rhsaCND{A(in|c \land ii|\ell_{g1})}
 \def\rhsbCND{A(in|\lnot c \land ii|\ell_{g2})}
-\def\rhscCND{P[g_{1:},\ell_{g1}/g,in]}
-\def\rhsdCND{Q[g_{2:},\ell_{g2}/g,in]}
+\def\rhscCND{P[\g{1:},\ell_{g1}/g,in]}
+\def\rhsdCND{Q[\g{2:},\ell_{g2}/g,in]}
 \def\lblCND{sem:cond}
 
 \def\lhsITER{c \ddo P}

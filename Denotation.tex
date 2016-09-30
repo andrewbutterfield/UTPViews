@@ -501,7 +501,7 @@ all the possible stuttering steps in Brookes' semantics.
 \newpage
 \subsubsection{Atomic Action}
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \includegraphics{images/atomic-action}\\
   \caption{Atomic Action}
@@ -523,15 +523,15 @@ conditions and conjoin our invariant:
  Note here that we write $x$ rather than $\setof{x}$, as a shorthand. This
 is why the notation for $A$ uses vertical bars to separate arguments.
 
-We need to show that $A(in|a|out)$ preserves the specified
+We need to show that $A(in|a|out)$ preserves the $\LE$
 invariant, under any arbitrary sound substitution $\varsigma$:
 \RLEQNS{
-   \{in|out\}\varsigma
-   \land [in|out]\varsigma
-   \land A(in|a|out)\varsigma &\implies& [in|out]'\varsigma
+   \{in|g|out\}\varsigma
+   \land I\varsigma
+   \land A(in|a|out)\varsigma &\implies& I'\varsigma
    & \eref{atom-inv-ok}
 }
-Here $[in|out]'$ is simply $[in|out]$ with $ls$ replaced by $ls'$.
+Here $I'$ is simply $I$ with $ls$ replaced by $ls'$.
 
 \subsubsection{Guarded Atomic Action}
 In effect there is no real difference between $c \pgrd a$
@@ -584,14 +584,13 @@ So $P$ becomes $P[\g{:1},\ell_g/g,out]$,
 and $Q$ is changed to $Q[\g{:2},\ell_g/g,in]$, both substitutions being sound.
 Next, we connect our modified $P$ and $Q$ with \emph{disjunction},
 and healthify.
-For all of this to work we require the LE invariant
-to ensure that only one of $in$, $\ell_g$ or $out$
-are ever present in $ls$.
-
 \RLEQNS{
    \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
 }
-
+For all of this to work we require an invariant
+to ensure that only one of $in$, $\ell_g$ or $out$
+are ever present in $ls$.
+However $\LE$ ensures this as $[in|g|out]$ implies $[in|\ell_g|out]$.
 If $A$ actions inside $P$ and $Q$ preserve the invariant,
 then so does their composition.
 This is immediate by the sound substitution independence
@@ -605,7 +604,7 @@ of invariant preservation (c.f., \eref{atom-inv-ok}).
 \begin{figure}[h]
   \centering
   \includegraphics{images/parallel-label-gen}\\
-  \caption{Generating labels of Parallel Composition}
+  \caption{Generating labels for Parallel Composition}
   \label{fig:par-lbl-gen}
 \end{figure}
 Parallel composition $P\parallel Q$ may seem straightforward:
@@ -636,14 +635,6 @@ when both $P$ and $Q$ have (See Fig.\ref{fig:par-comp}).
   \label{fig:par-comp}
 \end{figure}
 
-The LE invariant for parallel has not only to ensure
-that $in$ and $out$ are never in $ls$ together
-or when any of the four generated labels are,
-but also that the labels that replace $in$
-are never in $ls$ at the same time as the corresponding
-replacements for $out$ (see also \S\ref{sssec:label-exclusivity}).
-
-\newpage
 Putting all of this together gives the following definition
 \RLEQNS{
    \lhsPAR
@@ -654,22 +645,46 @@ Putting all of this together gives the following definition
 \\&& \phW \rhscPAR \lor {}
 \\&& \phW \rhsdPAR \rghtW
 }
+The behaviour for parallel has not only to ensure
+that $in$ and $out$ are never in $ls$ together
+or when any of the four generated labels are,
+but also that the labels that replace $in$
+are never in $ls$ at the same time as the corresponding
+replacements for $out$ (see also \S\ref{sssec:label-exclusivity}).
+The first part is guaranteed by $\LE$ at this level.
+For the second part we note that  the components $P$ and $Q$
+both have the $\LE$ invariant, which under the relevant sound substitutions
+become $[\ell_{g1}|\g{1::}|\ell_{g1:}]$
+and $[\ell_{g2}|\g{2::}|\ell_{g2:}]$ respectively.
+This is enough to enforce the correct behaviour of the generated labels.
+
+
 We need to demonstrate that the Split and Merge actions
-preserve the LE invariant:
+preserve the $\LE$ invariant:
 \RLEQNS{
    \{in|g|out\}\varsigma
-   \land [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]\varsigma
+   \land I\varsigma
    && \eref{split-inv-ok}
+\\ {} \land [g_{1::}|\ell_{g1}|\ell_{g1:}]\varsigma
+\\ {} \land [g_{2::}|\ell_{g2}|\ell_{g2:}]\varsigma
 \\ {} \land A(in|ii|\ell_{g1},\ell_{g2})\varsigma
    &\implies&
-   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]'\varsigma
+   I'\varsigma
+\\&& {} \land [g_{1::}|\ell_{g1}|\ell_{g1:}]'\varsigma
+\\&& {} \land [g_{2::}|\ell_{g2}|\ell_{g2:}]'\varsigma
+\\
 \\ \{in|g|out\}\varsigma
-   \land [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]\varsigma
+   \land I\varsigma
    && \eref{merge-inv-ok}
-\\ {} \land A(\ell_{g1:},\ell_{g2:}|ii|out)\varsigma
+\\ {} \land [g_{1::}|\ell_{g1}|\ell_{g1:}]\varsigma
+\\ {} \land [g_{2::}|\ell_{g2}|\ell_{g2:}]\varsigma
+\\ {} \land A(|\ell_{g1:},\ell_{g2:}|ii|out)\varsigma
    &\implies&
-   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]'\varsigma
+   I'\varsigma
+\\&& {} \land [g_{1::}|\ell_{g1}|\ell_{g1:}]'\varsigma
+\\&& {} \land [g_{2::}|\ell_{g2}|\ell_{g2:}]'\varsigma
 }
+
 
 \newpage
 \subsubsection{Nondeterministic Choice}
@@ -688,14 +703,19 @@ or $out$.
 The first atomic action enabled by $in$ to
 run in either component will disable all other such actions in both components,
 because it will remove $in$ from the label-set.
-
-
+However we do need to extend the $\LE$ invariant a little,
+to assert that labels from one side are never present when labels from
+the other side are.
 \RLEQNS{
-   \lhsNDC &\defs& \rhsNDC & \elabel{\lblNDC}
+   \lhsNDC &\defs& \invNDC \land \rhsNDC & \elabel{\lblNDC}
 }
 
 
-LE invariant preservation - not required
+$\LE$ invariant preservation --- if an action in $P$ is enabled,
+and the invariant holds, then no labels from $Q$ are present.
+$P$ can only modify $ls$ membership for labels in $\g1$,
+so it cannot invalidate the invariant by mixing in labels from $\g2$.
+(And vice-versa).
 
 
 \newpage
@@ -712,10 +732,13 @@ LE invariant preservation - not required
 A nondeterministic loop $P^*$  starts with a non-deterministic choice
 regarding if it will immediately terminate,
 or perform an iteration.
-In the former case we go directly from $in$ to $out$,
+In the former case we go directly to $out$,
 while in the latter we need a new label ($\ell_g$)
 which replaces the $in$ of $P$.
-When $P$ terminates, we immediately go back to the top-level $in$
+We also need to ``buffer'' $in$, by not using it as the terminate/continue
+decision point. Instead we use yet another label ($\ell_{g:}$
+as the one in $ls$ when deciding if to stop of continue.
+When $P$ terminates, we immediately go back to the decision point $\ell_{g:}$
 to choose again.
 \RLEQNS{
    \lhsSTAR
@@ -726,7 +749,17 @@ to choose again.
 \\&& \phW \rhscSTAR \lor {}
 \\&& \phW \rhsdSTAR \rghtW
 }
-LE invariant preservation
+To understand why we cannot use $in$ itself as the decision point,
+consider the program $P^*+Q^*$. If the decision point is $in$
+then every time either $P$ or $Q$ finish an execution,
+both become enabled. This is because $+$ does not re-label $in$.
+Another possibility would be to have $+$ have actions to make
+a choice between the two sides, and then this loop could
+use $in$ as a decision point.
+But then this breaks a property that $P$ never puts $in$ into $ls$,
+but only removes it.
+
+$\LE$ invariant preservation
 \RLEQNS{
    \{in|g|out\}\varsigma
    \land [in|\ell_{g1}|out]\varsigma
@@ -754,22 +787,9 @@ LE invariant preservation
 \end{figure}
 
 
-\textbf{Brought here}
-\emph{Nondeterministic choice $P+Q$ is fairly simple.
-Provide two new labels to replace the $in$s of $P$ and $Q$
-and introduce two independent control-flow actions,
-both enabled by $in$, each of which adds one of the new labels to $ls$
-(while removing $in$, of course).
-Then the first control-flow action to run will enable its component,
-while simultaneously disabling the other control-flow action.
-Split generators are passed into $P$ and $Q$ as usual.
-The LE invariant has to assert that only one of two new labels
-can be present in $ls$ at any point in time.
-}
-
 The semantics for conditional choice $P \dcond c Q$
-is very similar to that for non-deterministic choice.
-The only difference is that the two control-flow actions
+is different to that for non-deterministic choice.
+The difference is that we need two control-flow actions
 have the condition $c$, or its negation as appropriate,
 conjoined with the underlying program state skip action $ii$.
 This ensures that the control-flow action is only able to proceed
@@ -783,11 +803,14 @@ in the current state $s$.
 \\&& \phW \rhsbCND \lor {}
 \\&& \phW \rhscCND \lor {}
 \\&& \phW \rhsdCND \rghtW
-\\&& \land_? \invCND \mbox{ \textit{\small necessary?}}
+\\&& {} \land \invCND
 }
+We do need to extend the $\LE$ invariant to ensure
+that once one side or other of the conditional is active,
+the other remains inactive.
 
 
-LE invariant preservation
+$\LE$ invariant preservation
 \RLEQNS{
    \{in|g|out\}\varsigma
    \land [in|\ell_{g1}|\ell_{g2}|out]\varsigma
@@ -826,7 +849,7 @@ role of state-condition $c$---the same idea applies here too.
 }
 
 
-LE invariant preservation
+$\LE$ invariant preservation
 \RLEQNS{
    \{in|g|out\}\varsigma
    \land [in|\ell_{g1}|out]\varsigma
