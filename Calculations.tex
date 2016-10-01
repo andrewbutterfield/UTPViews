@@ -641,119 +641,40 @@ We now can easily show that we get stuttering here also:
 \\&& \W(\Skip\lor C\sigma \lor \dots)
 }
 
-\subsection{Miscellaneous}
 
-Most of this stuff should end up,
-if required,
-in a Proofs/Justification appendix.
+\subsection{Compact Semantics}
 
-\subsubsection{Semantic Substitutions List}
-
-It can be informative to see the invariants grouped with
-the relevant actions and substitutions.
 \RLEQNS{
-   ~[in|out]
-   && A(in|a|out)
-\\ && id
-\\
-\\ ~[in|\ell_g|out]
-   && [g_{:1},\ell_g/g,out]
-\\ && [g_{:2},\ell_g/g,in]
-\\
-\\ ~[in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out]
-   && A(in|ii|\ell_{g1},\ell_{g2})
-\\ && A(\ell_{g1:},\ell_{g2:}|ii|out)
-\\ && [g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-\\ && [g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\
-\\ ~[in|\ell_{g1}|\ell_{g2}|out]
-   && A(in|ii|\ell_{g1})
-\\ && A(in|ii|\ell_{g2})
-\\ && [g_{1:},\ell_{g1}/g,in]
-\\ && [g_{2:},\ell_{g2}/g,in]
-\\
-\\ ~[in|\ell_g|out]
-   && A(in|ii|out)
-\\ && A(in|ii|\ell_g)
-\\ && P[g_{:},\ell_g,in/g,in,out]
-\\
-\\ ~[in|\ell_{g1}|\ell_{g2}|out]
-   && A(in|c \land ii|\ell_{g1})
-\\ && A(in|\lnot c \land ii|\ell_{g2})
-\\ && [g_{1:},\ell_{g1}/g,in]
-\\ && [g_{2:},\ell_{g2}/g,in]
-\\
-\\ ~[in|\ell_g|out]
-\\ && A(in|\lnot c \land ii|out)
-\\ && A(in|c \land ii|\ell_g)
-\\ && [g_{:},\ell_g,in/g,in,out]
+   \lhsCA &\defs& \rhsCA & \eref{\lblCA}
+\\ \lhsSEQ &\defs& \rhsSEQ & \eref{\lblSEQ}
+\\ \lhsPAR
+   &\defs&
+   \leftW \rhsaPAR \lor {}
+   & \eref\lblPAR
+\\&& \phW \rhsbPAR \lor {}
+\\&& \phW \rhscPAR \lor {}
+\\&& \phW \rhsdPAR \rghtW
+\\ \lhsNDC &\defs& \invNDC \land \rhsNDC & \eref{\lblNDC}
+\\ \lhsSTAR
+   &\defs&
+   \leftW \rhsaSTAR \lor {}
+   & \eref\lblSTAR
+\\&& \phW \rhsbSTAR \lor {}
+\\&& \phW \rhscSTAR \lor {}
+\\&& \phW \rhsdSTAR \rghtW
+\\ \lhsCND
+   &\defs&
+   \leftW \rhsaCND \lor {}
+   & \eref\lblCND
+\\&& \phW \rhsbCND \lor {}
+\\&& \phW \rhscCND \lor {}
+\\&& \phW \rhsdCND \rghtW
+\\&& {} \land \invCND
+\\ \lhsITER
+   &\defs&
+   \leftW \rhsaITER \lor {}
+   & \eref\lblITER
+\\&& \phW \rhsbITER \lor {}
+\\&& \phW \rhscITER \lor {}
+\\&& \phW \rhsdITER \rghtW
 }
-
-\subsubsection{Nested Invariants}
-
-For each composite,
-we show how its component substitutions affect their invariants
-and any entailment relationships that arise.
-We don't show the conditional variants of choice and iteration
-because their invariants and substitutions are the same as those
-in the corresponding non-deterministic constructs.
-
-Semantics Reminder:
-\RLEQNS{
-  \catom a
-  &\defs& [in|out] \land \W(\Skip \lor A(in|a|out))
-\\ P \cseq Q
-   &\defs&
-   [in|\ell_g|out]\land \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
-\\ P \parallel Q
-   &\defs&
-   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out] \land {}
-\\&& \W(\quad\phlor A(in|ii|\ell_{g1},\ell_{g2})
-\\ && \qquad {}\lor
-   P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
-\\ && \qquad {}\lor
-    Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
-\\ && \qquad {}\lor
-   A(\ell_{g1:},\ell_{g2:}|ii|out)~)
-\\ P + Q
-   &\defs&
-   [in|\ell_{g1}|\ell_{g2}|out] \land {}
-\\ && \W(\quad {}\phlor A(in|ii|\ell_{g1})
-\\ && \qquad {} \lor
-                     A(in|ii|\ell_{g2})
-\\ && \qquad {} \lor
-   P[g_{1:},\ell_{g1}/g,in]
-\\ && \qquad {} \lor
-   Q[g_{2:},\ell_{g2}/g,in]~)
-\\ P^*
-   &\defs&
-   [in|\ell_g|out] \land {}
-\\ && \W(\quad  \phlor A(in|ii|out)
-\\ && \qquad {}\lor A(in|ii|\ell_g)
-\\ && \qquad {}\lor P[g_{:},\ell_g,in/g,in,out]~)
-}
-
-
-\paragraph{Sequential Composition}
-
-\begin{description}
-  \item[Invariant]
-    $[in|\ell_g|out]$
-  \item[Substitutions]
-    $[g_{:1},\ell_g/g,out]$ and $[g_{:2},\ell_g/g,in]$
-  \item[Component Invariants]
-    $$\begin{array}{|l|c|c|}
-    \hline
-      \mbox{Type} & \mbox{as }P & \mbox{as }Q
-    \\\hline
-      \catom\_ & [in|\ell_g] & [\ell_g|out]
-    \\\hline
-       \_\cseq\_& [in|\ell_{g:1}|\ell_g] & [\ell_g|\ell_{g:2}|out]
-    \\\hline
-       \_\parallel\_
-       & [in|(\ell_{g:11}|\ell_{g:11:}),(\ell_{g:12}|\ell_{g:12:})|\ell_g]
-       & [\ell_g|(\ell_{g:21}|\ell_{g:21:}),(\ell_{g:22}|\ell_{g:22:})|out]
-    \\\hline
-    \end{array}$$
-\end{description}
-Hmmm \dots, no simple relationship is emerging.

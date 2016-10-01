@@ -865,6 +865,64 @@ $\LE$ invariant preservation
    [in|\ell_{g1}|out]'\varsigma
 }
 
+\subsection{Semantics Summary}\label{ssec:sem-recap}
+
+
+\RLEQNS{
+   \lhsDL &\defs& \rhsDL & \eref{\lblDL}
+\\
+\\ \lhsLE &\defs& \rhsLE & \eref{\lblLE}
+\\
+\\ P^0 & \defs& \Skip           & \eref{seq-0}
+\\ P^{i+1} & \defs& P \seq P^i  & \eref{seq-i-plus-1}
+\\
+\\ \lhsWWW &\defs& \rhsWWW & \eref{\lblWWW}
+\\
+\\ \lhsW &\defs& \rhsW & \eref{\lblW}
+\\
+\\ \lhsA &\defs& \rhsA & \eref{\lblA}
+\\
+\\ \lhsCA &\defs& \rhsCA & \eref{\lblCA}
+\\
+\\ \lhsSEQ &\defs& \rhsSEQ & \eref{\lblSEQ}
+\\
+\\ \lhsPAR
+   &\defs&
+   \leftW \rhsaPAR \lor {}
+   & \eref\lblPAR
+\\&& \phW \rhsbPAR \lor {}
+\\&& \phW \rhscPAR \lor {}
+\\&& \phW \rhsdPAR \rghtW
+\\
+\\ \lhsNDC &\defs& \invNDC \land \rhsNDC & \eref{\lblNDC}
+\\
+\\ \lhsSTAR
+   &\defs&
+   \leftW \rhsaSTAR \lor {}
+   & \eref\lblSTAR
+\\&& \phW \rhsbSTAR \lor {}
+\\&& \phW \rhscSTAR \lor {}
+\\&& \phW \rhsdSTAR \rghtW
+\\
+\\ \lhsCND
+   &\defs&
+   \leftW \rhsaCND \lor {}
+   & \eref\lblCND
+\\&& \phW \rhsbCND \lor {}
+\\&& \phW \rhscCND \lor {}
+\\&& \phW \rhsdCND \rghtW
+\\&& {} \land \invCND
+\\
+\\ \lhsITER
+   &\defs&
+   \leftW \rhsaITER \lor {}
+   & \eref\lblITER
+\\&& \phW \rhsbITER \lor {}
+\\&& \phW \rhscITER \lor {}
+\\&& \phW \rhsdITER \rghtW
+}
+
+
 \newpage
 \subsection{Key Semantic Properties}
 
