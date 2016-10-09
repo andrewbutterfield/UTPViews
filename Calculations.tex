@@ -351,6 +351,19 @@ We adopt the following shorthand for those cases:
    & \elabel{NF-skip}
 }
 
+\RLEQNS{
+   run(\catom a) &=& a
+\\ run(\catom a \cseq \catom b) &=& a \seq b
+\\ run(\catom a \parallel \catom b)
+   &=&
+   a \seq b \lor b \seq a
+\\ run(\catom a + \catom b)
+   &=&
+   a \lor b
+\\ run(a^*)
+   &=& ii \lor a \lor a^2 \lor a^3 \lor \dots
+}
+
 
 \subsubsection{Sequential Composition}
 
