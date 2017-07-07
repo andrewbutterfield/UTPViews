@@ -477,7 +477,7 @@ Two actions meant to be mutually exclusive (the hint being the invariant):
 \RLEQNS{
   && A(L_1|a|L_2) \seq A(L_3|b|L_4) & [L_1|L_2|L_3|L_4]
 \EQ{law $A^2$}
-\\&& L_3\setminus L_2 \cap L_1 = \emptyset \and {}
+\\&& L_3\setminus L_2 \cap L_1 = \emptyset \land {}
 \\&& X(    L_1 \cup L_3\setminus L_2
       \mid a\seq b
       \mid L_1 \cup L_3
@@ -490,6 +490,7 @@ Two actions meant to be mutually exclusive (the hint being the invariant):
 \EQ{Falsifies $[L_1|L_3|\ldots]$}
 \\&& \false
 }
+
 This law also works with invariant fragments
 $[L_1|L_3|\dots]$ and $[L_2|L_4|\dots]$
 
