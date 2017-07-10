@@ -1,0 +1,72 @@
+
+\def\lhsDL{\DL(P)}
+\def\rhsDL{P \land \setof{in|g|out}}
+\def\lblDL{DL-def}
+
+\def\lhsLE{\LE(P)}
+\def\rhsLE{P \land [in|g|out]}
+\def\lblLE{EL-def}
+
+\def\lhsWWW{\WWW(P)}
+\def\rhsWWW{\bigvee_{i \in \Nat} P^i}
+\def\lblWWW{WWW-as-NDC}
+
+\def\lhsW{\W(P)}
+\def\rhsW{\DL(\LE(\WWW(P)))}
+\def\lblW{W-def}
+
+\def\lhsA{A(E|a|N)}
+\def\rhsA{E \subseteq ls \land a \land ls'=(ls\setminus E) \cup N}
+\def\lblA{A-def}
+
+\def\lhsCA{\catom a}
+\def\rhsCA{\W(A(in|a|out))) }
+\def\lblCA{sem:atomic}
+
+\def\lhsSEQ{P \cseq Q}
+\def\rhsSEQ{\W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])}
+\def\lblSEQ{sem:seq}
+%   P \cseq Q
+%   &\defs&
+%   \W(P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+%   & \elabel{sem:seq}
+%}
+%
+
+\def\leftW{\W(~}
+\def\phW{\phantom{\leftW}}
+\def\rghtW{~)}
+
+\def\lhsPAR{P \parallel Q}
+\def\rhsaPAR{A(in|ii|\ell_{g1},\ell_{g2})}
+\def\rhsbPAR{P[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]}
+\def\rhscPAR{Q[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]}
+\def\rhsdPAR{A(\ell_{g1:},\ell_{g2:}|ii|out)}
+\def\lblPAR{sem:par}
+
+\def\lhsNDC{P+Q}
+\def\invNDC{[\g1|\g2]}
+\def\rhsNDC{\W(~P[g_{1}/g] \lor Q[g_{2}/g]~)}
+\def\lblNDC{sem:NDC}
+
+\def\lhsSTAR{P^*}
+\def\rhsaSTAR{A(in|ii|\ell_{g:})}
+\def\rhsbSTAR{A(\ell_{g:}|ii|\ell_g)}
+\def\rhscSTAR{A(\ell_{g:}|ii|out)}
+\def\rhsdSTAR{P[\g{::},\ell_g,\ell_{g:}/g,in,out]}
+\def\lblSTAR{sem:star}
+
+\def\lhsCND{P \dcond c Q}
+\def\invCND{[\ell_{g1}|\g{1:}|\ell_{g2}|\g{2:}]}
+\def\rhsaCND{A(in|c \land ii|\ell_{g1})}
+\def\rhsbCND{A(in|\lnot c \land ii|\ell_{g2})}
+\def\rhscCND{P[\g{1:},\ell_{g1}/g,in]}
+\def\rhsdCND{Q[\g{2:},\ell_{g2}/g,in]}
+\def\lblCND{sem:cond}
+
+\def\lhsITER{c \ddo P}
+\def\rhsaITER{A(in|ii|\ell_{g:})}
+\def\rhsbITER{A(\ell_{g:}|\lnot c \land ii|out)}
+\def\rhscITER{A(\ell_{g:}|c \land ii|\ell_g) }
+\def\rhsdITER{P[\g{::},\ell_g,\ell_{g:}/g,in,out]}
+\def\lblITER{sem:iter}
