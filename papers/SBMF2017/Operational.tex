@@ -1,0 +1,119 @@
+\section{Operational Semantics}\label{sec:operational}
+
+\subsection{Operational Semantics}
+
+We map an initial program and state pair to a final one,
+in a standard small-step semantics.
+
+\begin{mathpar}
+\inferrule{s \in \sem a s}{a,s \arr{} \Vskip,s'}
+\and
+\inferrule{ }{\Vskip \cseq P_2,s \arr{} P_2,s}
+\and
+\inferrule{P_1,s \arr{} P'_1,s'}{P_1 \cseq P_,s \arr{} P'_1 \cseq P_2,s'}
+\and
+\inferrule{ }{\Vskip \parallel P_2,s \arr{} P_2,s}
+\and
+\inferrule{ }{P_1 \parallel \Vskip,s \arr{} P_1,s}
+\and
+\inferrule{P_1,s \arr{} P'_1,s'}{P_1 \parallel P_2,s \arr{} P'_1 \parallel P_2,s'}
+\and
+\inferrule{P_2,s \arr{} P'_2,s'}{P_1 \parallel P_2,s \arr{} P_1 \parallel P'_2,s'}
+\and
+\inferrule{ }{P_1 + P_2,s \arr{} P_i,s} i \in \setof{1,2}
+\and
+\inferrule{ }{P^*,s \arr{} \Vskip,s}
+\and
+\inferrule{ }{P^*,s \arr{} P\cseq P^*,s}
+\and
+\inferrule{\sem c s }{P_1 \dcond c P_2,s \arr{} P_1,s}
+\and
+\inferrule{\lnot\sem c s }{P_1 \dcond c P_2,s \arr{} P_2,s}
+\and
+\inferrule{\lnot \sem c s }{c \ddo P,s \arr{} \Vskip,s}
+\and
+\inferrule{\sem c s }{c \ddo P,s \arr{} P\cseq c \ddo P,s}
+\end{mathpar}
+The multi-step operational transition relation
+is defined by the following rules:
+\begin{mathpar}
+\inferrule{ }{P,s \arrs P,s}
+\and
+\inferrule
+ {P_1,s_1 \arr{} P_2,s_2
+  \\
+  P_2,s_2 \arrs P_3,s_3
+ }
+ {P_1,s_1 \arrs P_3,s_3}
+\end{mathpar}
+
+Contrast this with the presentation in \S\ref{sec:viewdefs}, Definition 3.
+
+
+\subsection{Induced Transitions}
+
+We shall write an atomic behavior
+that is enabled only when $E \subseteq ls$,
+does a state change described by predicate $a$ over $s$ and $s'$
+and then removes all of $E$ from $ls$ and adds in the labels in $N$
+with the suggestive notation:
+\[
+ E \arr a N
+\]
+Here we shall assume that both $E$ and $N$
+contain only expressions over $in$, $out$ and $\ell_G$
+where $G$ is a generator expression over $g$ only.
+Written according to our semantics,
+this corresponds to the predicate
+$A(E|a|N)$.
+
+\textbf{THE FOLLOWING NEEDS REVISING}
+If we define $ii$ as being  $s'=s$,
+then we can re-write our semantics as follows:
+\begin{eqnarray*}
+   a
+   &\defs&
+   in \arr a out
+\\ \cskip
+   &\defs&
+   in \arr{ii} out
+\\ C \cseq D
+   &\defs&
+   C[g_{:1},\ell_g/g,out] \lor D[g_{:2},\ell_g/g,in]
+\\ C + D
+   &\defs&
+   in \arr{ii} \ell_{g1} \lor in \arr{ii} \ell_{g2}
+\\ &\lor&
+   C[g_{1:},\ell_{g1}/g,in] \lor D[g_{2:},\ell_{g2}/g,in]
+\\ C \parallel D
+   &\defs&
+   in \arr{ii} \setof{\ell_{g1},\ell_{g2}}
+\\ &\lor&
+   C[g_{1::},\ell_{g1},\ell_{g1:}/g,in,out]
+   \lor D[g_{2::},\ell_{g2},\ell_{g2:}/g,in,out]
+\\ &\lor&
+   \setof{\ell_{g1:},\ell_{g2:}}
+   \arr{ii}
+   out
+\\ C^*
+   &\defs&
+   in \arr{ii} out
+   \lor
+   in \arr{ii} \ell_g
+\\ &\lor&
+   C[g_{:},\ell_g,in/g,in,out]
+\\ run(C)
+   &\defs&
+   ( ls(\B{out}) * C)[in/ls]
+\end{eqnarray*}
+We note the following substitution laws:
+\begin{eqnarray*}
+  && (E \arr a N)[G,L,M/g,in,out]
+\\&=& (ls(E) \land s' \in \sem a \land ls'=ls\ominus(E|N))[G,L,M/g,in,out]
+\\&=& ls(E)[G,L,M/g,in,out]
+       \land s' \in \sem a
+\\&& {}\land ls'=ls\ominus(E[G,L,M/g,in,out]|N[G,L,M/g,in,out]))
+\\&=& E[G,L,M/g,in,out] \arr a N[G,L,M/g,in,out]
+\\
+\\&& a[G,L,M/g,in,out] = L \arr a M
+\end{eqnarray*}
