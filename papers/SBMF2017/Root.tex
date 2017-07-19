@@ -6,6 +6,7 @@ We do a quick run-down of the Commands\cite{conf/popl/Dinsdale-YoungBGPY13}.
 
 \def\Atm#1{\langle#1\rangle}
 \def\rr#1{r{\scriptstyle{#1}}}
+\def\RR#1{R{\scriptstyle{#1}}}
 
 \begin{eqnarray*}
    a &\in& \Atom
@@ -27,41 +28,23 @@ This Root file is a re-work of the Views semantics
 replacing label generators by ``rooted'' label-paths.
 
 We start by defining three basic ways to transform a rooted path:
-``step'' ($:$);
+``done'' ($\bullet$);
 ``split-one'' ($1$);
 and ``split-two'' ($2$).
+No further changes can be made to one that is ``done''.
 \RLEQNS{
-   S &\defs& \setof{:,1,2}
+   S &\defs& \setof{1,2}
 }
 
 We now define a rooted path as an expression of the form
-of the variable $r$ followed by zero or more $S$ transforms.
+of the variable $r$ followed by zero or more $S$ transforms,
+possibly terminated by the ``done'' marker.
 \RLEQNS{
    \sigma,\varsigma &\defs& S^*
-\\ R &::=& r | R S
-\\   & = & r\sigma
+\\ R &::=& r\sigma | r\sigma\bullet
 }
 These have to be expressions as we shall want to substitute for $r$
-in them.
-
-\subsubsection{Path Ordering}
-\RLEQNS{
-   R &\le& R\sigma
-\\ R1\sigma &<& R\!:\!\varsigma
-\\ R2\sigma &<& R\!:\!\varsigma
-}
-\RLEQNS{
-   r &\le& r\sigma
-}
-\RLEQNS{
-   R1\sigma &<& R\!:\!\varsigma
-}
-\RLEQNS{
-   R2\sigma &<& R\!:\!\varsigma
-}
-\RLEQNS{
-   R &\le& R\sigma
-}
+in them by ``done-free'' rooted paths.
 
 \subsection{Shorthands}
 
@@ -95,10 +78,10 @@ and replacing them with new ones:
 \\ r &:& R
 \end{eqnarray*}
 
-We define our dictionary alphabet entries,
-and also declare that the predicate variables $a$, $b$ and $c$
+Predicate variables $a$, $b$ and $c$
 will refer to atomic state-changes,
 and so only have alphabet $\setof{s,s'}$.
+An expression $g$ is `ground' if its free variables are contained in $\setof r$.
 
 \subsection{``Standard'' UTP Constructs}
 
@@ -112,18 +95,17 @@ and so only have alphabet $\setof{s,s'}$.
 \\ c * P
    &=&
    P ; c * P \cond c \Skip
+\\ \Skip &=& ls'=ls \land s'=s
+\\ \alpha \Skip &=& \setof{ls,ls',s,s'}
 \end{eqnarray*}
 
-We need to update some definitions from standard UTP as follows:
-
-\paragraph{Updating UTP Skip ($\Skip$)}\label{hd:updating-UTP-II}
-
-We know have a concrete definition for $\Skip$,
-as well as a known alphabet.
-\RLEQNS{
-   \Skip &=& ls'=ls \land s'=s
-\\ \alpha \Skip &=& \setof{ls,ls',s,s'}
-}
+We note that ground expressions can ``ignore'' sequential composition
+in a certain sense:
+\begin{eqnarray*}
+   (g \land P) ; Q \quad = &     g \land ( P ; Q)      & = \quad P ; (g \land Q)
+\\                         &           =
+\\                         & (g \land P) ; (g \land Q)
+\end{eqnarray*}
 
 \subsection{WwW Basic Shorthands}
 
@@ -179,12 +161,12 @@ We do want the following simplification:
 
 We have a key invariant as part of the healthiness
 condition associated with every semantic predicate,
-namely that the labels $r$ and $\rr:$ never occur in  $ls$ at
+namely that the labels $r$ and $\rr\bullet$ never occur in  $ls$ at
 the same time:
 \[
- ( r \in ls \implies \rr: \notin ls )
+ ( r \in ls \implies \rr\bullet \notin ls )
  \land
- ( \rr: \in ls \implies r \notin ls )
+ ( \rr\bullet \in ls \implies r \notin ls )
 \]
 This is the Label Exclusivity invariant.
 
@@ -194,7 +176,7 @@ we shall see that we will get a number of instances of this.
 We adopt a shorthand notation,
 so that the above invariant is simply
 \[
-  [r|\rr:]
+  [r|\rr\bullet]
 \]
 So we define the following general shorthand:
 \RLEQNS{
@@ -247,17 +229,29 @@ given an enabling label or label-set.
 \subsubsection{Wheels within Wheels}\label{hc:WwW}
 
 The wheels-within-wheels healthiness condition
-insists that $r$ and $\rr:$ are never simultaneously in
+insists that $r$ and $\rr\bullet$ are never simultaneously in
 the label-set $ls$,
 and that our semantic predicates are closed under mumbling.
+In fact we can strengthent the invariant to say for any rooted path $R$
+that $R$ and $\RR\bullet$ are never in $ls$ together.
 \RLEQNS{
    \W(C)
    &\defs&
-   [r|\rr:] \land \left(~\bigvee_{i\in 0\dots} C^i~\right)
+   [R|\RR\bullet] \land \left(~\bigvee_{i\in 0\dots} C^i~\right)
 \\ ii &\defs& s'=s
 }
+In fact it makes sense to define $\W(C)$ as $\bigvee C^i$
+and have the following invariant preservation theorem, for every command $C$:
+\begin{equation*}
+   [R|\RR\bullet] \implies \W(C) \implies [R|\RR\bullet]'
+\end{equation*}
+Or we have rolled in and the proof obligation is
+\begin{equation*}
+   \W(C) \implies [R|\RR\bullet]'
+\end{equation*}
 
-Unrolling $\W(C)$, using $I$ for $[r|\rr:]$,
+
+Unrolling $\W(C)$, using $I$ for $[R|\RR\bullet]$,
 and noting that
 $
 \bigvee_{i \in \Nat} C^i
@@ -275,17 +269,53 @@ $.
 \\ &=& I \land (~(\bigvee_{i < k} C^i) \lor (\bigvee_{i \geq k} C^i)~)
 }
 We assume $\seq$ binds tighter than $\lor$.
+We can also move conjoined ground predicates around at will:
+\begin{equation}
+  g \land \bigvee C^i
+= \bigvee (g \land C^i)
+= \bigvee (g \land C)^i
+= g \land \bigvee (g \land C)^i
+\end{equation}
+With disjunction of predicates we get all possible interleavings:
+\begin{eqnarray*}
+      W(P \lor Q)
+  &=& \bigvee (P \lor Q)^i
+\\&=& \Skip \lor P \lor Q \lor {}
+\\& & P^2 \lor PQ \lor QP \lor Q^2 \lor {}
+\\& & P^3 \lor P^2Q \lor PQP \lor PQ^2 \lor {}
+\\& & QP^2 \lor QPQ \lor Q^2P \lor Q^3 \lor \dots
+\end{eqnarray*}
+If one of the disjuncts is a use of $\W$:
+\begin{eqnarray*}
+      W(P \lor \W(Q))
+\\&=& \bigvee (P \lor \W(Q))^i
+\\&=& \bigvee_i (P \lor \bigvee_j Q^j)^i
+\end{eqnarray*}
+This is all possible interleavings of $P$ and $Q^j$,
+each of which can be matched to a interleaving or $P$ and $Q$,
+so we have:
+\begin{equation}
+   \W(P \lor \W(Q)) = \W(P \lor Q)
+\end{equation}
+Conjunctions with ground expressions are not a problem:
+\begin{eqnarray*}
+   \W(P \lor g \land \W(Q)) &=& \W(P \lor \W(g \land Q))
+\\ &=& \W(P \lor g \land Q)
+\\ g_1 \land \W(P \lor g_2 \land \W(Q))
+   &=& g_1 \land \W(P \lor g_2 \land Q)
+\\ &=& \W(g_1 \land P \lor g_1 \land g_2 \land Q)
+\end{eqnarray*}
 
 \subsection{WwW Semantic Definitions}
 
 The definitions, using the new shorthands:
 \RLEQNS{
-   \W(C) &\defs& [r|\rr:]
+   \W(C) &\defs& [r|\rr\bullet]
                  \land
                  \left(\bigvee_{i\in 0\dots} C^i\right)
 \\ ii &\defs& s'=s
 \\
-\\ \Atm a &\defs&\W(A(r|a|\rr:))
+\\ \Atm a &\defs&\W(A(r|a|\rr\bullet))
 \\
 \\ \cskip
    &\defs&
@@ -297,16 +327,16 @@ The following are all under review (they lack sufficient invariants).
    &\defs&
    \W(~    A(r|ii|\rr1)
       \lor C[\rr1/r]
-      \lor A(\rr{1:}|ii|\rr2)
+      \lor A(\rr{1\bullet}|ii|\rr2)
       \lor D[\rr2/r]
-      \lor A(\rr{2:}|ii|\rr:) ~)
+      \lor A(\rr{2\bullet}|ii|\rr\bullet) ~)
 \\
 \\ C + D
    &\defs&
    \W(\quad {}\phlor A(r|ii|\rr1) \lor A(r|ii|\rr2)
 \\ && \qquad {} \lor
    C[\rr1/r] \lor D[\rr2/r]
-\\ && \qquad {} \lor A(\rr{1:}|ii|\rr:) \lor A(\rr{2:}|ii|\rr:) ~)
+\\ && \qquad {} \lor A(\rr{1\bullet}|ii|\rr\bullet) \lor A(\rr{2\bullet}|ii|\rr\bullet) ~)
 \\
 \\ C \parallel D
    &\defs&
@@ -315,18 +345,18 @@ The following are all under review (they lack sufficient invariants).
    C[\rr1/r]
    \lor D[\rr2/r]
 \\ && \qquad {}\lor
-   A(\rr{1:},\rr{2:}|ii|\rr:)~)
+   A(\rr{1\bullet},\rr{2\bullet}|ii|\rr\bullet)~)
 \\
 \\ C^*
    &\defs&
-   \W(\quad  \phlor A(r|ii|\rr1) \lor A(\rr1|ii|\rr:)
-\\ && \qquad {}\lor C[\rr1/r]    \lor A(\rr{1:}|ii|\rr1) ~)
+   \W(\quad  \phlor A(r|ii|\rr1) \lor A(\rr1|ii|\rr\bullet)
+\\ && \qquad {}\lor C[\rr1/r]    \lor A(\rr{1\bullet}|ii|\rr1) ~)
 }
 
 \subsubsection{Coding Atomic Semantics}
 
 \RLEQNS{
-   \Atm a &\defs&\W(A(r|a|\rr:))
+   \Atm a &\defs&\W(A(r|a|\rr\bullet))
 }
 
 \newpage
@@ -344,23 +374,23 @@ The following are all under review (they lack sufficient invariants).
 
 \RLEQNS{
    C \cseq D
-   &\defs& [r|\rr1|\rr{1:}|\rr2|\rr{2:}|\rr:] \land {}
+   &\defs& [r|\rr1|\rr{1\bullet}|\rr2|\rr{2\bullet}|\rr\bullet] \land {}
 \\ && \W(\quad {}\phlor A(r|ii|\rr1)
 \\ && \qquad {} \lor C[\rr1/r]
-\\ && \qquad {} \lor A(\rr{1:}|ii|\rr2)
+\\ && \qquad {} \lor A(\rr{1\bullet}|ii|\rr2)
 \\ && \qquad {} \lor D[\rr2/r]
-\\ && \qquad {} \lor A(\rr{2:}|ii|\rr:)~)
+\\ && \qquad {} \lor A(\rr{2\bullet}|ii|\rr\bullet)~)
 }
 
 \subsubsection{Coding (Non-Det.) Choice}
 
 \RLEQNS{
    C + D
-   &\defs& [r|\rr1|\rr{1:}|\rr2|\rr{2:}|\rr:] \land {}
+   &\defs& [r|\rr1|\rr{1\bullet}|\rr2|\rr{2\bullet}|\rr\bullet] \land {}
 \\&& \W(\quad {}\phlor A(r|ii|\rr1) \lor A(r|ii|\rr2)
 \\ && \qquad {} \lor
    C[\rr1/r] \lor D[\rr2/r]
-\\ && \qquad {} \lor A(\rr{1:}|ii|\rr:) \lor A(\rr{2:}|ii|\rr:) ~)
+\\ && \qquad {} \lor A(\rr{1\bullet}|ii|\rr\bullet) \lor A(\rr{2\bullet}|ii|\rr\bullet) ~)
 }
 
 \subsubsection{Coding Parallel Composition}
@@ -368,27 +398,27 @@ The following are all under review (they lack sufficient invariants).
 \RLEQNS{
    C \parallel D
    &\defs& ~
-   [r|\rr1,\rr2,\rr{1:},\rr{2:}|\rr:] \land
-   [\rr1|\rr{1:}] \land
-   [\rr2|\rr{2:}] \land {}
+   [r|\rr1,\rr2,\rr{1\bullet},\rr{2\bullet}|\rr\bullet] \land
+   [\rr1|\rr{1\bullet}] \land
+   [\rr2|\rr{2\bullet}] \land {}
 \\&& \W(\quad\phlor A(r|ii|\rr1,\rr2)
 \\ && \qquad {}\lor
    C[\rr1/r]
    \lor D[\rr2/r]
 \\ && \qquad {}\lor
-   A(\rr{1:},\rr{2:}|ii|\rr:)~)
+   A(\rr{1\bullet},\rr{2\bullet}|ii|\rr\bullet)~)
 }
 
 \subsubsection{Coding Iteration}
 
 \RLEQNS{
    C^*
-   &\defs& [r|\rr2|\rr1|\rr{1:}|\rr:] \land {}
+   &\defs& [r|\rr2|\rr1|\rr{1\bullet}|\rr\bullet] \land {}
 \\&& \W(\quad  \phlor A(r|ii|\rr2)
 \\ && \qquad {}\lor A(\rr2|ii|\rr1)
                \lor C[\rr1/r]
-               \lor A(\rr{1:}|ii|\rr2)
-\\ && \qquad {}\lor A(\rr2|ii|\rr:) ~)
+               \lor A(\rr{1\bullet}|ii|\rr2)
+\\ && \qquad {}\lor A(\rr2|ii|\rr\bullet) ~)
 }
 
 
