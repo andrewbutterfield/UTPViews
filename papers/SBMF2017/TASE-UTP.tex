@@ -1,0 +1,65 @@
+\section{Unifying Theories of Programming}\label{ha:UTP}
+
+The Unifying Theories of Programming framework \cite{Hoare-He98}
+uses predicate calculus to define before-after relationships
+over appropriate collections of free observation variables.
+The before-variables are undashed,
+while after-variables have dashes%
+\footnote{%
+We follow \cite[\S1,p25]{Hoare-He98} in using `dashed',
+rather than `primed'
+}.
+Some observations correspond to the values of program variables ($v,v'$),
+while others deal with  important observations one might make of
+a running program,
+such as start ($ok$) and termination ($ok'$)
+or event traces ($tr,tr'$).
+The set of observation variables associated with a theory
+or predicate is known as its \emph{alphabet}.
+For example,
+the meaning of an assignment statement might be given as follows:
+\begin{equation*}
+  x := e  \qquad\defs\qquad  ok \implies ok' \land x' = e \land \nu'=\nu
+\end{equation*}
+The definition says that once started, the assignment terminates,
+with the final value of variable $x$ set equal
+to the value of expression $e$ in the before-state,
+while the other variables, denoted collectively by $\nu$, remain unchanged.
+In UTP,
+a predicate of the form $ok \land P \implies ok' \land Q$
+is called a \emph{Design},
+denoting a total-correctness assertion,
+is typically shortened to $P \design Q$.
+UTP supports specification languages as well as programming
+ones, and a general notion of refinement as universally-closed
+reverse implication:
+\begin{equation*}
+  S \refinedby P \defs [ P \implies S ]
+\end{equation*}
+
+A key part of the UTP framework is the use of healthiness conditions
+to ensure that the predicates actually correspond to feasible program
+outcomes.
+These are typically defined
+using idempotent and monotonic predicate-transformers ($\H$)
+that make an un-healthy predicate healthy ($\H(Bad) = Better$),
+while leaving healthy ones untouched ($\H(Good) = Good$).
+For example, the unhealthy predicate $\lnot ok \land ok'$
+(I've finished even though I didn't start!)
+is ruled out by the following predicate-transformer:
+\begin{equation*}
+   \HH1(P) =  \lnot ok \lor P
+\end{equation*}
+In contrast,
+applying $\HH1$ to the definition of assignment leaves it unchanged.
+Most of the healthiness conditions define sets of healthy predicates
+that form complete lattices,
+where the bottom element is the most liberal specification (``chaos''),
+and the top element is
+the infeasible program that satisfies any specification (``miracle'').
+The healthiness conditions that do not produce lattices
+are typically optional ones that can be invoked to rule out miracles,
+and which effectively chop off the upper infeasible predicates,
+and leaving fully refined programs as maximal elements.
+
+\DRAFT{}

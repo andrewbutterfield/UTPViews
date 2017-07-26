@@ -31,6 +31,16 @@
   \def\DRAFT#1{}
 \fi
 
+\input{TASE-Definitions}
+
+\def\HDRo#1{}
+\def\HDRa#1{\section{#1}}
+\def\HDRb#1{\subsection{#1}}
+\def\HDRc#1{\subsubsection{#1}}
+\def\HDRd#1{\paragraph{#1}}
+\def\HDRe#1{\paragraph{#1}}
+\def\HDRf#1{\paragraph{#1}}
+
 \title{UTCP: compositional semantics for shared-variable concurrency}%
 \author{
 Andrew Butterfield
@@ -64,6 +74,15 @@ Trinity College Dublin
 \input{Calculations}
 \input{Operational}
 \appendix
+%\input{TASE-Intro}
+%\input{TASE-PML}
+\input{TASE-UTP}
+%\input{TASE-WeakPML}
+\input{TASE-UTCP}
+\input{TASE-Unify}
+\input{TASE-Related}
+\input{TASE-Conclusion}
+
 \input{Root}
 
 
