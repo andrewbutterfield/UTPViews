@@ -1,0 +1,130 @@
+\section{Weak PML}\label{ha:WeakPML}
+
+We give the semantics of the weakest interpretation of PML,
+where we only consider the dataflow-like behaviour induced
+by the ``requires''($?$) and ``provides'' ($!$) annotations on basic actions.
+We shall assume a simple model of resources,
+as uninterpreted entities that are distinguishable,
+and where the only property of interest is whether or not any given
+resource is present in the system.
+What we want to observe is how the resources in the system
+evolve over time, as well as keeping track (by name)
+of which basic actions were executed.
+We introduce three observations,
+all of which can be made both before and after a PML run:
+starting, termination ($ok,ok' : \Bool$);
+resources in the system ($r,r' : \power Res$);
+and basic actions executed ($h,h' : Name^*$).
+
+Due to space limitations,
+we do not give a detailed account of the healthiness conditions here,
+but note that we have the usual Design conditions ($\HH1,\HH2,\HH3$)
+as well as modified versions of some of the Reactive systems conditions\cite[Chp 8]{Hoare-He98}
+which we present here without comment:
+\RLEQNSs{
+   \PP1(P) &\defs& P \land h \leq h'
+\\ \PP2(P) &\defs& \exists h_0  \bullet  P[h_0,h_0\cat(h'-h)/h,h']
+}
+In particular, we have a complete lattice with bottom $\true$
+and top $\lnot ok$.
+
+Our semantics has two parts, an action collection phase ($Coll$)
+and a dynamic execution model ($doStep$, $RunW$).
+The collection function works through a PML description
+and collects all the basic actions,
+recording them in a finite map.
+This works because of the PML requirement
+that every textual occurrence
+of a basic action has a unique name or identifier.
+\RLEQNSs{
+   Coll &:& PML \fun (Name \pfun Action)
+\\ Coll(N?rr!pr) &\defs& \maplet N {(N?rr!pr)}
+\\ Coll(P \oplus Q) &\defs& Coll(P)\uplus Coll(Q),
+    \quad \oplus \in \setof{\seq,\pcond,\parallel}
+\\ Coll(\piter P) &\defs& Coll(P)
+}
+Here $\uplus$ denotes map disjoint union.
+The meaning of a basic action is a design that runs when its
+required resources are available,
+here defined with the notion of a guarded action ($g\&A$):
+\RLEQNSs{
+   N?rr!pr &\defs&
+   \true
+   \design
+   rr \subseteq r
+     \pgrd  r' = r \cup pr \land h' = h \cat \seqof N
+\\ g \pgrd A &\defs& A \cond g \lnot ok
+}
+Given a basic-actions map $\varpi$,
+we can determine, w.r.t to the current resource set $r$,
+if there is an enabled action whose execution will extend that
+resource set ($canGo$):
+\RLEQNSs{
+   isEna(N?rr!pr) &\defs& rr \subseteq r
+\\ isDone(N?rr!pr) &\defs& pr \subseteq r
+\\ canGo(\varpi)
+   &\defs&
+   \exists N \bullet
+      N \in \dom\varpi
+\\ && \quad {}\land
+      isEna(\varpi N)
+      \land
+      \lnot isDone(\varpi N)
+}
+We describe a single step of the system as one that
+makes a non-deterministic choice out of all of the currently
+enabled actions
+and executes it:
+\RLEQNSs{
+   doStep(\varpi)
+   &\defs&
+   \exists N \bullet
+     N \in \dom \varpi
+     \land
+     isEna(\varpi N)
+     \land
+     \varpi N
+}
+Here we exploit a standard part of the UTP methodology
+ (``programs are predicates'')
+that a action ($N?rr!pr$ or $\varpi N$)
+is considered the same thing as its defining predicate.
+
+We run a PML description ($RunW$) by repeatedly doing a step
+so long as it is possible to make progress (provide more resources):
+\RLEQNSs{
+   RunW(\varpi)
+   &\defs&
+   canGo(\varpi) * doStep(\varpi)
+}
+Here $c * P$ is UTP notation for \textbf{while} $c$ \textbf{do} $P$.
+
+The dynamic semantics of a PML description $P$ is therefore
+given as
+\RLEQNSs{
+  P &=& RunW(Coll(P))
+}
+The following distributive law is an easy result,
+for $\oplus$ ranging over $\seq,\pcond,\parallel$:
+\RLEQNSs{
+  RunW(Coll(P \oplus Q))
+  &=&
+  RunW(Coll(P))
+\\ && {} \lor
+  RunW(Coll(Q))
+}
+We get one step law for Weak PML:
+picking one of the available ready actions, running it and
+continuing execution
+constitutes a refinement of that program.
+This refinement is all of the behaviours that are possible
+after that first (possibly non-deterministic) choice is made.
+\RLEQNSs{
+\lefteqn{%
+   canGo(\varpi)
+    \land
+    N \in \dom \varpi
+    \land isEna(\varpi N) } \nonumber
+\\&\implies&
+   RunW(\varpi) \refinedby (\varpi N) {\seq} RunW(\varpi)
+}

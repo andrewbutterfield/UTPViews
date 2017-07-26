@@ -1,0 +1,76 @@
+\section{Process Modelling Language}\label{ha:PML}
+
+Process Modelling Language (PML) \cite{DBLP:journals/infsof/AtkinsonWN07}
+is a shared-state concurrent imperative language
+describing named basic actions ($N?rr!pr$) as
+activities that require resources to start ($rr$)
+and provide resources when they complete ($pr$).
+Actions are non-destructive in that the required resources are
+not consumed but remain in place.
+Its concrete syntax is C-like, but we present a simpler abstract syntax here:
+\RLEQNSs{
+   N \in Name
+\\ A \in Action &::=& N?rr!pr
+\\ P,Q \in PML
+   &::=&
+   A
+   \mid
+   P \lseq Q
+   \mid
+   P \pcond Q
+   \mid
+   P \parallel Q
+   \mid
+   \piter P
+}
+We use $P \lseq Q$ and $P \parallel Q$ to denote
+respectively sequential and parallel composition.
+Both the conditional ($P \pcond Q$) and the loop construct $\piter P$
+are unusual in that they have no explicit conditions.
+Instead the decision of which branch to take or whether or not to end the loop
+is left unspecified---this is one aspect of the flexible nature of the language.
+In its original intended use, it was left to the people enacting the business
+process described by PML to use their judgement to determine which branch to take
+or when a process has been repeated enough.
+
+We are developing a formal PML semantics framework which
+ can investigate and relate at least three interpretations of
+a PML description:
+\begin{itemize}
+  \item \textbf{Strict:}
+    the behaviour follows strictly according to the control-flow structure,
+    becoming deadlocked if control requires execution of actions
+    whose required resources are not available.
+  \item \textbf{Flexible:}
+    the behaviour is guided by the control flow,
+    but actions can run out of sequence if their required resources become available
+    before the control flow has determined that they should start.
+  \item \textbf{Weak:}
+    control flow is completely ignored,
+    and execution simply iterates the non-deterministic choice of actions
+    whose resources are available (also known as the ``dataflow interpretation'').
+\end{itemize}
+In our framework, the three interpretations form a refinement hierarchy:
+\begin{equation*}
+  Weak \refinedby Flexible \refinedby Strict
+\end{equation*}
+
+As an example, consider the following PML description:
+\[
+ A?!r_1 \lseq (B?r1!r_2 \parallel C?r_2!r_3) \lseq D?r_1!r_4
+\]
+In the strict interpretation, only one sequence is possible,
+namely $A,B,C,D$ because (i) $A$ is required by control-flow
+to precede both $B$ and $C$, and (ii) $D$ is forced to be last.
+In the weak interpretation, we ignore the flow control,
+and are left with resource constraints only
+($B$ must follow $A$, $C$ must follow $B$ and $D$ must follow$A$)
+This admits three possible enactment sequences:
+$A,B,C,D$,
+or $A,D,B,C$,
+or $A,B,D,C$.
+
+In this paper we focus on the weak semantics,
+and on developments we have done within the Unifying Theories
+of Programming (UTP) framework \cite{Hoare-He98} to create a semantic baseline
+on top of which both the flexible and strict semantics can be constructed.

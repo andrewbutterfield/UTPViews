@@ -1,0 +1,114 @@
+\subsection{Bringing It All Together}\label{ha:unify}
+
+We link the weak semantics to the UTCP version
+by simply recognising that Weak PML simply views a PML description
+as being the parallel composition of all its basic tasks.
+We instantiate the generic state observation $s$
+in the UTCP theory with the $r$ and $h$ observations of
+the Weak theory, and define the semantics of a basic action $A$
+as:
+\RLEQNSs{
+  N?rr!pr
+  &\defs&
+  rr \subseteq r \land \lnot pr \subseteq r
+\\&& {} \land r' = r\cup rr \land h'= h \cat \seqof N
+}
+Here we drop $ok$ and $ok'$, as its role is subsumed by $ls$  and $ls'$
+in the UTCP theory, and instead have a basic action return false when
+its required resources are not available,
+or all its provided resources
+have been so provided.
+%We can simply
+%translate Weak PML to an equivalent Strong PML description
+%by replacing every composite construct with parallel.
+%\RLEQNSs{
+%   W2S(A) &\defs& A
+%\\ W2S(P \oplus Q)
+%   &\defs& W2S(P) \parallel W2S(Q)
+%   , \qquad \oplus\in\setof{\seq,\pcond,\parallel}
+%\\ W2S(\piter P) &\defs& W2S(P)
+%}
+We note that when a PML description consists solely of basic tasks
+and parallel composition, then the Weak, Flexible and Strict PML semantics
+coincide since the control flow allows any task to run anytime,
+so it is all just down to resource constraints.
+
+
+%We can also circumvent the requirement for Weak PML task names to be unique
+%by using the generator idea to create unique task labels
+%which then form the domain of $\varpi$
+%---we don't need any static parameters, as we just pass a generator
+%in as an extra argument to $Coll$.
+
+\subsection{Future Work}\label{ha:future}
+
+One key issue we face in developing a strict or flexible semantics
+is that the iteration construct has no explicit halting condition
+associated with it syntactically.
+The expectation is that an iteration is repeated until it brings
+about a state of affairs that enables \emph{what comes after it}.
+%In order to model this compositional,
+%we need some way, in a sequential composition $P \seq Q$,
+%for $Q$ to be able to signal back to $P$ that it has become ``enabled''.
+%This has to be done without $P$ or $Q$ being aware of each others existence.
+%This in turn requires that the establishment of that connection,
+%between the enablement of $Q$
+%and the stopping criterion of $P$ (if it is an iteration),
+%has to be the responsibility of the $\seq$ constructor.
+%The same notion of enablement can be used to allow the conditional
+%construct to preferentially select for an enabled arm.
+%
+We believe that the UTP approach described in this paper will allow us
+to produce a semantics that is compositional:
+the iteration simply repeats until it gets a stop signal
+sent by the enclosing sequential composition.
+
+The instantiation of the flexible and strict semantics on top of UTCP
+still has to be done,
+as do the proofs regarding the laws of concurrent programs.
+%A definitive list of these can be obtained by a careful reading
+%of \cite{DBLP:journals/iandc/Brookes96}
+%and consists of identities:
+%\RLEQNSs{
+%   P \lseq ( Q \lseq R) &=& ( P \lseq Q ) \lseq R
+%\\ Idle \lseq P &=& P
+%\\ P \lseq Idle &=& P
+%\\ P \parallel Q &=& Q \parallel P
+%\\ P \parallel ( Q \parallel R) &=& ( P \parallel Q ) \parallel R
+%\\ P \parallel Idle &=& P
+%\\ P \lcond{true} Q &=& P
+%\\ P \lcond{false} Q &=& Q
+%\\ (P \lcond c Q) \lseq R &=& (P \lseq R) \lcond c (Q \lseq R)
+%\\ c \wdo P &=& (P \lseq c \wdo P) \lcond c Idle
+%}
+%and refinements:
+%\RLEQNSs{
+%   P \lseq Q &\refinedby& P \parallel Q
+%\\ P \lseq (Q \parallel R) &\refinedby& (P \lseq Q) \parallel R
+%\\ P \lcond{c_1 \land c_2} Q &\refinedby&
+%   (P \lcond{c_2} Q) \lcond{c_1} Q
+%}
+The proof sketches done so far show indicate that
+the proofs will require demonstrating the existence
+of label bijections that respect control-flow,
+and that a benefit of constructing such bijections
+will be a corresponding operational semantics for UTCP.
+
+We are also working on ideas for a variant of UTCP
+that shows promise for being fully compositional:
+\emph{i.e.}, without having a static disjunction
+of actions, that then needs something like $run$
+to make it all dynamic.
+We also point out, in the spirit of unification,
+that this work has potential to go beyond just PML
+but also assist in the development of other theories
+of concurrency in UTP,
+such as pioneering work in \cite{journals/fac/ZhuHQB15}
+addressing the semantics of System-C.
+
+We prefer the UTP denotational/algebraic approach
+to that of using operational semantics.
+The former typically requires redoing induction proofs
+when any change is made,
+whereas adding new features and merging models is
+much simpler with the latter\cite[p277]{Hoare-He98}.
