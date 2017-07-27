@@ -1,1 +1,66 @@
 \section{UTP}\label{sec:UTP}
+
+The Unifying Theories of Programming framework \cite{Hoare-He98}
+uses predicate calculus to define before-after relationships
+over appropriate collections of free observation variables.
+The before-variables are undashed,
+while after-variables have dashes.
+A simple approach would be to simply observe the values of program variables,
+in which case the before- and after-\emph{values}
+of program variable \texttt{v}
+would be represented by observational variables $v$ and $v'$ respectively.
+For example,
+the meaning of an assignment statement might be given as follows:
+\begin{equation*}
+  x := e  \qquad\defs\qquad  x' = e \land \nu'=\nu
+\end{equation*}
+The definition says that the assignment terminates,
+with the final value of variable $x$ set equal
+to the value of expression $e$ in the before-state,
+while the other variables, denoted collectively here  by $\nu$, remain unchanged.
+This leads to a theory of partial correctness for imperative programs.
+
+The theory can be extended to cover total correctness by introducing
+Boolean observations of program starting ($ok$) and termination ($ok'$).
+In this case, we find that we need a technique that allows us to identify
+predicates whose interpretation is nonsense, and eliminate them from any
+semanitc theory we might construct.
+For example, the predicate $\lnot ok \land ok'$ describes a situation
+in which a program has not started, but has terminated.
+
+In UTP we use the concept of healthiness conditions to specify which predicates
+are meaningful in the context of our theory.
+For the total correctness theory to work,
+we need to ensure that all predicates have the form
+$ok \land P \implies ok' \land Q$, where $P$ and $Q$ do not refer to $ok$ or $ok'$.
+This is interpreted as saying,
+if the program is started and $P$ holds true at the start,
+then the program will terminate with $Q$ being satisfied at the end.
+
+An important characteristic of both the UTP theories referred to above,
+is that their predicates are interpeted as a relation between the before-state
+and after-state of a \emph{complete} program execution.
+
+The ``standard'' treatment of concurrency in UTP\cite[Chps. 7,8]{Hoare-He98},
+is focussed on local-state concurrency, without any mutable state variables.
+Here it becomes necessary to observe the program state at intermediate points
+in its execution,
+typically when the program is waiting
+for external events to occurr.
+This neccesitates another pair of Boolean observations, $wait$ and $wait'$
+that indicate such waiting.
+We do not give any further details regarding these theories,
+but instead mention them simply to make the observation
+that here the predicates are interpreted as a relation between
+the before-state,
+and a \emph{subsequent} state that can either be
+an intermediate waiting state, or the final state of the complete execution.
+In particular this allows giving semanitcs to programs that never terminate,
+such as most server implementations.
+We have no final-state, but many intermediate waiting/response states.
+
+Our focus in this introduction on how the predicates are \emph{interpreted}
+in terms of program state is important,
+because the theory presented in this paper involves yet more
+adjustments in interpretation,
+as explained in Sections \ref{sec:observe} and \ref{sec:calc}.
