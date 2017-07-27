@@ -1,5 +1,16 @@
 \section{Introduction}\label{sec:Intro}
 
+In this paper we present a compositional UTP semantics
+for the Command Language in the paper
+on concurrency ``views''\cite{conf/popl/Dinsdale-YoungBGPY13}.
+We use a slightly different syntax to that in the above cited paper,
+where $\Atom$ is a set of atomic state-change operations,:
+\begin{eqnarray*}
+   a &\in& \Atom
+\\ C &::=& \catom a \mid C \cseq C \mid C+C \mid C \parallel C \mid C^*
+\end{eqnarray*}
+The reason for the difference is explained, in context, in Sec \ref{sec:observe}.
+
 \input{Movitation}
 
 \input{Related}

@@ -1,229 +1,87 @@
 \section{Observations}\label{sec:observe}
 
+Any UTP theory has to cleary define its \emph{alphabet},
+that is, the set of observational variables that define
+its domain of discourse.
+The theory presented here is inspired by UTPP\cite{DBLP:conf/icfem/WoodcockH02}
+and uses some of the observations presented there:
+the values associated with all (shared) variables
+are not mentioned individually, but instead are lumped together;
+and we assume that all actions are labelled and that we can observe
+the set of labels that are considered to be ``active''.
+\begin{eqnarray}
+   s, s' &:& State
+\\ ls, ls' &:& \power Lbl
+\end{eqnarray}
+The theory in \cite{DBLP:conf/icfem/WoodcockH02} also uses $ok$ and $ok'$,
+but these are not required here
+---they can added in though as derived observations, if wanted.
 
-
-
-XXXXXXXXX
-
-
-
-
-
-
-\subsection{Label-Set Invariants}
-
-The semantics we propose here depends on the careful management
-of when specific labels are, or are not,
-present in the global label-set $ls$.
-We are looking at a situation where the semantics of any construct
-requires associating unique labels with its entry and exit points,
-as well as having a label generator provided for use with any sub-components
-it might have.
-
-So, from the perspective of any well-program $P$,
-we have the following three (static) observation variables.
-\RLEQNS{
+The role of label-generators is rather different, however.
+They will be used to generate labels for statements,
+and we do not want these to change during the lifetime of the program.
+We will also want to be able to refer in a general way to two key labels
+associated with any language construct,
+namely the label ($in$) that is used to enable the starting of a construct,
+and the label ($out$) that is used to signal that the construct has just terminated.
+\begin{eqnarray}
    in, out &:& Lbl
 \\ g &:& Gen
-}
-Key to the success of this semantics is a collection of label-set invariants
-which characterise proper label-set contents,
-which are preserved by all label-set manipulations performed
-by our semantic definitions.
-
-\subsubsection{Disjoint Labels (DL)}\label{sssec:disjoint-labels}
-
-The first invariant we have is simply one that asserts,
-for every construct, that $in$, $out$ and the labels of $g$
-are all different
-\footnote{The theory can be developed using only $g$ as a static observation,
-and letting $\ell_g$ and $\ell_{g:}$ play the role of $in$ and $out$
-respectively, in which case Disjoint Labels is automatically satisfied.
-However, while this results in an entirely equivalent theory,
-it is notationally much more obscure
-with definitions and results that are harder to interpret and check.
-}%
-\RLEQNS{
-   in \neq out &\land& \setof{in,out} \cap labs(g) = \emptyset
-   & \ecite{Disjoint-Labels}
-}
+\end{eqnarray}
+These observations are \emph{static},
+in that their values do not change during program execution.
+Instead, these variables record context-sensitive information about
+how a language construct is situated with respect to its ``neighbours'',
+in a way that permits a compositional approach.
+For details of how this works, see Section \ref{sec:composing}.
 
 
 
-\subsubsection{Label Exclusivity (LE)}\label{sssec:label-exclusivity}
+Our semantics is built upon basic atomic state-change
+actions that modify global shared state $s$.
+The concurrent flow of control is managed using a global dynamic label-set $ls$
+and the association of two distinguished labels $in$ and $out$,
+and a label generator $g$ with every language construct.
 
-In addition to Disjoint Labels above,
-which merely ensures distinctness of labels themselves,
-we also need stronger invariants regarding which labels can, or cannot,
-occur in the global label set at any one time.
-There is not one such Label Exclusivity invariant,
-but rather we have that each language construct defines it own
-variation, in order to ensure that flow of control is correctly managed.
+This brings us to an important distinction between the usual approach
+taken by UTP regarding the distinction between syntax and semantics.
+The usual approach,
+inspired by the slogan ``programs are predicates''\cite{predprog,conf/mlpl/Hoare85},
+is to treat syntax and semantics as the same thing.
+A program's syntax is simply a shorthand notation for its semantics.
+So, the program text \texttt{x := x+y} \emph{is} a predicate,
+a shorthand for the more verbose $x' = x + y \land y' = y$
+\footnote{Assuming \texttt{x} and \texttt{y} are the only variables}
+.
+in particular, the notation for sequential composition, $P ; Q$,
+is a shorthand for
+$\exists obs_m @ P[obs_m/obs'] \land Q[obs_m/obs]$,
+where $obs$ ($obs'$) refers to all the before- (after-)observations.
+This ``punning'' between syntax and semantics largely works for theories
+of sequential programs or local-state concurrency,
+mainly because sequences of code lead to simple semantic sequencing.
+However, in global shared-variable concurrency,
+code sequences get broken up by interference from parallel execution threads,
+and there is no longer a simple correspondence between syntactical and semantic
+sequencing.
 
-There is a general version of the invariant, as follows:
-\RLEQNS{
-   &&
-   in \in  ls \implies (\setof{out} \cup labs(g))\cap ls = \emptyset
-\\ &\land&
-   (labs(g) \cap  ls \neq \emptyset) \implies \setof{in,out}\cap ls = \emptyset
-\\ &\land&
-   out \in ls \implies (\setof{in} \cup labs(g))\cap ls = \emptyset
-   & \ecite{Exclusive-Labels}
-}
-
-We also more specific invariants, specific to each composite language construct.
-We start with one of the simplest,
-namely that used by sequential composition.
-It asserts that any point in time,
-only one of $in$, $\ell_g$ or $out$ can be present in $ls$:
-\RLEQNS{
-   &&
-   in \in  ls \implies \setof{\ell_g,out}\cap ls = \emptyset
-\\ &\land&
-   \setof{\ell_g} \subseteq ls \implies \setof{in,out}\cap ls = \emptyset
-\\ &\land&
-   out \in ls \implies \setof{in,\ell_g}\cap ls = \emptyset
-}
-The most complex example is that for parallel composition.
-Here we have four labels in addition to $in$ and $out$,
-namely $\ell_{g1}$, $\ell_{g1:}$, $\ell_{g2}$, and $\ell_{g2:}$.
-They should not occupy $ls$ at the same time as either $in $ or $out$,
-but we also have that only one of the pair $(\ell_{g1},\ell_{g1:})$
-can be present at the same time,
-and the same must hold  for $(\ell_{g2},\ell_{g2:})$.
-\RLEQNS{
-   &&
-   in \in ls
-   \implies
-   \setof{\ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:},out}\cap ls = \emptyset
-\\ &\land&
-   \ell_{g1} \in ls \implies \setof{in,\ell_{g1:},out}\cap ls = \emptyset
-\\ &\land&
-   \ell_{g1:} \in ls \implies \setof{in,\ell_{g1},out}\cap ls = \emptyset
-\\ &\land&
-   \ell_{g2} \in ls \implies \setof{in,\ell_{g2:},out}\cap ls = \emptyset
-\\ &\land&
-   \ell_{g2:} \in ls \implies \setof{in,\ell_{g2},out}\cap ls = \emptyset
-\\ &\land&
-   out \in ls
-   \implies
-   \setof{in, \ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:}}\cap ls = \emptyset
-}
-The precise motivation for these will be explained when the relevant
-construct semantics are being described later.
-For now we simply observe,
-that these invariants are quite bulky and complex.
-
-
-
-\subsubsection{Label-Set Invariant Notation}
-
-First we shorten $labs(g)$ to just $g$ when this is clear from context,
-i.e., a label-set, rather than a generator, is expected.
-
-The Disjoint Labels invariant basically asserts
-that a number of sets of labels are mutually disjoint.
-We use the following shorthand, where the $L_i$ are label-sets,
-\RLEQNS{
-   \setof{L_1|L_2|\dots|L_n}
-   &\defs&
-   \forall_{i,j \in 1\dots n}
-    @
-    i \neq j \implies L_i \cap L_j = \emptyset
-\\ \multicolumn{3}{c}{\elabel{short-disj-lbl}}
-}
-So we have an alternative definition of the Disjoint Labels invariant:
-\RLEQNS{
- && \setof{in|g|out} & \elabel{Disjoint-Labels}
-}
-
-In a similar vein, we use a similar shorthand notation
-for the Label Exclusivity invariants.
-We use a shorthand,
-whose easy cases can be formulated as follows:
-\RLEQNS{
-   ~[L_1|L_2|\dots|L_n]
-   &\defs&
-   \forall_{i,j \in 1\dots n}
-    @
-    i \neq j \implies
-     ( L_i \cap ls \neq \emptyset \implies L_j \cap ls = \emptyset )
-\\ \multicolumn{3}{c}{\elabel{short-lbl-exclusive}}
-}
-So the sequential composition Label Exclusivity invariant
-is simply: $[in|\ell_g|out]$.
-What needs to be kept in mind regarding this shorthand notation
-is that $ls$ is mentioned under the hood,
-and it is really all about what can be present in the global label-set
-at any instant in time.
-
-For parallel composition, we a little more complexity.
-In shorthand it is expressed as
-\[
-   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out].
-\]
-It asserts at the top-level that $ls$
-may contain only $in$, only $out$,
-or only labels in $\ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:}$.
-In addition however, $\ell_{g1}$ and $\ell_{g1:}$ cannot occur together
-and neither can $\ell_{g2}$ and $\ell_{g2:}$.
-
-A more detailed and formal description of this way of describing
-these invariants, in terms of an different abstract notation,
-is presented in \S\ref{ssec:exclusive-lsat}.
-
-\subsubsection{Properties of DL and LE}
-
-Consider the following two generic examples:
-\begin{enumerate}
-  \item
-    $DL_n = \{L_1|L_2|\dots|L_n\}$
-    asserts that each $L_i$ is disjoint from any other.
-  \item
-    $LE_n = [L_1|L_2|\dots|L_n]$
-    asserts that if elements one $L_i$ are in $ls$,
-    then no elements from the others are.
-\end{enumerate}
-
-The ordering in either invariant is immaterial.
-If $\rho$ is a permutation over $\setof{1\dots n}$ then
-\RLEQNS{
-   \{L_1|L_2|\dots|L_n\} &=& \{L_{\rho1}|L_{\rho2}|\dots|L_{\rho n}\}
-   & \elabel{DL-perm}
-\\ ~[L_1|L_2|\dots|L_n] &=& [L_{\rho1}|L_{\rho2}|\dots|L_{\rho n}]
-   & \elabel{LE-perm}
-}
-Both invariants imply shorter versions of themselves:
-\RLEQNS{
-   \{\dots|L_{i-1}|L_i|L_{i+1}\dots\} &\implies& \{\dots|L_{i-1}|L_{i+1}\dots\}
-   & \elabel{DL-drop}
-\\ ~[\dots|L_{i-1}|L_i|L_{i+1}\dots] &\implies& [\dots|L_{i-1}|L_{i+1}\dots]
-   & \elabel{LE-drop}
-}
-Both invariants imply versions with smaller sets:
-\RLEQNS{
-   S_i \subseteq L_i \land \{L_1|\dots|L_n\}
-   &\implies& \{S_1|\dots|S_n\}
-   & \elabel{DL-subset}
-\\ S_i \subseteq L_i \land [L_1|\dots|L_n]
-   &\implies& [S_1|\dots|S_n]
-   & \elabel{DL-subset}
-}
-A key property shared by all LE invariants,
-is that they are trivially satisfied by $ls = \emptyset$,
-or if $ls$ only contains labels not mentioned in the invariant.
-\RLEQNS{
-   scope(LE_n) &\defs& L_1 \cup L_2 \cup \dots \cup L_n
-\\ (ls = ls \setminus scope(LE_n)) &\implies& LE_n = \true
-    & \elabel{LE-out-of-scope}
-\\ ls = \emptyset &\implies& LE_n = \true
-    & \elabel{LE-trivial}
-}
-There is no simple relationship between $DL_n$ and $LE_n$.
-It is possible for one to be true when the other is false.
-\begin{description}
-  \item[DL true, LE false]
-    $L_1 \cap L_2 = \emptyset \quad\land\quad (L_1 \cup L_2) \subseteq ls$.
-  \item[DL false, LE true]
-    $L_1 = L_2 \quad\land\quad L_1 \cap ls = \emptyset$
-\end{description}
+Here we shall use the notation $P;Q$
+to denote \emph{semantic} sequential composition,
+which means that the execution of $P$ is immediately followed by the
+execution of $Q$, without any intervening external interfence.
+We define it as follows:
+\begin{equation}
+   P ; Q \defs \exists s_m, ls_m @ P[s_m,ls_m/s',ls'] \lor Q[s_m,ls_m/s,ls]
+   \label{eqn:semantic-;}
+\end{equation}
+The key thing to note is that this definition makes no reference at all
+to $g$, $in$ or $out$,
+as these are static observations.
+A desired consequence of this is that
+substitutions $\gamma$ that
+replace $g$, $in$ and/or $out$
+by expressions that only involve the static variables,
+will distribute through semantic sequential composition:
+\begin{equation}
+  (P ; Q)\gamma = (P\gamma) ; (Q\gamma)
+\end{equation}

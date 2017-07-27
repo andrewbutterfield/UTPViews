@@ -8,11 +8,6 @@
   \caption{High-level view of a concurrent program}
   \label{fig:high-level-prog}
 \end{figure}
-Our program language is built upon basic atomic state-change
-actions that modify global shared state $s$.
-The concurrent flow of control is managed using a global label-set $ls$
-and the association of two distinguished labels $in$ and $out$,
-and a label generator $g$ with every language construct
 (See Fig. \ref{fig:high-level-prog}).
 
 A key feature of this UTP semantics is that we have a key distinction

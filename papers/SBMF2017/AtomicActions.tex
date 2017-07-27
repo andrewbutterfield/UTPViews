@@ -1,1 +1,89 @@
 \section{Atomic Actions}\label{sec:atomic}
+
+An atomic action ($a$) is simply a global state transformer whose effects,
+once started,
+occurr immediately and completely, without any external interference.
+We can consider it be a relational predicate that only mentions $s$ and $s'$.
+In the semantics of UTPP, and here for UTCP,
+every atomic action is labelled.
+Flow of control is managed by keeping a synamic record
+of which labels are considered current, or ``enabled''.
+The behaviour of an atomic action is that it exhibits none
+until its label is enabled.
+Noting that many atomic actions can be enabled at once,
+what happens is that one of actions is selected non-deterministically to run.
+The action so selected transforms the global state,
+and then the control-flow management marks its label as disabled,
+and enables labels of atomic action that can immediately follow it
+according to the control-flow structure of the program.
+
+In order to define this behaviour computationally,
+we depart from the technique used in UTPP based on explicit program labels.
+Instead we use the static observables $in$ and $out$ to explicitly indicate
+the enabling label --- $in$--- for the action,
+and a disabling, or ``done'' label---$out$---, for the same action.
+In effect we are exploiting the fact that our language is block-structured
+with only one entry and exit point for each construct,
+in order to be able to decouple the semantics of an atomic action
+from whatever might come after.
+Dealing with that is the responsibiity of the semantics of language composites.
+
+As already stated,
+we use $a$ to denote the predicate describing the core global state-changes,
+and  use $ls$ and $ls'$ to record the set of enabled labels both before
+and after the atomic action has run.
+We can define a predicate that captures the basic behaviour
+of such ``flow-controlled'' atomic action:
+\begin{equation}
+  in \in ls
+  \land
+  a
+  \land
+  ls'=(ls\setminus\setof{in})\cup\setof{out}
+\end{equation}
+In short: the action when its $in$-label is in $ls$,
+it that it performs the state-change specified by $a$,
+and replaces the $in$-label by the $out$-label,
+in the updated set $ls'$ of enabled labels.
+If $in$ is not in $ls$,
+or predicate $a$ is not satisfied by the current value of $s$,
+then the semantic predicate reduces to $\false$.
+
+We shall leave the issue of how specific labels
+are associated with $in$ and $out$ of each atomic action until we
+deal with language composites in Sec. \ref{sec:composing}.
+All we shall say here is that we ensure that all actions have unique labels,
+and it is always the case that $in \neq out$.
+We also note that there will atomic actions that do not change the global
+state, but that do change which labels are enabled, used to implement
+some of the more complex control-flows.
+
+The semantics of a running composite program,
+as per the action systems approach used in \cite{DBLP:conf/icfem/WoodcockH02},
+is to imagine all of the labelled atomic actions collected into one large
+non-deterministic choice,
+itself in a loop that runs until some distinguished stop-label appears
+in the enabled label-set. The whole thing is initialised by enabling
+at least one atomic action $in$-label.
+We can imagine a predicate transformer $run$
+that takes such a non-deterministic choice ($NDC$) and produces
+a relational predicate that defines its overall running behaviour:
+\begin{eqnarray}
+   NDC
+   &=&
+   \bigvee_{j \in 0\dots n} (in_j \in ls
+   \land
+   a_j
+   \land
+   ls'=(ls\setminus\setof{in_j})\cup\setof{out_j})
+\\ run(NDC)
+   &defs&
+   ls' = \setof{in_0} ; \textbf{ while } out_n \notin ls \textbf{ do } NDC
+\end{eqnarray}
+Here we assume $in_0$ and $out_n$ are the initial and final labels of the whole
+program.
+In effect, the meaning of a shared-variable concurrent program
+is all the interleavings of atomic actions that are consistent
+with flow-of-control restrictions, with each interleaving
+being a series of atomic actions sequentially composed \emph{semantically},
+using $;$ as defined in Eqn. \ref{eqn:semantic-;}.
