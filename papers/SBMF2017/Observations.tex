@@ -77,11 +77,10 @@ We define it as follows:
 The key thing to note is that this definition makes no reference at all
 to $g$, $in$ or $out$,
 as these are static observations.
-A desired consequence of this is that
-substitutions $\gamma$ that
-replace $g$, $in$ and/or $out$
-by expressions that only involve the static variables,
-will distribute through semantic sequential composition:
+
+We also define semantic skip ($\Skip$),
+the unit for semantic sequential composition,
+as
 \begin{equation}
-  (P ; Q)\gamma = (P\gamma) ; (Q\gamma)
+  \Skip &\defs& ls' = ls \land s' = s
 \end{equation}

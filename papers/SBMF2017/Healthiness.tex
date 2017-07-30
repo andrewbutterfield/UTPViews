@@ -71,120 +71,30 @@ unbounded non-determinism.
 
 \subsection{Label-Set Invariants}
 
-XXXXXXX
 
 The semantics we propose here depends on the careful management
 of when specific labels are, or are not,
 present in the global label-set $ls$.
-We are looking at a situation where the semantics of any construct
-requires associating unique labels with its entry and exit points,
-as well as having a label generator provided for use with any sub-components
-it might have.
-
-So, from the perspective of any well-program $P$,
-we have the following three (static) observation variables.
-\RLEQNS{
-   in, out &:& Lbl
-\\ g &:& Gen
-}
 Key to the success of this semantics is a collection of label-set invariants
 which characterise proper label-set contents,
 which are preserved by all label-set manipulations performed
 by our semantic definitions.
-
-\subsubsection{Disjoint Labels (DL)}\label{sssec:disjoint-labels}
-
-The first invariant we have is simply one that asserts,
-for every construct, that $in$, $out$ and the labels of $g$
-are all different
-\footnote{The theory can be developed using only $g$ as a static observation,
-and letting $\ell_g$ and $\ell_{g:}$ play the role of $in$ and $out$
-respectively, in which case Disjoint Labels is automatically satisfied.
-However, while this results in an entirely equivalent theory,
-it is notationally much more obscure
-with definitions and results that are harder to interpret and check.
-}%
-\RLEQNS{
-   in \neq out &\land& \setof{in,out} \cap labs(g) = \emptyset
-   & \ecite{Disjoint-Labels}
-}
-
-
-
-\subsubsection{Label Exclusivity (LE)}\label{sssec:label-exclusivity}
-
-In addition to Disjoint Labels above,
-which merely ensures distinctness of labels themselves,
-we also need stronger invariants regarding which labels can, or cannot,
-occur in the global label set at any one time.
-There is not one such Label Exclusivity invariant,
-but rather we have that each language construct defines it own
-variation, in order to ensure that flow of control is correctly managed.
-
-There is a general version of the invariant, as follows:
-\RLEQNS{
-   &&
-   in \in  ls \implies (\setof{out} \cup labs(g))\cap ls = \emptyset
-\\ &\land&
-   (labs(g) \cap  ls \neq \emptyset) \implies \setof{in,out}\cap ls = \emptyset
-\\ &\land&
-   out \in ls \implies (\setof{in} \cup labs(g))\cap ls = \emptyset
-   & \ecite{Exclusive-Labels}
-}
-
-We also more specific invariants, specific to each composite language construct.
-We start with one of the simplest,
-namely that used by sequential composition.
-It asserts that any point in time,
-only one of $in$, $\ell_g$ or $out$ can be present in $ls$:
-\RLEQNS{
-   &&
-   in \in  ls \implies \setof{\ell_g,out}\cap ls = \emptyset
-\\ &\land&
-   \setof{\ell_g} \subseteq ls \implies \setof{in,out}\cap ls = \emptyset
-\\ &\land&
-   out \in ls \implies \setof{in,\ell_g}\cap ls = \emptyset
-}
-The most complex example is that for parallel composition.
-Here we have four labels in addition to $in$ and $out$,
-namely $\ell_{g1}$, $\ell_{g1:}$, $\ell_{g2}$, and $\ell_{g2:}$.
-They should not occupy $ls$ at the same time as either $in $ or $out$,
-but we also have that only one of the pair $(\ell_{g1},\ell_{g1:})$
-can be present at the same time,
-and the same must hold  for $(\ell_{g2},\ell_{g2:})$.
-\RLEQNS{
-   &&
-   in \in ls
-   \implies
-   \setof{\ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:},out}\cap ls = \emptyset
-\\ &\land&
-   \ell_{g1} \in ls \implies \setof{in,\ell_{g1:},out}\cap ls = \emptyset
-\\ &\land&
-   \ell_{g1:} \in ls \implies \setof{in,\ell_{g1},out}\cap ls = \emptyset
-\\ &\land&
-   \ell_{g2} \in ls \implies \setof{in,\ell_{g2:},out}\cap ls = \emptyset
-\\ &\land&
-   \ell_{g2:} \in ls \implies \setof{in,\ell_{g2},out}\cap ls = \emptyset
-\\ &\land&
-   out \in ls
-   \implies
-   \setof{in, \ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:}}\cap ls = \emptyset
-}
-The precise motivation for these will be explained when the relevant
-construct semantics are being described later.
-For now we simply observe,
-that these invariants are quite bulky and complex.
-
-
-
-\subsubsection{Label-Set Invariant Notation}
-
-First we shorten $labs(g)$ to just $g$ when this is clear from context,
-i.e., a label-set, rather than a generator, is expected.
-
-The Disjoint Labels invariant basically asserts
-that a number of sets of labels are mutually disjoint.
-We use the following shorthand, where the $L_i$ are label-sets,
+We have two kinds of invariants,
+both of which are concerned with the mutual disjointness, in some sense,
+of a collection of sets of labels.
+We introduce some shorthand notations to avoid excessively long predicates and expressions. We use `$\mid$' as a seperator between things mean to be disjoint,
+and commas to list subsets and/or set- elements that should be unioned together.
+So the following fragment
+\[  A,b | M,N | x,Y \]
+is shorthand for
+\[ A \cup \setof a
+  \quad \textbf{disjoint-from} \quad
+  M \cup N
+  \quad \textbf{disjoint-from} \quad
+ \setof x \cup Y
+\]
+To assert mutual set disjointness,
+use the following shorthand, where the $L_i$ are label-sets,
 \RLEQNS{
    \setof{L_1|L_2|\dots|L_n}
    &\defs&
@@ -193,15 +103,10 @@ We use the following shorthand, where the $L_i$ are label-sets,
     i \neq j \implies L_i \cap L_j = \emptyset
 \\ \multicolumn{3}{c}{\elabel{short-disj-lbl}}
 }
-So we have an alternative definition of the Disjoint Labels invariant:
-\RLEQNS{
- && \setof{in|g|out} & \elabel{Disjoint-Labels}
-}
-
-In a similar vein, we use a similar shorthand notation
-for the Label Exclusivity invariants.
-We use a shorthand,
-whose easy cases can be formulated as follows:
+We also want to assert that certain sets, necessarily mutually disjoint,
+can never have any of their elements in the global label-set,
+if any element from one of the other sets is present.
+Again, we have a shorthand:
 \RLEQNS{
    ~[L_1|L_2|\dots|L_n]
    &\defs&
@@ -211,80 +116,40 @@ whose easy cases can be formulated as follows:
      ( L_i \cap ls \neq \emptyset \implies L_j \cap ls = \emptyset )
 \\ \multicolumn{3}{c}{\elabel{short-lbl-exclusive}}
 }
-So the sequential composition Label Exclusivity invariant
-is simply: $[in|\ell_g|out]$.
-What needs to be kept in mind regarding this shorthand notation
-is that $ls$ is mentioned under the hood,
-and it is really all about what can be present in the global label-set
-at any instant in time.
 
-For parallel composition, we a little more complexity.
-In shorthand it is expressed as
-\[
-   [in|(\ell_{g1}|\ell_{g1:}),(\ell_{g2}|\ell_{g2:})|out].
-\]
-It asserts at the top-level that $ls$
-may contain only $in$, only $out$,
-or only labels in $\ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:}$.
-In addition however, $\ell_{g1}$ and $\ell_{g1:}$ cannot occur together
-and neither can $\ell_{g2}$ and $\ell_{g2:}$.
-
-A more detailed and formal description of this way of describing
-these invariants, in terms of an different abstract notation,
-is presented in \S\ref{ssec:exclusive-lsat}.
-
-\subsubsection{Properties of DL and LE}
-
-Consider the following two generic examples:
-\begin{enumerate}
-  \item
-    $DL_n = \{L_1|L_2|\dots|L_n\}$
-    asserts that each $L_i$ is disjoint from any other.
-  \item
-    $LE_n = [L_1|L_2|\dots|L_n]$
-    asserts that if elements one $L_i$ are in $ls$,
-    then no elements from the others are.
-\end{enumerate}
-
-The ordering in either invariant is immaterial.
-If $\rho$ is a permutation over $\setof{1\dots n}$ then
+The first invariant we have, Disjoint Labels ($DL$) is simply one that asserts,
+for every construct, that $in$, $out$ and the labels of $g$
+are all different.
+\footnote{The theory can be developed using only $g$ as a static observation,
+and letting $\ell_g$ and $\ell_{g:}$ play the role of $in$ and $out$
+respectively, in which case Disjoint Labels is automatically satisfied.
+However, while this results in an entirely equivalent theory,
+it is notationally more obscure
+making it harder to interpret and check.
+}%
 \RLEQNS{
-   \{L_1|L_2|\dots|L_n\} &=& \{L_{\rho1}|L_{\rho2}|\dots|L_{\rho n}\}
-   & \elabel{DL-perm}
-\\ ~[L_1|L_2|\dots|L_n] &=& [L_{\rho1}|L_{\rho2}|\dots|L_{\rho n}]
-   & \elabel{LE-perm}
+   DL &\defs& \setof{in|labs(g)|out}  \ecite{Disjoint-Labels}
 }
-Both invariants imply shorter versions of themselves:
+We also need stronger Label Exclusivity invariants,
+regarding which labels can, or cannot,
+occur in the global label set at any one time.
+There is not one such invariant,
+but rather we have that each language construct defines its own
+variation, in order to ensure that flow of control is correctly managed.
+
+There is a general version of the invariant ($LE$) that holds
+for all language constructs that asserts that any point in time,
+only elements from of one of $in$, $labs(g)$ or $out$
+can be present in $ls$ at any point in time:
 \RLEQNS{
-   \{\dots|L_{i-1}|L_i|L_{i+1}\dots\} &\implies& \{\dots|L_{i-1}|L_{i+1}\dots\}
-   & \elabel{DL-drop}
-\\ ~[\dots|L_{i-1}|L_i|L_{i+1}\dots] &\implies& [\dots|L_{i-1}|L_{i+1}\dots]
-   & \elabel{LE-drop}
+   LE &\defs&
+   ~[in|labs(g)|out]
+   & \ecite{Exclusive-Labels}
 }
-Both invariants imply versions with smaller sets:
-\RLEQNS{
-   S_i \subseteq L_i \land \{L_1|\dots|L_n\}
-   &\implies& \{S_1|\dots|S_n\}
-   & \elabel{DL-subset}
-\\ S_i \subseteq L_i \land [L_1|\dots|L_n]
-   &\implies& [S_1|\dots|S_n]
-   & \elabel{DL-subset}
-}
-A key property shared by all LE invariants,
-is that they are trivially satisfied by $ls = \emptyset$,
-or if $ls$ only contains labels not mentioned in the invariant.
-\RLEQNS{
-   scope(LE_n) &\defs& L_1 \cup L_2 \cup \dots \cup L_n
-\\ (ls = ls \setminus scope(LE_n)) &\implies& LE_n = \true
-    & \elabel{LE-out-of-scope}
-\\ ls = \emptyset &\implies& LE_n = \true
-    & \elabel{LE-trivial}
-}
-There is no simple relationship between $DL_n$ and $LE_n$.
-It is possible for one to be true when the other is false.
-\begin{description}
-  \item[DL true, LE false]
-    $L_1 \cap L_2 = \emptyset \quad\land\quad (L_1 \cup L_2) \subseteq ls$.
-  \item[DL false, LE true]
-    $L_1 = L_2 \quad\land\quad L_1 \cap ls = \emptyset$
-\end{description}
+Note that we also just use a dash to make
+the same assertion about the allowable contents of $ls'$
+by simply writing $[in|labs(g)|out]'$.'
+
+So, in summary, we have that every healthy predicate describing
+a shared-variable concurrent program's behaviour is of the form $\WWW(C)$
+for some predicate $C$ and also satisfies $DL$ and maintains $LE$.

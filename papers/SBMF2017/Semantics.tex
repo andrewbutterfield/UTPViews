@@ -1,0 +1,51 @@
+\section{Command Semantics}\label{sec:semantics}
+
+We present the full semanitcs of atomic commands first,
+then describe an important classification of expressions and substitutions,
+before describing the semanitcs of the four composite command forms.
+
+\subsection{Atomic Commands}\label{ssec:atomic}
+
+The actomic command $\catom a$ can be very simply expressed as basic action
+with the addition of healthiness conditions:
+\RLEQNS{
+  \lhsCA &\defs& DL \land \rhsCA & \elabel{\lblCA}
+}
+Here we would that if $LE$ holds when this action starts,
+i.e. when $in \in ls$ and it gets to run,
+that $LE'$ should also hold, with $out \in ls'$.
+
+\subsection{Grounded and Sound}
+
+Given that we have a distinction between static observations ($g$, $in$, $out$),
+and dynamic ones ($s,s',ls,ls'$) it is worth extending this distinction
+to expressions and substitutions.
+The reason for this is do with the fact that, by design,
+semantic sequantial composition ignores the static variables.
+An expression is ``ground'' if the only variables present are static.
+A substitution is also deemed ``ground'',
+if all the the replacement expressions are ground,
+and the target variables are all static.
+A desired consequence of this is that
+ground substitutions $\gamma$
+will distribute through semantic sequential composition,
+semantic skip,
+and both disjoint label-set notations
+\RLEQNS{
+   (P\seq Q)\gamma &=& P\gamma \seq Q\gamma  & \elabel{seq-gnd-distr}
+\\ \Skip\gamma     &=& \Skip                 &\elabel{skip-gamma}
+\\ ~\{L_1|\dots|L_n\}\gamma &=& \{L_1\gamma|\dots|L_n\gamma\}
+& \elabel{DL-gamma-subst}
+\\ ~[L_1|\dots|L_n]\gamma &=& [L_1\gamma|\dots|L_n\gamma]
+& \elabel{LE-gamma-subst}
+}
+Groundness is not enough, we also require substitutions to be ``sound''
+in the sense that they cannot transfrom a situation that satisfies $DL$
+or $LE$ into one that does not.
+A ground substitution $\varsigma$, of the form $[G,I,O/g,in,out]$ is \emph{sound}
+if $\setof{I|G|O}$ holds.
+We will see that all substitutions given explicilty in the semantic definitions
+below are sound, and that this is easy to check by inspection.
+
+
+\subsection{Composing Actions}\label{ssec:composing}
