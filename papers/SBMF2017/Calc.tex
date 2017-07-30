@@ -1,1 +1,708 @@
-\section{Calculations}\label{sec:calc} 
+\section{Calculations}\label{sec:calc}
+
+This semantic theory was validated by a series of test calculations
+done to ensure that it was making the right predications about program behaviour.
+This typically involved taking small programs with a few atomic actions
+and trying to simplify their semantic predicates
+down to a non-deterministic choice of atomic action sequences.
+This required the development of a UTP calculator tool,
+as some of the calculations proved to be very long,
+but very mechanical and tedious \cite{conf/utp/Butterfield16}.
+
+We shall start by sketching out a test calculation for $\catom a$,
+where the objective is to reduce it down to a predicate involving
+just basic atoms.
+
+\RLEQNS{
+  & & \lhsCA
+\\&=& \rhsCA                                    & \elabel{\lblCA}
+\\&=& DL \land LE \land \WWW(A(in|a|out))       & \elabel{\lblW}
+\\&=& DL \land LE \land \bigvee_i A(in|a|out)^i & \elabel{\lblWWW}
+}
+
+
+
+XXXXXXXXX
+
+
+
+
+We will discuss this aspect of the semantics first (\S\ref{ssec:normal-form}),
+as it embodies a key simplifying principle.
+We then address the issue of computing mumblings, i.e. the (UTP)
+sequential composition of $A$ actions (\S\ref{ssec:comp-A}.
+Finally, we present results of test calculations,
+which turn out to produce our normal forms (\S\ref{ssec:nf-calc}).
+
+\subsection{Normal Form}\label{ssec:normal-form}
+
+All the semantics above have an invariant $I_P$,
+zero or more atomic actions ($A_i$),
+plus zero or more language sub-component predicates ($P_j$)
+assembled into a predicate of the form:
+\[
+  I_P
+  \land
+  \DL(\W( A_1 \lor \dots \lor A_m
+     \lor
+     P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n ))
+\]
+where each $A_i$ is a basic action that preserves $I_P$,
+and $\varsigma_i = [G_i,I_i,O_i/g,in,out]$,
+is a sound substitution, so $\setof{I_i|G_i|O_i}$ holds.
+We can expand the definitions of $\DL$ and $\W$ to get:
+\[
+  I_P \land \setof{in|g|out}
+  \land
+  \bigvee_{i \in \Nat}
+    \left( A_1 \lor \dots \lor A_m
+          \lor
+          P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n
+    \right)^i
+\]
+We can then force the invariants in:
+\[
+    \bigvee_{i \in \Nat}
+      I_P \land \setof{in|g|out}
+      \land
+       \left( A_1 \lor \dots \lor A_m
+             \lor
+             P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n
+       \right)^i
+\]
+Each of the $P_1 \dots P_n$ have the same structure.
+We now explore the nature of the sequential compositions,
+starting with $i=2$.
+\RLEQNS{
+  && ( A_1 \lor \dots \lor A_m
+       \lor
+       P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n )
+     \seq
+     ( A_1 \lor \dots \lor A_m
+       \lor
+       P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n )
+\EQ{$;$-$\lor$-distr}
+\\&& A_1 \seq A_1 \lor \dots \lor A_1 \seq A_m
+     \lor
+     A_1 \seq P_1\varsigma_1 \lor \dots \lor A_1 \seq P_n\varsigma_n
+\\&\lor& \vdots
+\\&\lor& A_m \seq A_1 \lor \dots \lor A_m \seq A_m
+         \lor
+         A_m \seq P_1\varsigma_1 \lor \dots \lor A_m \seq P_n\varsigma_n
+\\&\lor& P_1\varsigma_1 \seq A_1 \lor \dots \lor P_1\varsigma_1 \seq A_m
+         \lor
+         P_1\varsigma_1 \seq P_1\varsigma_1 \lor \dots \lor P_1\varsigma_1 \seq P_n\varsigma_n
+\\&\lor& \vdots
+\\&\lor& P_n\varsigma_n \seq A_1 \lor \dots \lor P_n\varsigma_n \seq A_m
+         \lor
+         P_n\varsigma_n \seq P_1\varsigma_1 \lor \dots \lor P_n\varsigma_n \seq P_n\varsigma_n
+}
+If our program is an atomic action, then $m=2$ and $n=0$, so
+we have
+\[
+  A_1 \seq A_1
+\]
+which means its semantics reduces to
+\[
+ \bigvee_{i \in \Nat }I_P \land \setof{in|g|out} \land A_1^i
+\]
+If our program is a composite whose components are atomic,
+then the $P_i$ have the above form.
+Generalising, it should be easy to see that the semantics of any construct $P$
+will ultimately have the form
+\[
+  \bigvee_p  I_p \land X_p)
+\]
+Here $p$ is an index from some appropriate set,
+determined by the structure of $P$.
+
+The $I_p$ are some conjunction of invariants
+that includes $I_P$, the top-level invariant for $P$.
+and $X_p$ is a sequence of $A$s sequentially composed together.
+By convention, we assume a distinguished index value $p_0$,
+and take $I_{p_0} = I_P$ and $X_{p_0} = \Skip$.
+To summarise:
+\RLEQNS{
+   I_{p_0}  &=& I_P  & \elabel{I-p-0}
+\\ X_{p_0} &=& \Skip   & \elabel{X-p-0}
+\\ P        &=& \bigvee_p  (I_p \land X_p)
+   & \elabel{UTCP-NF}
+}
+
+In effect the meaning of a program is a big non-deterministic choice
+between stuttering, basic actions,
+and a specific set of mumblings.
+We will make those more precise after we have investigated mumbling in more detail.
+
+The $X_{m_0} =\Skip$ occurs because we have the case $i=0$ to consider above,
+and it propagates up.
+In effect we have another healthiness condition:
+\RLEQNS{
+   P &=& \Skip \lor P & \elabel{stutter-anytime}
+}
+
+
+\subsection{Composing $A$s (a.k.a. Mumbling)}\label{ssec:comp-A}
+
+We have a problem in that actions defined using $A(\dots)$
+are not closed under standard UTP sequential composition (\eref{UTP-seq-def}).
+For example consider the following,
+where all three labels are different:
+\[
+   A(l_1|a|l_2) \seq A(l_2|b|l_3)
+\]
+The first action requires $l_1$ to be in $ls$ to run,
+and if so, removes it and adds in $l_2$.
+So the second action can then run immediately afterwards,
+and removes $l_2$ and adds in $l_3$.
+So the overall outcome is that $l_1$ needs to be in $ls$
+for this mumbling to occur, $l_1$ and $l_2$ are removed,
+and $l_3$ is added.
+We could argue that the net effect is that $l_1$
+is removed and $l_3$ is added,
+but that assumes that $l_2$ was not present at the start.
+If it was, then the net effect would still be,
+requiring $l_1$ to be present to start,
+removing $l_1$ and $l_2$, and adding in $l_3$.
+
+We cannot describe this as an instance of $A$.
+We need a more general form,
+where the labels removed are not necessarily
+exactly those that had to be present to enable the action.
+We call this eXtended atomic action $X$ and it is defined as follows:
+\RLEQNS{
+   X(E|a|R|A)
+   &\defs&
+   E \subseteq ls \land a \land ls' = (ls \sminus R) \cup A
+   & \elabel{X-def}
+}
+We can then re-define $A$ in terms of $X$:
+\RLEQNS{
+   A(E|a|N)
+   &=&
+   X(E|a|E|N)
+   & \elabel{A-alt-def}
+}
+The key law is one regarding sequentially composing $X$s:
+\RLEQNS{
+   \lefteqn{X(E_1|a|R_1|A_1) ; X(E_2|b|R_2|A_2)} &&& \elabel{X-then-X}
+\\ &=& E_2 \cap (R_1\sminus A_1) = \emptyset
+\\ && {} \land
+   X(E_1 \cup (E_2\sminus A_1)
+       \mid a\seq_s b
+       \mid R_1 \cup R_2
+       \mid (A_1 \sminus R_2) \cup  A_2)
+}
+The condition $E_2 \cap (R_1\sminus A_1) = \emptyset$
+characterises all those cases were the second $X$ is enabled
+immediately after the first $X$ terminates
+(i.e., without any outside interference).
+
+
+From this we immediately get the following laws:
+\RLEQNS{
+   \lefteqn{A(E_1|a|N_1) \seq A(E_2|a|N_2)} &&& \elabel{A-then-A}
+\\ &=& E_2 \cap (E_1\sminus N_1) = \emptyset
+\\ && {} \land
+       X(E_1 \cup (E_2\sminus N_1)
+           \mid a\seq_s b
+           \mid E_1 \cup E_2
+           \mid (N_1 \sminus E_2) \cup  N_2)
+\\
+\\ \lefteqn{A(E_1|a|N_1) \seq X(E_2|a|R_2|A_2)} &&& \elabel{A-then-X}
+\\ &=& E_2 \cap (E_1\sminus N_1) = \emptyset
+\\ & & {} \land
+       X(E_1 \cup (E_2\sminus N_1)
+           \mid a\seq_s b
+           \mid E_1 \cup R_2
+           \mid (N_1 \sminus R_2) \cup  A_2)
+\\
+\\ \lefteqn{X(E_1|a|R_1|A_1) \seq A(E_2|a|N_2)} &&& \elabel{X-then-A}
+\\ &=& E_2 \cap (R_1\sminus A_1) = \emptyset
+\\ & & {} \land
+       X(E_1 \cup (E_2\sminus A_1)
+           \mid a\seq_s b
+           \mid R_1 \cup E_2
+           \mid (A_1 \sminus E_2) \cup  N_2)
+}
+There are a few cases where two $A$s lead to an $A$ outcome.
+One obvious one is where the two actions have no labels in common:
+\RLEQNS{
+   \lefteqn{(E_1 \cup N_1) \cap (E_2 \cup N_2)=\emptyset} &&& \elabel{disjoint-As}
+\\ &\implies&
+  A(E_1|a|N_1) \seq A(E_2|b|N_2)
+  =
+  A(E_1\cup E_2|a\seq_s b|N_1\cup N_2)
+}
+The other is when the enabling labels of the second
+are disjoint from those added by the first:
+\RLEQNS{
+   \lefteqn{N_1 \cap E_2 =\emptyset} &&& \elabel{A2-not-enabled-by-A1}
+\\ &\implies&
+  A(E_1|a|N_1) \seq A(E_2|b|N_2)
+\\ && {} =
+  E_2 \cap E_1 = \emptyset
+  \land A(E_1\cup E_2|a\seq_s b|N_1\cup N_2)
+}
+Many of the latter two cases will be ruled out as impossible in
+practise, due to the label invariants.
+
+We can also illustrate what happens when we compose and $X$ or $A$ with
+itself:
+\RLEQNS{
+   X(E|a|R|A) \seq X(E|a|R|A)
+   &=&
+   (E\sminus A) \cap R = \emptyset
+   \land
+   X(E|a^2|R|A)
+   & \elabel{X-twice}
+\\ A(E|a|N) \seq A(E|a|N)
+   &=&
+   E \subseteq N \land A(E|a^2|N)
+   & \elabel{A-twice}
+}
+
+Finally, as for $A$,
+we note that ground-substitutions can be driven inside $X$:
+\RLEQNS{
+   X(E|a|R|A)\gamma &=& X(E\gamma|a|R\gamma|A\gamma) & \elabel{X-gamma-subs}
+}
+
+\newpage
+\subsubsection{Normal Form Revisited}
+
+We can now be much more precise about the normal form,
+in that we can now state that the $X$ in \eref{UTCP-NF} above
+are really predicates of the form resulting from \eref{X-then-X}:
+\RLEQNS{
+   P
+   &=&
+   \bigvee_{p \in pindex}
+      (I_p \land X(E_p|a_p|R_p|A_p) \land S_p)
+   & \elabel{UTCP-NF-X-and-S}
+}
+for suitable choices of $pindex$, $I_p$, $E_p$, $a_p$, $R_p$, $A_p$ and $S_p$,
+depending on $P$.
+In particular, we find that the $E_p$ and $A_p$ all satisfy the relevant
+label-set invariants.
+The the $S_p$ term  is a ground-expression,
+and is statically decidable as $\true$ or $\false$.
+So, we only need the terms where they evaluate to true,
+and so they need not appear explicitly:
+\RLEQNS{
+   P
+   &=&
+   \bigvee_{p \in pindex'}
+      (I_p \land X(E_p|a_p|R_p|A_p))
+   & \elabel{UTCP-NF-X-only}
+}
+where $pindex'$ is $pindex$ less those cases where $S_p = \false$.
+
+A common case that emerges when we do calculations
+is the need to compute sequential compositions
+of terms that are an LE-invariant in conjunction with an $X$-term:
+\RLEQNS{
+   (I_1 \land X_1) \seq (I_2 \land X_2)
+   &=&
+   I_1 \land I_2[(ls\sminus R_1)\cup A_1/ls] \land (X_1 \seq  X_2)
+   & \elabel{IandX-then-IandX}
+\\ &=& I_{12} \land (X_1 \seq X_2)
+\\ && \textbf{where } I_{ij} = I_i \land I_j[(ls\sminus R_i)\cup A_i/ls]
+}
+In essence the invariants come out with the second
+one adjusted to accounts for the label changes made by $X_1$.
+
+\subsubsection{Musings on the Normal Form}
+
+For any complete program that does not use iteration constructs,
+this expansion is finite.
+
+For any complete program
+we find often find that the $X$-terms
+can be be simplified, using invariants,
+to the $A$-form.
+We do not prove this, but note that we have observed it as a result
+of test calculations and these lead us to believe it is true in general.
+
+An important law we shall require is that the UTP sequential
+composition of two normal forms can itself be expressed
+as such a normal form:
+\RLEQNS{
+   I \land (\Skip\lor\bigvee A_i) \seq J \land (\Skip\lor\bigvee B_j)
+   &=&
+   I \land J \land (\Skip\lor\bigvee (A_i \seq B_j))
+   &\elabel{nf-seq}
+}
+This is an easy result of the fact that $\seq$ distributes through $\lor$,
+and $\Skip$ is a unit for it as well.
+
+\subsection{Normal Form Calculations}\label{ssec:nf-calc}
+
+\subsubsection{Notation}
+
+When we do calculations for small programs
+we typically specialise the $\DL$ invariant to just refer
+to the labels in use, rather than $g$ in general.
+This often means that $DL$ mentions the same labels as occur
+in the construct specific label-set $LE$ invariants.
+We adopt the following shorthand for those cases:
+\RLEQNS{
+   \{[L_1|\dots|L_n]\}
+   &\defs&
+   \{L_1|\dots|L_n\}\land [L_1|\dots|L_n]
+   & \elabel{DL-LE-overlap}
+}
+
+\subsubsection{Atomic Actions}
+\RLEQNS{
+   \catom{a}
+   &=&
+   \{[in|out]\} \land (\Skip \lor A(in|a|out))
+   & \elabel{NF-atomic}
+\\
+\\ \cskip
+   &=&
+   \{[in|out]\} \land (\Skip \lor A(in|ii|out))
+   & \elabel{NF-skip}
+}
+
+\RLEQNS{
+   run(\catom a) &=& a
+\\ run(\catom a \cseq \catom b) &=& a \seq b
+\\ run(\catom a \parallel \catom b)
+   &=&
+   a \seq b \lor b \seq a
+\\ run(\catom a + \catom b)
+   &=&
+   a \lor b
+\\ run(a^*)
+   &=& ii \lor a \lor a^2 \lor a^3 \lor \dots
+}
+
+
+\subsubsection{Sequential Composition}
+
+
+\RLEQNS{
+   P \cseq Q
+   &=& [in|\ell_g|out] \land \dots
+   & \elabel{NF-seq}
+\\
+\\ \catom a \cseq \catom b
+   &=& \{[in|\ell_g|out]\} \land {}
+  & \elabel{NF-a-seq-b}
+\\ && (~\Skip
+      \lor
+      A(in|a|\ell_g)
+      \lor
+      A(\ell_g|b|out)
+      \lor
+      A(in|a\seq b|out)~)
+}
+
+
+\subsubsection{Non-deterministic Choice}
+
+\RLEQNS{
+   P + Q
+   &=& [in|\ell_{g1}|\ell_{g2}|out] \land \dots & \elabel{NF-NDC}
+\\
+\\ \catom a + \catom b
+   &=& \{[in|\ell_{g1}|\ell_{g2}|out]\} \land {}
+   & \elabel{NF-a-or-b}
+\\ && \bigvee\left\{
+       \begin{array}{l}
+          \Skip,
+       \\ A(in|ii|\ell_{g1}),
+          A(in|ii|\ell_{g2}),
+          A(\ell_{g1}|a|out),
+          A(\ell_{g2}|b|out),
+       \\ A(in|a|out),
+          A(in|b|out)
+       \end{array}
+      \right\}
+}
+
+
+\subsubsection{Parallel Composition}
+Here $\#n$ denotes mumblings of length $n$.
+\RLEQNS{
+   P \parallel Q
+   &=& [in\mid([\ell_{g1}|\ell_{g1:}],[\ell_{g2}|\ell_{g2:}])\mid out]
+       \land \dots
+   & \elabel{NF-par}
+\\
+\\ \catom a \parallel \catom b
+   &=& \{in\mid \ell_{g1},\ell_{g1:},\ell_{g2},\ell_{g2:}\mid out\}
+        \land {}
+\\ && [in\mid([\ell_{g1}|\ell_{g1:}],[\ell_{g2}|\ell_{g2:}])\mid out]
+       \land {}
+   & \elabel{NF-a-par-b}
+\\ && \bigvee\left\{
+       \begin{array}{l}
+          \Skip,
+       \\ A(in|ii|\ell_{g1},\ell_{g2}),
+          A(\ell_{g1:},\ell_{g2:}|ii|out),
+       \\ A(\ell_{g1}|a|\ell_{g1:}),
+          A(\ell_{g2}|b|\ell_{g2:}),
+       \\ A(in|a|\ell_{g1:},\ell_{g2}),
+          A(in|b|\ell_{g2:},\ell_{g1}),
+       \\ A(\ell_{g1},\ell_{g2}|b;a|\ell_{g1:},\ell_{g2:}),
+          A(\ell_{g1},\ell_{g2}|a;b|\ell_{g1:},\ell_{g2:}),
+       \\ A(\ell_{g2:},\ell_{g1}|a|out),
+          A(\ell_{g1:},\ell_{g2}|b|out),
+      \\ A(in|b;a|\ell_{g1:},\ell_{g2:}),
+         A(in|a;b|\ell_{g1:},\ell_{g2:}),
+      \\ A(\ell_{g1},\ell_{g2}|b;a|out),
+         A(\ell_{g1},\ell_{g2}|a;b|out),
+      \\ A(in|b;a|out),
+         A(in|a;b|out)
+       \end{array}
+      \right\}
+}
+
+\subsubsection{Non-deterministic Iteration}
+The actions that denote a terminating
+run with zero or more complete iterations
+are \textbf{emboldended} below.
+\RLEQNS{
+   P^* &=& [in|\ell_g|out] \land \dots
+   & \elabel{NF-iter}
+\\
+\\ \catom a^*
+   &=& \{[in|\ell_g|out]\} \land {}
+   & \elabel{NF-a-star}
+\\ && \bigvee\left\{
+       \begin{array}{l}
+          \Skip,
+       \\ \mathbf{A(in|ii|out)},
+          A(in|ii|\ell_g),
+          A(\ell_g|a|in)
+       \\ A(\ell_g|a|out),
+          A(\ell_g|a|\ell_g)
+          , A(in|a|in)
+       \\ \mathbf{A(in|a|out)},
+          A(in|a|\ell_g),
+          A(\ell_g|a^2|in)
+       \\ A(\ell_g|a^2|out,
+          A(\ell_g|a^2|\ell_g),
+          A(in|a^2|in)
+       \\ \mathbf{A(in|a^2|out)},
+          A(in|a^2|\ell_g),
+          A(\ell_g|a^3|in)
+       \\ A(\ell_g|a^3|out),
+          A(\ell_g|a^3|\ell_g),
+          A(in|a^3|in),
+       \\ \vdots
+       \end{array}
+      \right\}
+}
+An obvious recurrent pattern (based on mumbling depth) has emerged:
+\RLEQNS{
+   &&  \mathbf{A(in|a^n|out)} \quad A(in|a^n|\ell_g) \quad A(\ell_g|a^{n+1}|in) &\#2n+1
+\\ &&  A(\ell_g|a^{n+1}|out) \quad A(\ell_g|a^{n+1}|\ell_g) \quad A(in|a^{n+1}|in) &\#2n+2
+}
+We can also identify a pattern based on number of $a$s performed:
+\RLEQNS{
+   \alpha_0 && \mathbf{A(in|ii|out)} \quad A(in|ii|\ell_g)
+\\ \alpha_1 && A(\ell_g|a|in) \quad A(\ell_g|a|out) \quad A(\ell_g|a|\ell_g) \quad A(in|a|in)
+\\          && \mathbf{A(in|a|out)} \quad A(in|a|\ell_g)
+\\ \alpha_2 && A(\ell_g|a^2|in) \quad A(\ell_g|a^2|out) \quad A(\ell_g|a^2|\ell_g) \quad A(in|a^2|in)
+\\          && \mathbf{A(in|a^2|out)} \quad A(in|a^2|\ell_g)
+\\
+\\ \alpha_n && A(\ell_g|a^n|in) \quad A(\ell_g|a^n|out) \quad A(\ell_g|a^n|\ell_g) \quad A(in|a^n|in)
+\\          && \mathbf{A(in|a^n|out)} \quad A(in|a^n|\ell_g)
+}
+
+
+\newpage
+\subsection{Essential Properties?}
+
+
+Looking forward we will want some key algebraic properties:
+\RLEQNS{
+   A(E|a|N) \textbf{ sat } I
+   &=&
+   A(E|a|N)\gamma \textbf{ sat } I\gamma
+   , \quad \mbox{arbitrary }\gamma
+\\ ((ls\sminus R)\cup A)(S)
+   &=&
+   ls(F(R,A,S)) \land P(R,A,S)
+}
+
+
+When $P\gamma$ executes:
+\begin{description}
+  \item[\elabel{P-removes-in}]
+    it will remove $in\gamma$ from $ls$ at some point;
+  \item[\elabel{P-removes-g}]
+    the only other labels it removes are in $labs(g\gamma)$;
+  \item[\elabel{P-adds-out}]
+    it adds $out\gamma$ into $ls$ at some point;
+  \item[\elabel{P-adds-g}]
+    the only other labels it adds are in $labs(g\gamma)$;
+  \item[\elabel{P-ignores-rest}]
+    and its behaviour is not affected by any label not
+    in
+    \\$\setof{in\gamma,out\gamma} \cup labs(g\gamma)$.
+\end{description}
+We can summarise this as follows:
+\begin{itemize}
+  \item $P\gamma$ actions are enabled by labels in $in\gamma,g\gamma$
+  \item $P\gamma$ actions enable actions enabled by $g\gamma,out\gamma$
+  \item Remember that the following invariant holds: $[in\gamma|g\gamma|out\gamma]$
+\end{itemize}
+
+
+
+
+
+\RLEQNS{
+   X(E|a|R|A)\gamma &=& X(E\gamma|a|R\gamma|A\gamma)
+   & \elabel{X-gnd-subs}
+\\ (\bigvee_n X_n)^2
+   &=& \bigvee_{n_1,n_2} X_{n_1} \seq X_{n_2}
+   & \elabel{NF-squared}
+\\ (\bigvee_p Y_p \lor \bigvee_q Z_q)^2
+     &=& \bigvee_{p_1,p_2}  (Y_{p_1} \seq Y_{p_2})
+\\&\lor& \bigvee_{q_1,q_2}  (Z_{q_1} \seq Z_{q_2})
+\\&\lor& \bigvee_{p,q}  (Y_p \seq Z_q)
+\\&\lor& \bigvee_{q,p}  (Z_q \seq Y_p)
+  & \elabel{NF+NF-squared}
+\\ &=& \bigvee_r X_r,\textrm{ for appropriate } r
+  & \elabel{NF-squared-alt}
+\\ (\bigvee_p Y_p \lor \bigvee_q Z_q)^n
+     &=& \bigvee_r X_r,\textrm{ for appropriate } r
+  & \elabel{NF-powered}
+\\ \W(\Skip \lor \bigvee_p Y_p \lor \bigvee_q Z_q)
+     &=& \bigvee_r X_r,\textrm{ for appropriate } r
+  & \elabel{W-of-NDC-is-NF}
+}
+Add in X-then-X and related properties.
+
+Nice to have:
+the combined invariants ensure that the normal form
+has the form:
+\[
+  P = \bigvee_n A(E_n|a_n|N_n)  \qquad \elabel{NF-only-As}
+\]
+Is this the case?
+
+
+\newpage
+\subsection{Miscellaneous}
+
+More stuff for proofs section.
+
+
+We shall first demonstrate that the stuttering $\Skip$
+introduced in the atomic action semantics
+propagates up into the program composites,
+so that, for example, we could have defined sequential composition
+as:
+\RLEQNS{
+   P \cseq Q
+   &\defs&
+   [in|\ell_g|out]\land
+   \W(\Skip \lor P[g_{:1},\ell_g/g,out] \lor Q[g_{:2},\ell_g/g,in])
+   & \elabel{sem:seq-alt}
+}
+We argue by induction over program syntax.
+
+What we shall demonstrate is that, for all commands $C$
+with a definition $C = \W(P)$, for $P$ related to $C$ as appropriate,
+that the following predicates are all equal:
+\RLEQNS{
+  \W(\Skip \lor P) \quad = & \W(P)& = \quad \Skip \lor \W(P)
+ & \elabel{W-prog-stutters}
+}
+The base case is easy, here $c$ is $\catom a$,
+and $P$ is $\Skip \lor A(in|a|out)$:
+\RLEQNS{
+  && \W(\Skip \lor (\Skip \lor A(in|a|out)))
+\EQ{$\lor$-assoc, $\lor$-idem}
+\\&& \W(\Skip \lor A(in|a|out))
+\EQ{\eref{sem:atomic}}
+\\&& \catom a
+}
+For the inductive step we assume the hypothesis
+for command $C$ and its semantics predicate  $C = \W(P)$,
+that:
+\RLEQNS{
+   \W(P) &=& \W(\Skip \lor P) &\elabel{hyp:P-stutters}
+}
+We now make use of the following deduction:
+\RLEQNS{
+  && \W(\Skip \lor Q)
+\EQ{loop unrolling}
+\\&& (\Skip\lor Q)\seq(\Skip\lor Q)\seq(\Skip\lor Q)\seq(\Skip\lor Q)\seq\dots
+\EQ{$\lor$-$\seq$-distr, diagonalisation, removing identical terms}
+\\&& \bigvee_{i \in \Nat} \Skip\seq Q^i & \elabel{W-stutter-is-NDC}
+}
+An immediate consequence of this is that
+\RLEQNS{
+  \W(\Skip \lor Q) &=& \Skip \lor \W(\Skip\lor Q) & \elabel{W-exposes-II}
+}
+We now show that the same holds for a composite $F(C,\ldots)$
+that directly includes $P$, or rather its semantics $C$
+, along with some other stuff.
+Inspection of all the semantic definitions reveals
+that the form of the semantics of $F$ is the following,
+where $\sigma$ is a ground substitution:
+\RLEQNS{
+   F(C,\ldots) &=& \W(C\sigma \lor \ldots)
+}
+We now can easily show that we get stuttering here also:
+\RLEQNS{
+  && \W(C\sigma \lor \dots)
+\EQ{$C$ is meaning of $P$}
+\\&& \W(\W(P)\sigma \lor \dots)
+\EQ{\eref{hyp:P-stutters}}
+\\&& \W(\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{\eref{W-exposes-II}}
+\\&& \W((\Skip\lor\W(\Skip \lor P))\sigma \lor \dots)
+\EQ{substitution}
+\\&& \W(\Skip\sigma\lor\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{Lemma $\Skip\sigma=\Skip$}
+\\&& \W(\Skip\lor\W(\Skip \lor P)\sigma \lor \dots)
+\EQ{reverse first two steps above}
+\\&& \W(\Skip\lor C\sigma \lor \dots)
+}
+
+
+\subsection{Compact Semantics}
+
+\RLEQNS{
+   \lhsCA &\defs& \rhsCA & \eref{\lblCA}
+\\ \lhsSEQ &\defs& \rhsSEQ & \eref{\lblSEQ}
+\\ \lhsPAR
+   &\defs&
+   \leftW \rhsaPAR \lor {}
+   & \eref\lblPAR
+\\&& \phW \rhsbPAR \lor {}
+\\&& \phW \rhscPAR \lor {}
+\\&& \phW \rhsdPAR \rghtW
+\\ \lhsNDC &\defs& \invNDC \land \rhsNDC & \eref{\lblNDC}
+\\ \lhsSTAR
+   &\defs&
+   \leftW \rhsaSTAR \lor {}
+   & \eref\lblSTAR
+\\&& \phW \rhsbSTAR \lor {}
+\\&& \phW \rhscSTAR \lor {}
+\\&& \phW \rhsdSTAR \rghtW
+\\ \lhsCND
+   &\defs&
+   \leftW \rhsaCND \lor {}
+   & \eref\lblCND
+\\&& \phW \rhsbCND \lor {}
+\\&& \phW \rhscCND \lor {}
+\\&& \phW \rhsdCND \rghtW
+\\&& {} \land \invCND
+\\ \lhsITER
+   &\defs&
+   \leftW \rhsaITER \lor {}
+   & \eref\lblITER
+\\&& \phW \rhsbITER \lor {}
+\\&& \phW \rhscITER \lor {}
+\\&& \phW \rhsdITER \rghtW
+}

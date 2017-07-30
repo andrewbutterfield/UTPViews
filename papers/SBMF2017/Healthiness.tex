@@ -130,6 +130,9 @@ making it harder to interpret and check.
 \RLEQNS{
    DL &\defs& \setof{in|labs(g)|out}  \ecite{Disjoint-Labels}
 }
+We shall simplify further by stating that in the shorthands presented
+here that we use just simple $g$ to denote $labs(g)$,
+so $DL$ can we written as ${in|g|out}$.
 We also need stronger Label Exclusivity invariants,
 regarding which labels can, or cannot,
 occur in the global label set at any one time.
@@ -143,12 +146,12 @@ only elements from of one of $in$, $labs(g)$ or $out$
 can be present in $ls$ at any point in time:
 \RLEQNS{
    LE &\defs&
-   ~[in|labs(g)|out]
+   ~[in|g|out]
    & \ecite{Exclusive-Labels}
 }
 Note that we also just use a dash to make
 the same assertion about the allowable contents of $ls'$
-by simply writing $[in|labs(g)|out]'$.'
+by simply writing $[in|g|out]'$.'
 
 So, in summary, we have that every healthy predicate describing
 a shared-variable concurrent program's behaviour is of the form $\WWW(C)$

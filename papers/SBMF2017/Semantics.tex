@@ -9,7 +9,8 @@ before describing the semanitcs of the four composite command forms.
 The actomic command $\catom a$ can be very simply expressed as basic action
 with the addition of healthiness conditions:
 \RLEQNS{
-  \lhsCA &\defs& DL \land \rhsCA & \elabel{\lblCA}
+   \lhsW &\defs& \rhsW & \eref{\lblW}
+\\ \lhsCA &\defs& \rhsCA & \elabel{\lblCA}
 }
 Here we would that if $LE$ holds when this action starts,
 i.e. when $in \in ls$ and it gets to run,
@@ -49,3 +50,76 @@ below are sound, and that this is easy to check by inspection.
 
 
 \subsection{Composing Actions}\label{ssec:composing}
+
+The semantics of composite actions basically involves using the generator
+to produce a suitable number of labels,
+that are then used in zero or more ``control-flow'' actions
+of the form $A(E|ii|N)$, where $ii$ is atomic skip that simply asserts $s'=s$.
+The left-over generator is the split as required,
+and then the components are ``connected'' into
+the relevant new labels and generators using sound substitutions.
+Finally the relevant healthiness conditions are supplied.
+A key principle is to ensure that when any sub-component is ``active'',
+that is, at least one of its labels is present in $ls$,
+that none of the labels of the parent, other than those explcitly shared with the
+sub-component, are themsleves in $ls$.
+This prevents a parent starting a spurious copy of a sub-component
+while that sub-component is actually running.
+The semantic definitions are listed in Fig. \ref{fig:composite-semantics}.
+Careful inspection of all the substitutions present will confirm that they
+are all sound.
+\begin{figure}
+  \RLEQNS{
+     \W(P) &\defs& DL \land LE \land \WWW(P) & \elabel{\lblW}
+  \\ \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
+  \\ \lhsPAR
+     &\defs&
+     \leftW \rhsaPAR \lor {}
+     & \elabel\lblPAR
+  \\&& \phW \rhsbPAR \lor {}
+  \\&& \phW \rhscPAR \lor {}
+  \\&& \phW \rhsdPAR \rghtW
+  \\ \lhsNDC &\defs& \invNDC \land \rhsNDC & \elabel{\lblNDC}
+  \\ \lhsSTAR
+     &\defs&
+     \leftW \rhsaSTAR \lor {}
+     & \elabel\lblSTAR
+  \\&& \phW \rhsbSTAR \lor {}
+  \\&& \phW \rhscSTAR \lor {}
+  \\&& \phW \rhsdSTAR \rghtW
+  }\caption{Composite Semantics}
+\label{fig:composite-semantics}
+\end{figure}
+Given that the invariant $LE$, which is $[in|labs(g)|out]$,
+is part of the definition of $\W$,
+then we have it statisfied, by definition, by any sub-components.
+From the prespective of the parent composite, this means that $LE\varsigma$
+also holds, where $\varsigma$ ranges over all the sound substitutions
+used in the definition of thr parent's semantics.
+For example, for program sequential composition,
+we not only assert $[in|g|out]$,
+but can also infer $[in|\g{:1}|\ell+g]$
+and $[\ell_g|\g{:2}|out]$.
+Some constructs require a little more than just $DL$, $LE$ and the sound substitution
+variants just discussed.
+For example in program non-deterministic choice ($+$),
+we need to insist that only one branch is taken, hence
+the need to assert that if any label is present in $ls$ from one component
+then none from the other are present.
+
+NEED TO EXPLAIN SOME DEFINITIONS AND SHOW A DIAGRAM?
+
+
+In summary,
+we have have predicate semantics for atomic and composite program
+constructs,
+in which everything at every level is wrapped in an infinite loop.
+This seems to be completely counter-intuitive:
+a program that consists of a single atomic action may wait
+for a while while external interference rumbles on,
+but eventually it shoudl get ``scheduled'', do its singel atomic thing
+and then effectively stop.
+How is this consistent with looping forever?
+To see the answer to this question,
+it helps to conisder such simple examples,
+and this brings up the issue of \emph{calculation}.
