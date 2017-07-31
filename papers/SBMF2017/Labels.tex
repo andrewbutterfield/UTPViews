@@ -12,14 +12,12 @@ to the interesting partsof the code,
 or are a mandatory part of the syntax of the language under consideration.
 Our semantic approach here is no different to the above with respect to
 the need for labels,
-but we differ by:
-not requiring any labels in the language;
-and generating them automatically
+but we generate them automatically
 in a way that supports compositional reasoning within the UTP framework.
 
 Given some notion of labels ($l \in Lbs$),
 we want a notion of a generator ($g \in Gen$) that supports two operations:
-$new:Gen \fun Lbl \times Gen$ produces a new label and a new generator;
+$new:Gen \fun Lbl \times Gen$ that produces a new label and a new generator;
 while
 $split:Gen \fun Gen \times Gen$ splits a generator into two new ones.
 In all cases we require that any labels obtained from generators

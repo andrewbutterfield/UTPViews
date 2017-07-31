@@ -5,9 +5,9 @@ done to ensure that it was making the right predications about program behaviour
 This typically involved taking small programs with a few atomic actions
 and trying to simplify their semantic predicates
 down to a non-deterministic choice of atomic action sequences.
-This required the development of a UTP calculator tool,
-as some of the calculations proved to be very long,
-but very mechanical and tedious \cite{conf/utp/Butterfield16}.
+Some of the calculations proved to be very long,
+repetitive and tedious,
+motivating the UTP-calculator development \cite{conf/utp/Butterfield16}.
 
 We shall start by sketching out a test calculation for $\catom a$,
 where the objective is to reduce it down to a predicate involving
@@ -19,7 +19,7 @@ just basic atoms.
 \\&=& DL \land LE \land \bigvee_i A(in|a|out)^i & \elabel{\lblWWW}
 }
 At this point what remains is to compute $A(in|a|out)^i$ for $i \in \Nat$.
-The cases of $i=0,1$ are stragihtforward.
+The cases of $i=0,1$ are straightforward.
 Computing $i=2$ is easy:
 \RLEQNS{
   &  & A(in|a|out) \seq A(in|a|out)     & \elabel{X-def}
@@ -46,14 +46,12 @@ same.
 One slight complication is that the contents of $\WWW$ in theses cases
 is a disjunction of terms, rather than a single basic action,
 so we first simplify these out, applying all substitutions,
-to get a term $Q$ of the form $\Skip \lor \mbox{basic actions}$.
+to get a term $Q$ of the form ($\Skip \lor \textit{basic actions}$).
 We need to compute $Q^i$ for $i \geq 2$,
 and sequential composition distributes through disjunction,
 so we obtain resulting terms of the same form,
 by repeated application of law \elabel{X-then-X}.
-These calculations are basically very simple but get very long and involved,
-producing disjunctions whose length can of the order of 20 or 30 basic actions.
-A large number of these have results from \elabel{X-then-X}
+A large number of these have results
 with the set side-condition that evaluates to \false,
 as per the $i=2$ example above---these terms vanish.
 There are other terms produced that do not vanish,
@@ -65,7 +63,7 @@ if $R=E$.
 In every test calculation we have done
 it turns out that the others, where $R\neq E$ can also be re-written,
 because $LE$ says that none of $R \setminus E$ can be present in $ls$
-when everyanything from $E$ is present,
+when anything from $E$ is present,
 so the removal of those labels is ineffective, as they are never present
 when that action is enabled.
 So, the next outcome is that we get final results where every basic action
@@ -85,40 +83,76 @@ Some calculation results are shown in Fig. \ref{fig:calc-results}.
     &=&
     \Skip \lor A(in|a|\ell_g) \lor A(\ell_g|b|out) \lor A(in|ab|out)
 \\ \catom a + \catom b
-   &=& \Skip \lor A(in|ii|\ell_{g1} \lor A(in|ii|\ell_{g2} \lor A(\ell_{g1}|a|out)
+   &=& \Skip \lor A(in|ii|\ell_{g1}) \lor A(in|ii|\ell_{g2}) \lor A(\ell_{g1}|a|out)
 \\ & &{} \lor A(\ell_{g2}|b|out) \lor A(in|a|out) \lor A(in|b|out)
 \\ \catom a \parallel \catom b
    &=&
-   \Skip \lor A(in|ii|lg1,lg2)
-         \lor A(lg1:,lg2:|ii|out)
-         \lor A(lg1|a|lg1:)
+   \Skip \lor A(in|ii|\ell_{g1},\ell_{g2})
+         \lor A(\ell_{g1:},\ell_{g2:}|ii|out)
+         \lor A(\ell_{g1}|a|\ell_{g1:})
 \\ & & {}
-         \lor A(lg2|b|lg2:)
-         \lor A(in|a|lg1:,lg2)
-         \lor A(in|b|lg2:,lg1)
+         \lor A(\ell_{g2}|b|\ell_{g2:})
+         \lor A(in|a|\ell_{g1:},\ell_{g2})
+         \lor A(in|b|\ell_{g2:},\ell_{g1})
 \\ & & {}
-         \lor A(lg1,lg2|ba|lg1:,lg2:)
-         \lor A(lg1,lg2|ab|lg1:,lg2:)
+         \lor A(\ell_{g1},\ell_{g2}|ba|\ell_{g1:},\ell_{g2:})
+         \lor A(\ell_{g1},\ell_{g2}|ab|\ell_{g1:},\ell_{g2:})
 \\ & & {}
-         \lor A(lg2:,lg1|a|out)
-         \lor A(lg1:,lg2|b|out)
-         \lor A(in|ba|lg1:,lg2:)
+         \lor A(\ell_{g2:},\ell_{g1}|a|out)
+         \lor A(\ell_{g1:},\ell_{g2}|b|out)
+         \lor A(in|ba|\ell_{g1:},\ell_{g2:})
 \\ & & {}
-         \lor A(in|ab|lg1:,lg2:)
-         \lor A(lg1,lg2|ba|out)
-         \lor A(lg1,lg2|ab|out)
+         \lor A(in|ab|\ell_{g1:},\ell_{g2:})
+         \lor A(\ell_{g1},\ell_{g2}|ba|out)
+         \lor A(\ell_{g1},\ell_{g2}|ab|out)
 \\ & & {}
          \lor A(in|ba|out)
          \lor A(in|ab|out)
 }
 \caption{
   Some Test Calculation Results.
-  Here $ab$ is short for $a;b$, etc.
+  Here $ab$ ($ba$) is short for $a;b$ ($b;a$).
 }
 \label{fig:calc-results}
 \end{figure}
+If we look at the result for $\catom a \cseq \catom b$
+we have $\Skip$, the stuttering step,
+and $A(in|ab|out)$ which is
+the complete exection of both actions without interference (mumbling),
+and $A(in|a|\ell_g)$ that shows the execution of $a$, to an intermediate
+point where $b$ has yet to occur.
+These three observations are consistent with the idea that
+our predicates are relations between a starting state and some subsequent
+or final state.
+However we also have action $A(\ell_g|b|out)$,
+which is an observation that begins after action $a$ has already occured,
+and just observes the behaviour of $b$ alone.
+What has happenned with this UTP theory of concurrency
+is that it is now no longer insists that the ``before'' observation
+is pinned to be the start of the program. Now we are able to observe program
+behaviour that can both start and end at what are intermediate points
+in the lifetime of the program.
 
+If we look at $\catom a + \catom b$, we also explcitly
+see the control-flow ``decisions'',
+such as $A(in|ii|\ell_{g1})$ where the decision to execute $a$ is made.
+This will remove $in$ from $ls$ if it runs,
+so disabling the other choice, denoted by $A(in|ii|\ell_{g2})$.
+By contrast, in $\catom a\parallel \catom b$ the initially enabled
+action is $A(in|ii|\ell_{g1},\ell_{g2})$, which activates both $a$ and $b$.
+The control flow action $A(\ell_{g1:},\ell_{g2:}|ii|out)$ delays termination
+until both atomic actions are done.
 
-WE NEED TO DISCUSS THESE
- - POINT OUT THE FACT THAT THE START STATE IS NOW MOVABLE
- - POINT OUT STUTTERING AND MUMBLING
+Finally,
+we stress that the explicit inclusion of labels in the final results
+is essential in order to ensure compositionality.
+In \cite{conf/tase/BMN16} we had the explicit $run$ form,
+and this reduced the semantics of $\catom a$ to $a$,
+that of $\catom a + \catom b$ to $a \lor b$
+and $\catom a \parallel \catom b$ to $ab\lor ba$.
+While this looks cleaner, it has lost too much information,
+and we cannot compose these further to get correct answers.
+With the explcitly labelled semantics presented here for UTCP,
+we can, for example, compute $(\catom a \cseq \catom b) \parallel \catom c$
+by replacing the first $\cseq$ term by its expansion
+from Fig. \ref{fig:calc-results}.

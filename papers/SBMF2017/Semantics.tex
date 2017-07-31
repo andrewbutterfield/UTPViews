@@ -9,10 +9,10 @@ before describing the semanitcs of the four composite command forms.
 The actomic command $\catom a$ can be very simply expressed as basic action
 with the addition of healthiness conditions:
 \RLEQNS{
-   \lhsW &\defs& \rhsW & \eref{\lblW}
+   \lhsW &\defs& DL \land LE \land \WWW(P) & \elabel{\lblW}
 \\ \lhsCA &\defs& \rhsCA & \elabel{\lblCA}
 }
-Here we would that if $LE$ holds when this action starts,
+Here we would expect that if $LE$ holds when this action starts,
 i.e. when $in \in ls$ and it gets to run,
 that $LE'$ should also hold, with $out \in ls'$.
 
@@ -61,8 +61,9 @@ the relevant new labels and generators using sound substitutions.
 Finally the relevant healthiness conditions are supplied.
 A key principle is to ensure that when any sub-component is ``active'',
 that is, at least one of its labels is present in $ls$,
-that none of the labels of the parent, other than those explcitly shared with the
-sub-component, are themsleves in $ls$.
+that none of the labels of the parent,
+other than those explicitly shared with the sub-component,
+are themsleves in $ls$.
 This prevents a parent starting a spurious copy of a sub-component
 while that sub-component is actually running.
 The semantic definitions are listed in Fig. \ref{fig:composite-semantics}.
@@ -70,8 +71,7 @@ Careful inspection of all the substitutions present will confirm that they
 are all sound.
 \begin{figure}
   \RLEQNS{
-     \W(P) &\defs& DL \land LE \land \WWW(P) & \elabel{\lblW}
-  \\ \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
+     \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
   \\ \lhsPAR
      &\defs&
      \leftW \rhsaPAR \lor {}
@@ -95,10 +95,10 @@ is part of the definition of $\W$,
 then we have it statisfied, by definition, by any sub-components.
 From the prespective of the parent composite, this means that $LE\varsigma$
 also holds, where $\varsigma$ ranges over all the sound substitutions
-used in the definition of thr parent's semantics.
+used in the definition of the parent's semantics.
 For example, for program sequential composition,
 we not only assert $[in|g|out]$,
-but can also infer $[in|\g{:1}|\ell+g]$
+but can also infer $[in|\g{:1}|\ell_g]$
 and $[\ell_g|\g{:2}|out]$.
 Some constructs require a little more than just $DL$, $LE$ and the sound substitution
 variants just discussed.
@@ -117,7 +117,7 @@ in which everything at every level is wrapped in an infinite loop.
 This seems to be completely counter-intuitive:
 a program that consists of a single atomic action may wait
 for a while while external interference rumbles on,
-but eventually it shoudl get ``scheduled'', do its singel atomic thing
+but eventually it should get ``scheduled'', perform its atomic action
 and then effectively stop.
 How is this consistent with looping forever?
 To see the answer to this question,

@@ -24,7 +24,7 @@ The theory can be extended to cover total correctness by introducing
 Boolean observations of program starting ($ok$) and termination ($ok'$).
 In this case, we find that we need a technique that allows us to identify
 predicates whose interpretation is nonsense, and eliminate them from any
-semanitc theory we might construct.
+semantic theory we might construct.
 For example, the predicate $\lnot ok \land ok'$ describes a situation
 in which a program has not started, but has terminated.
 
@@ -37,6 +37,22 @@ This is interpreted as saying,
 if the program is started and $P$ holds true at the start,
 then the program will terminate with $Q$ being satisfied at the end.
 
+A healthiness condition can be thought of as a higher-order predicate
+taking a predicate as argument and returning \true\ iff the predicate is healthy.
+Considering a healthiness predicate called ``H'',
+we might define something called $\mathbf{isH}$, for instance.
+However, it considerably simplifies most UTP theories
+if we can find a monotonic, idempotent predicate transformer
+instead ($\mathbf{mkH}$)
+that transforms an unhealthy predicate into a healthy one,
+and leaves healthy predicates unchanged.
+Then we can define $\mathbf{isH}(P)$ to be the assertion that tests
+if $P$ is a fixed-point of $\mathbf{mkH}$.
+In most UTP literature the name $\mathbf{H}$ is overloaded
+to denote both $\mathbf{mkH}$ and $\mathbf{isH}$.
+Our healthiness conditions (Sec. \ref{sec:health})
+can be expressed in this fashion.
+
 An important characteristic of both the UTP theories referred to above,
 is that their predicates are interpeted as a relation between the before-state
 and after-state of a \emph{complete} program execution.
@@ -46,18 +62,17 @@ is focussed on local-state concurrency, without any mutable state variables.
 Here it becomes necessary to observe the program state at intermediate points
 in its execution,
 typically when the program is waiting
-for external events to occurr.
+for external events to occur.
 This neccesitates another pair of Boolean observations, $wait$ and $wait'$
 that indicate such waiting.
 We do not give any further details regarding these theories,
 but instead mention them simply to make the observation
 that here the predicates are interpreted as a relation between
 the before-state,
-and a \emph{subsequent} state that can either be
-an intermediate waiting state, or the final state of the complete execution.
-In particular this allows giving semanitcs to programs that never terminate,
-such as most server implementations.
-We have no final-state, but many intermediate waiting/response states.
+and some \emph{subsequent} intermediate or final state of the complete execution.
+% In particular this allows giving semantics to programs that never terminate,
+% such as most server implementations.
+% We have no final-state, but many intermediate waiting/response states.
 
 Our focus in this introduction on how the predicates are \emph{interpreted}
 in terms of program state is important,

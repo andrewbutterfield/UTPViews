@@ -36,8 +36,15 @@ in a way that permits a compositional approach.
 For details of how this works, see Section \ref{sec:composing}.
 
 
+In effect we are exploiting the fact that our language is block-structured
+with only one entry and exit point for each construct,
+in order to be able to decouple the semantics of an atomic action
+from whatever might come next.
+Dealing with that is the responsibiity of the semantics of language composites.
 
-Our semantics is built upon basic atomic state-change
+
+To summarise,
+our semantics is built upon basic atomic state-change
 actions that modify global shared state $s$.
 The concurrent flow of control is managed using a global dynamic label-set $ls$
 and the association of two distinguished labels $in$ and $out$,

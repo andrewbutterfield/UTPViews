@@ -84,17 +84,11 @@ both of which are concerned with the mutual disjointness, in some sense,
 of a collection of sets of labels.
 We introduce some shorthand notations to avoid excessively long predicates and expressions. We use `$\mid$' as a seperator between things mean to be disjoint,
 and commas to list subsets and/or set- elements that should be unioned together.
-So the following fragment
-\[  A,b | M,N | x,Y \]
-is shorthand for
-\[ A \cup \setof a
-  \quad \textbf{disjoint-from} \quad
-  M \cup N
-  \quad \textbf{disjoint-from} \quad
- \setof x \cup Y
-\]
+So the fragment $ A,b | M,N | x,Y $
+is shorthand for the mutual disjointness of
+$A \cup \setof a$ and $M \cup N$ and $\setof x \cup Y$.
 To assert mutual set disjointness,
-use the following shorthand, where the $L_i$ are label-sets,
+we use the following shorthand, where the $L_i$ are label-sets,
 \RLEQNS{
    \setof{L_1|L_2|\dots|L_n}
    &\defs&
@@ -128,11 +122,11 @@ it is notationally more obscure
 making it harder to interpret and check.
 }%
 \RLEQNS{
-   DL &\defs& \setof{in|labs(g)|out}  \ecite{Disjoint-Labels}
+   DL &\defs& \setof{in|labs(g)|out} & \elabel{Disjoint-Labels}
 }
 We shall simplify further by stating that in the shorthands presented
 here that we use just simple $g$ to denote $labs(g)$,
-so $DL$ can we written as ${in|g|out}$.
+so $DL$ can we written as $\{in|g|out\}$.
 We also need stronger Label Exclusivity invariants,
 regarding which labels can, or cannot,
 occur in the global label set at any one time.

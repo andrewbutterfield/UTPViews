@@ -6,27 +6,22 @@ occur immediately and completely, without any external interference.
 We can consider it be a relational predicate that only mentions $s$ and $s'$.
 In the semantics of UTPP, and here for UTCP,
 every atomic action is labelled.
-Flow of control is managed by keeping a dynamic record
-of which labels are considered current, or ``enabled''.
-The behaviour of an atomic action is that it exhibits none
-until its label is enabled.
-Noting that many atomic actions can be enabled at once,
-what happens is that one of actions is selected non-deterministically to run.
-The action so selected transforms the global state,
-and then the control-flow management marks its label as disabled,
-and enables labels of atomic action that can immediately follow it
-according to the control-flow structure of the program.
-
-In order to define this behaviour computationally,
-we depart from the technique used in UTPP based on explicit program labels.
-Instead we use the static observables $in$ and $out$ to explicitly indicate
-the enabling label --- $in$--- for the action,
-and a disabling, or ``done'' label---$out$---, for the same action.
-In effect we are exploiting the fact that our language is block-structured
-with only one entry and exit point for each construct,
-in order to be able to decouple the semantics of an atomic action
-from whatever might come after.
-Dealing with that is the responsibiity of the semantics of language composites.
+% Flow of control is managed by keeping a dynamic record
+% of which labels are considered current, or ``enabled''.
+% The behaviour of an atomic action is that it exhibits none
+% until its label is enabled.
+% Noting that many atomic actions can be enabled at once,
+% what happens is that one of actions is selected non-deterministically to run.
+% The action so selected transforms the global state,
+% and then the control-flow management marks its label as disabled,
+% and enables labels of atomic action that can immediately follow it
+% according to the control-flow structure of the program.
+%
+% In order to define this behaviour compositionally,
+% we depart from the technique used in UTPP based on explicit program labels.
+% Instead we use the static observables $in$ and $out$ to explicitly indicate
+% the enabling label --- $in$--- for the action,
+% and a disabling, or ``done'' label---$out$---, for the same action.
 
 As already stated,
 we use $a$ to denote the predicate describing the core global state-changes,
@@ -50,14 +45,14 @@ If $in$ is not in $ls$,
 or predicate $a$ is not satisfied by the current value of $s$,
 then the semantic predicate reduces to $\false$.
 
-We shall leave the issue of how specific labels
-are associated with $in$ and $out$ of each atomic action until we
-deal with language composites in Sec. \ref{sec:composing}.
-All we shall say here is that we ensure that all actions have unique labels,
-and it is always the case that $in \neq out$.
-We also note that there will atomic actions that do not change the global
-state, but that do change which labels are enabled, used to implement
-some of the more complex control-flows.
+% We shall leave the issue of how specific labels
+% are associated with $in$ and $out$ of each atomic action until we
+% deal with language composites in Sec. \ref{ssec:composing}.
+% All we shall say here is that we ensure that all actions have unique labels,
+% and it is always the case that $in \neq out$.
+% We also note that there will atomic actions that do not change the global
+% state, but that do change which labels are enabled, used to implement
+% some of the more complex control-flows.
 
 The semantics of a running composite program,
 as per the action systems approach used in \cite{DBLP:conf/icfem/WoodcockH02},
@@ -92,15 +87,15 @@ using $;$ as defined in Eqn. \ref{eqn:semantic-;}.
 Given that we will be sequentially composing a lot of predicates
 like \ref{pred:flow-atomic-action},
 we shall introduce a shorthand notation that we refer to as
-a ``basic action'', in which generalie from $in$ and $out$
-to sets of labels called $E$ (enablers) and $N$ (new):
+a ``basic action'',
+which refers to sets of labels called $E$ (enablers) and $N$ (new):
 \RLEQNS{
    \lhsA &\defs& \rhsA & \elabel{\lblA}
 }
 The plan is to then produce some laws governing
 the semantic sequential compositions of basic actions
 ($A(E_1|a_1|N_1);A(E_2|a_1|N_2) = ?$),
-but we rquickly doscover that
+but we quickly discover that
 in general the outcome cannot be expressed as a single instance
 of the form $A(E|a|N)$.
 Consider $A(l_1|a|l_2);A(l_2|b|l_3)$,
@@ -125,20 +120,20 @@ We can now prove the following composition law:
 \\ &=& E_2 \cap (R_1\sminus A_1) = \emptyset
 \\ && {} \land
    X(E_1 \cup (E_2\sminus A_1)
-       ~\mid~ a\seq_s b
+       ~\mid~ a\seq b
        ~\mid~ R_1 \cup R_2
        ~\mid~ (A_1 \sminus R_2) \cup  A_2)
 }
-Here $a \seq_s b$ is semantic sequential composition restricted
-to predicates that only refer to $s$ and $s'$, and not $ls$  or $ls'$.
 The condition $E_2 \cap (R_1\sminus A_1) = \emptyset$
 characterises all those cases were the second $X$ is enabled
 immediately after the first $X$ terminates
 (i.e., without any outside interference).
 This brings us to a very important aspect of how these predicates are to be
-interpreted. The semantic sequential composition of two basic actions
+interpreted.
+The semantic sequential composition of two basic actions
 captures the occurence of both actions in sequence without any intervening
-interference. This means that the first action once enabled,
+interference, known as a \emph{mumbling} step.
+This means that the first action once enabled,
 must be able to enable the second one without relying on some external agent.
 The expression $E_2 \cap (R_1\sminus A_1)$ is all of the labels in $E_2$
 that are removed ($R_1$) by the first action, but are not added back in ($A_1$).
@@ -151,6 +146,6 @@ inbetween.
 
 The reason for developing the $A(\dots)$ and $X(\dots)$ shorthands
 will become clear once we have discussed the healthiness conditions
-required to make the theory work (Sec. \ref{sec:health}), 
+required to make the theory work (Sec. \ref{sec:health}),
 and the kinds of calculations that will then ensue
 when we consider concrete examples (Sec. \ref{sec:calc}).
