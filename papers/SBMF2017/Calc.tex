@@ -12,15 +12,98 @@ but very mechanical and tedious \cite{conf/utp/Butterfield16}.
 We shall start by sketching out a test calculation for $\catom a$,
 where the objective is to reduce it down to a predicate involving
 just basic atoms.
-
 \RLEQNS{
   & & \lhsCA
 \\&=& \rhsCA                                    & \elabel{\lblCA}
 \\&=& DL \land LE \land \WWW(A(in|a|out))       & \elabel{\lblW}
 \\&=& DL \land LE \land \bigvee_i A(in|a|out)^i & \elabel{\lblWWW}
 }
+At this point what remains is to compute $A(in|a|out)^i$ for $i \in \Nat$.
+The cases of $i=0,1$ are stragihtforward.
+Computing $i=2$ is easy:
+\RLEQNS{
+  &  & A(in|a|out) \seq A(in|a|out)     & \elabel{X-def}
+\\&=& X(in|a|in|out) \seq X(in|a|in|out) &\elabel{X-then-X}
+\\&=& \setof{in} \cap (\setof{in}\setminus\setof{out}) = \emptyset
+      \land
+      X(\dots) & \mbox{set theory}
+\\&=& \false \land X(\dots)
+}
+We see that $A(in|a|out)^2 = \false$, and as $\false$ is a zero for
+semantic sequential composition,
+we can deduce that $A(in|a|out)^i = \false$ for all $i \geq 2$.
+So our final result is
+\begin{equation}
+  \catom a = DL \land LE \land(\Skip \lor A(in|a|out))
+\end{equation}
+Ignoring the healthiness conditions,
+this boils down to two possible observations we can make of $\catom a$:
+either we observe suttering---no change in state or label-sets ($\Skip$)
+or we see the complete execution of the underlyng basic action $A(in|a|out)$.
 
+Test calculations for simple usage of most of the composites is essentially the
+same.
+One slight complication is that the contents of $\WWW$ in theses cases
+is a disjunction of terms, rather than a single basic action,
+so we first simplify these out, applying all substitutions,
+to get a term $Q$ of the form $\Skip \lor \mbox{basic actions}$.
+We need to compute $Q^i$ for $i \geq 2$,
+and sequential composition distributes through disjunction,
+so we obtain resulting terms of the same form,
+by repeated application of law \elabel{X-then-X}.
+These calculations are basically very simple but get very long and involved,
+producing disjunctions whose length can of the order of 20 or 30 basic actions.
+A large number of these have results from \elabel{X-then-X}
+with the set side-condition that evaluates to \false,
+as per the $i=2$ example above---these terms vanish.
+There are other terms produced that do not vanish,
+but some of these can also be eliminated,
+because their enabling set violates the Label Exclusivity invariant.
+All remaining terms have the form $X(E|a|R|N)$,
+and some of these can be immediately re-written to $A(E|a|N)$,
+if $R=E$.
+In every test calculation we have done
+it turns out that the others, where $R\neq E$ can also be re-written,
+because $LE$ says that none of $R \setminus E$ can be present in $ls$
+when everyanything from $E$ is present,
+so the removal of those labels is ineffective, as they are never present
+when that action is enabled.
+So, the next outcome is that we get final results where every basic action
+can be written in the $A$-form.
+All of these aspects of these test calculations are supported by current
+versions of the tool descirbed in \cite{DBLP:conf/utp/Butterfield16}.
+If there is no use of the iteration construct $(P^*)$,
+then all calculations terminate because
+there is always some $i$ for which $Q^i$ evaluates to \false.
+Any use of the language iteration construct however
+results in having terms for all values of $i$.
 
+Some calculation results are shown in Fig. \ref{fig:calc-results}.
+\begin{figure}
+\RLEQNS{
+   \catom a \cseq \catom b
+    &=&
+    \Skip \lor A(in|a|\ell_g) \lor A(\ell_g|b|out) \lor A(in|ab|out)
+\\ \catom a + \catom b
+   &=& \Skip \lor A(in|ii|\ell_{g1} \lor A(in|ii|\ell_{g2} \lor A(\ell_{g1}|a|out)
+\\ & &{} \lor A(\ell_{g2}|b|out) \lor A(in|a|out) \lor A(in|b|out)
+\\ \catom a \parallel \catom b
+   &=&
+   \Skip \lor A(in|ii|lg1,lg2)           \lor A(lg1:,lg2:|ii|out)
+        \lor A(lg1|a|lg1:)              \lor A(lg2|b|lg2:)
+        \lor A(in|a|lg1:,lg2)           \lor A(in|b|lg2:,lg1)
+        \lor A(lg1,lg2|ba|lg1:,lg2:) \lor A(lg1,lg2|ab|lg1:,lg2:)
+        \lor A(lg2:,lg1|a|out)          \lor A(lg1:,lg2|b|out)
+        \lor A(in|ba|lg1:,lg2:)      \lor A(in|ab|lg1:,lg2:)
+        \lor A(lg1,lg2|ba|out)       \lor A(lg1,lg2|ab|out)
+        \lor A(in|ba|out)            \lor A(in|ab|out)
+}
+\caption{
+  Some Test Calculation Results
+  Here $ab$ is short for $a \seq b$, etc.
+}
+\label{fig:calc-results}
+\end{figure}
 
 XXXXXXXXX
 
