@@ -1,7 +1,15 @@
 \subsection{Future Work}\label{ssec:future}
 
-prove laws
+While careful inspection and test calculations
+give us a high level of confidence in the validity of our semantics,
+we still need to demonstrate that the algebraic laws
+of Concurrent Kleene Algebra\cite{}
+can be derived form our semantics.
+We also need to show how the standard operational semantics can be recovered.
 
-derive op-sem
-
-explore link to rely/guarantee
+Of particular interest is to explore the connection
+between UTCP and rely-guarantee.
+Given that we can explictly provide all atomic actions and their mumblings,
+we see a good opportunity to explore how this can be exploited
+to analyse how well one or more program steps satisfy their
+guarantee obligation, given a reliable environment.

@@ -1,12 +1,12 @@
 \section{Command Semantics}\label{sec:semantics}
 
-We present the full semanitcs of atomic commands first,
+We present the full semantics of atomic commands first,
 then describe an important classification of expressions and substitutions,
-before describing the semanitcs of the four composite command forms.
+before describing the semantics of the four composite command forms.
 
 \subsection{Atomic Commands}\label{ssec:atomic}
 
-The actomic command $\catom a$ can be very simply expressed as basic action
+The atomic command $\catom a$ can be very simply expressed as basic action
 with the addition of healthiness conditions:
 \RLEQNS{
    \lhsW &\defs& DL \land LE \land \WWW(P) & \elabel{\lblW}
@@ -45,7 +45,7 @@ in the sense that they cannot transfrom a situation that satisfies $DL$
 or $LE$ into one that does not.
 A ground substitution $\varsigma$, of the form $[G,I,O/g,in,out]$ is \emph{sound}
 if $\setof{I|G|O}$ holds.
-We will see that all substitutions given explicilty in the semantic definitions
+We will see that all substitutions in the semantic definitions
 below are sound, and that this is easy to check by inspection.
 
 
@@ -69,7 +69,7 @@ while that sub-component is actually running.
 The semantic definitions are listed in Fig. \ref{fig:composite-semantics}.
 Careful inspection of all the substitutions present will confirm that they
 are all sound.
-\begin{figure}
+\begin{figure}[t]
   \RLEQNS{
      \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
   \\ \lhsPAR
@@ -93,7 +93,7 @@ are all sound.
 Given that the invariant $LE$, which is $[in|labs(g)|out]$,
 is part of the definition of $\W$,
 then we have it statisfied, by definition, by any sub-components.
-From the prespective of the parent composite, this means that $LE\varsigma$
+From the perspective of the parent composite, this means that $LE\varsigma$
 also holds, where $\varsigma$ ranges over all the sound substitutions
 used in the definition of the parent's semantics.
 For example, for program sequential composition,
@@ -107,8 +107,6 @@ we need to insist that only one branch is taken, hence
 the need to assert that if any label is present in $ls$ from one component
 then none from the other are present.
 
-NEED TO EXPLAIN SOME DEFINITIONS AND SHOW A DIAGRAM?
-
 
 In summary,
 we have have predicate semantics for atomic and composite program
@@ -121,5 +119,5 @@ but eventually it should get ``scheduled'', perform its atomic action
 and then effectively stop.
 How is this consistent with looping forever?
 To see the answer to this question,
-it helps to conisder such simple examples,
+it helps to consider such simple examples,
 and this brings up the issue of \emph{calculation}.

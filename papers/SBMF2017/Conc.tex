@@ -1,6 +1,19 @@
 \section{Conclusions}\label{sec:conc}
 
-WHAT HAS BEEN DONE?
-WHY WILL IT BE USEFUL?
+We have presented a compositional, denotational UTP semantics
+of shared-variable concurrency.
+It is ``explicit'' in the sense that it can enumerate all the observations
+that it is possible make of the program's own behaviour, in any time-slot.
+
+The usefulness of this theory is that it is in a form that makes it very
+easy for us to link it to other UTP theories about approaches to concurrency,
+such as Rely-Guarantee\cite{DBLP:phd/ethos/Jones81,On-RG:vanStaden15},
+Owicki-Gries\cite{DBLP:journals/acta/OwickiG76},
+Concurrent Seperation Logic\cite{DBLP:journals/entcs/Brookes11},
+all featured in the Views paper.
+This is precisely because it is formulated as a before-after relation,
+with the twist that before and after observations can occur at any time
+during program execution, with the obvious proviso that
+``before'' precedes ``after''.
 
 \input{Future}

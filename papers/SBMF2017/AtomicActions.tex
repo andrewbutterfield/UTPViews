@@ -73,7 +73,7 @@ a relational predicate that defines its overall running behaviour:
    \land
    ls'=(ls\setminus\setof{in_j})\cup\setof{out_j})
 \\ run(NDC)
-   &defs&
+   &\defs&
    ls' = \setof{in_0} ; \textbf{ while } out_n \notin ls \textbf{ do } NDC
 \end{eqnarray}
 Here we assume $in_0$ and $out_n$ are the initial and final labels of the whole
@@ -94,7 +94,7 @@ which refers to sets of labels called $E$ (enablers) and $N$ (new):
 }
 The plan is to then produce some laws governing
 the semantic sequential compositions of basic actions
-($A(E_1|a_1|N_1);A(E_2|a_1|N_2) = ?$),
+($A(E_1|a_1|N_1);A(E_2|a_1|N_2)$),
 but we quickly discover that
 in general the outcome cannot be expressed as a single instance
 of the form $A(E|a|N)$.
@@ -143,9 +143,3 @@ So the whole predicate reduces to $\false$,
 indicating that it is not possible to observe those two actions in sequence,
 unless some other execution thread manages to add in the missing $E_2$ labels
 inbetween.
-
-The reason for developing the $A(\dots)$ and $X(\dots)$ shorthands
-will become clear once we have discussed the healthiness conditions
-required to make the theory work (Sec. \ref{sec:health}),
-and the kinds of calculations that will then ensue
-when we consider concrete examples (Sec. \ref{sec:calc}).

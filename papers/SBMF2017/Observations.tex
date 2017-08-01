@@ -33,7 +33,7 @@ in that their values do not change during program execution.
 Instead, these variables record context-sensitive information about
 how a language construct is situated with respect to its ``neighbours'',
 in a way that permits a compositional approach.
-For details of how this works, see Section \ref{sec:composing}.
+For details of how this works, see Section \ref{ssec:composing}.
 
 
 In effect we are exploiting the fact that our language is block-structured
@@ -47,8 +47,9 @@ To summarise,
 our semantics is built upon basic atomic state-change
 actions that modify global shared state $s$.
 The concurrent flow of control is managed using a global dynamic label-set $ls$
-and the association of two distinguished labels $in$ and $out$,
-and a label generator $g$ with every language construct.
+and the static association of a label generator $g$
+and two distinguished labels $in$, $out$,
+with every language construct.
 
 This brings us to an important distinction between the usual approach
 taken by UTP regarding the distinction between syntax and semantics.
@@ -63,7 +64,7 @@ a shorthand for the more verbose $x' = x + y \land y' = y$
 in particular, the notation for sequential composition, $P ; Q$,
 is a shorthand for
 $\exists obs_m @ P[obs_m/obs'] \land Q[obs_m/obs]$,
-where $obs$ ($obs'$) refers to all the before- (after-)observations.
+where $obs$ ($obs'$) refers to all the before- (after-) observations.
 This ``punning'' between syntax and semantics largely works for theories
 of sequential programs or local-state concurrency,
 mainly because sequences of code lead to simple semantic sequencing.

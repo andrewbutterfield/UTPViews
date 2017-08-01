@@ -65,9 +65,7 @@ this large choice.
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
 \\ \lhsWWW &\defs& \rhsWWW & \elabel{\lblWWW}
 }
-We note explicitly here that, in effect, our semantic model is based on
-unbounded non-determinism.
-
+We note that $\WWW$ is monotonic and idempotent.
 
 \subsection{Label-Set Invariants}
 
@@ -82,7 +80,9 @@ by our semantic definitions.
 We have two kinds of invariants,
 both of which are concerned with the mutual disjointness, in some sense,
 of a collection of sets of labels.
-We introduce some shorthand notations to avoid excessively long predicates and expressions. We use `$\mid$' as a seperator between things mean to be disjoint,
+We introduce some shorthand notations
+to avoid excessively long predicates and expressions.
+We use `$\mid$' as a seperator between things meant to be disjoint,
 and commas to list subsets and/or set- elements that should be unioned together.
 So the fragment $ A,b | M,N | x,Y $
 is shorthand for the mutual disjointness of
@@ -131,7 +131,7 @@ We also need stronger Label Exclusivity invariants,
 regarding which labels can, or cannot,
 occur in the global label set at any one time.
 There is not one such invariant,
-but rather we have that each language construct defines its own
+but rather we have that some language constructs may define their own
 variation, in order to ensure that flow of control is correctly managed.
 
 There is a general version of the invariant ($LE$) that holds

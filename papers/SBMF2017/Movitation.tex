@@ -1,13 +1,23 @@
 \subsection{Motivation}\label{ssec:motivate}
 
-\newpage
-XXXXXXXXX
-
-We have recently started to explore using UTP
-to describe shared-variable concurrency,
-by adapting the work of the  UTP semantics for Unifying Theories
-of Parallel Programming (UTPP) \cite{DBLP:conf/icfem/WoodcockH02}.
-We have reworked it to use a system for generating unique labels,
-in order to give a slight improvement to the compositionality
-of the semantics.
-This we call a Unifying Theory of Concurrent Programming (UTCP)\cite{conf/tase/BMN16}.
+The Views paper\cite{conf/popl/Dinsdale-YoungBGPY13}
+presented a unification of a number of different approaches to reasoning
+about shared-variable concurrency,
+by showing how they could all be mapped onto a common base-language
+that they called the Command language.
+From a UTP perspective,
+we saw this as an excellent launch-pad for the kind of theory unification
+that is of interest to us.
+On a seperate note,
+research collaboration lead us to give a UTP semantics to a process modelling
+language called PML\cite{DBLP:journals/infsof/AtkinsonWN07},
+which has the notion of basic actions that require certain resources to run,
+and which provide further resources as a result.
+Actions can be combined
+using sequencing, selection, branching and iteration.
+It turns out that PML is isomorphic to the Command language,
+and first steps towards
+a formal compositional UTP semantics of both was developed
+\cite{conf/tase/BMN16}.
+This paper moves that work on to present
+a compositional UTP semantics for Commands.

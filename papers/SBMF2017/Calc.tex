@@ -7,7 +7,7 @@ and trying to simplify their semantic predicates
 down to a non-deterministic choice of atomic action sequences.
 Some of the calculations proved to be very long,
 repetitive and tedious,
-motivating the UTP-calculator development \cite{conf/utp/Butterfield16}.
+motivating the UTP-calculator development \cite{DBLP:conf/utp/Butterfield16}.
 
 We shall start by sketching out a test calculation for $\catom a$,
 where the objective is to reduce it down to a predicate involving
@@ -66,7 +66,7 @@ because $LE$ says that none of $R \setminus E$ can be present in $ls$
 when anything from $E$ is present,
 so the removal of those labels is ineffective, as they are never present
 when that action is enabled.
-So, the next outcome is that we get final results where every basic action
+So, the outcome is that we get final results where every basic action
 can be written in the $A$-form.
 All of these aspects of these test calculations are supported by current
 versions of the tool described in \cite{DBLP:conf/utp/Butterfield16}.
@@ -77,7 +77,7 @@ Any use of the language iteration construct however
 results in having terms for all values of $i$.
 
 Some calculation results are shown in Fig. \ref{fig:calc-results}.
-\begin{figure}
+\begin{figure}[t]
 \RLEQNS{
    \catom a \cseq \catom b
     &=&
@@ -127,13 +127,13 @@ or final state.
 However we also have action $A(\ell_g|b|out)$,
 which is an observation that begins after action $a$ has already occured,
 and just observes the behaviour of $b$ alone.
-What has happenned with this UTP theory of concurrency
+What has happened with this UTP theory of concurrency
 is that it is now no longer insists that the ``before'' observation
 is pinned to be the start of the program. Now we are able to observe program
 behaviour that can both start and end at what are intermediate points
 in the lifetime of the program.
 
-If we look at $\catom a + \catom b$, we also explcitly
+If we look at $\catom a + \catom b$, we also explictly
 see the control-flow ``decisions'',
 such as $A(in|ii|\ell_{g1})$ where the decision to execute $a$ is made.
 This will remove $in$ from $ls$ if it runs,
@@ -153,6 +153,6 @@ and $\catom a \parallel \catom b$ to $ab\lor ba$.
 While this looks cleaner, it has lost too much information,
 and we cannot compose these further to get correct answers.
 With the explcitly labelled semantics presented here for UTCP,
-we can, for example, compute $(\catom a \cseq \catom b) \parallel \catom c$
+we can, for example, correctly compute $(\catom a \cseq \catom b) \parallel \catom c$
 by replacing the first $\cseq$ term by its expansion
 from Fig. \ref{fig:calc-results}.
