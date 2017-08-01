@@ -50,10 +50,10 @@
 \def\lblNDC{sem:NDC}
 
 \def\lhsSTAR{P^*}
-\def\rhsaSTAR{A(in|ii|\ell_{g:})}
-\def\rhsbSTAR{A(\ell_{g:}|ii|\ell_g)}
-\def\rhscSTAR{A(\ell_{g:}|ii|out)}
-\def\rhsdSTAR{P[\g{::},\ell_g,\ell_{g:}/g,in,out]}
+\def\rhsaSTAR{A(in|ii|\ell_g)}
+\def\rhsbSTAR{A(\ell_g|ii|\ell_{g:})}
+\def\rhscSTAR{A(\ell_g|ii|out)}
+\def\rhsdSTAR{P[\g{::},\ell_{g:},\ell_g/g,in,out]}
 \def\lblSTAR{sem:star}
 
 \def\lhsCND{P \dcond c Q}
@@ -65,8 +65,8 @@
 \def\lblCND{sem:cond}
 
 \def\lhsITER{c \ddo P}
-\def\rhsaITER{A(in|ii|\ell_{g:})}
-\def\rhsbITER{A(\ell_{g:}|\lnot c \land ii|out)}
-\def\rhscITER{A(\ell_{g:}|c \land ii|\ell_g) }
-\def\rhsdITER{P[\g{::},\ell_g,\ell_{g:}/g,in,out]}
+\def\rhsaITER{A(in|ii|\ell_g)}
+\def\rhsbITER{A(\ell_g|\lnot c \land ii|out)}
+\def\rhscITER{A(\ell_g|c \land ii|\ell_{g:}) }
+\def\rhsdITER{P[\g{::},\ell_{g:},\ell_g/g,in,out]}
 \def\lblITER{sem:iter}
