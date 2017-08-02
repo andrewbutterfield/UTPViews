@@ -8,23 +8,24 @@ top-level $run$ function of the action-system based semantic model used in UTPP,
 and drive it inwards to every level of the program.
 The original $run$ can be defined in the context of this theory as
 \[
-  run(P) = ls := \setof{in} ; \lnot (out \in ls) * P
+  run(P) \defs  ls' = \setof{in} ; \lnot (out \in ls) * P
 \]
+where $c * P$ is standard UTP (semantic) iteration.
 However this failed to keep atomic components ``live''.
 They could never be re-executed,
 as would be required if they were within an iteration.
 Instead it was realised that every construct (atomic and composite)
 would have to be within an infinite loop.%
-\RLEQNS{
-    \true * P &\elabel{WWW-as-loop}
-}%
+\[
+    \true * P \qquad \elabel{WWW-as-loop}
+\]
 This wrapping of the basic property in an infinite loop
 would occur at every level of the program hierarchy,
 hence the our use of the phrase ``Wheels within Wheels''
 (WwW) to refer to this principle.
 
 It should be noticed that this theory underwent
-a large enumber of iterations before the WwW principle was finally
+a large number of iterations before the WwW principle was finally
 elucidated properly and shown to give the right results.
 Earlier work in this area, reported in \cite{conf/tase/BMN16},
 still had $run$ as shown above and was not fully compositional.
@@ -40,32 +41,34 @@ In effect we define an atomic action
 as placing a basic action inside such a loop,
 but within a non-deterministic choice between it
 and a \emph{stuttering} step, denoted by UTP's \emph{semantic} skip ($\Skip$):
-\RLEQNS{
-  \catom a &=& \true * (\Skip \lor A(in|a|out))
-\\ \Skip &=& s'=s \land ls'=ls
-}
+\[
+  \catom a = \true * (\Skip \lor A(in|a|out))
+\]
 A result of this is that this stuttering step gets
 propagated up to enclosing composites,
 so in effect we see $\true * C = \true * (\Skip\lor C)$
 where $C$ is any predicate denoting the semantics of a command.
 Given that our loop bodies always have such a disjunction,
 it then becomes interesting to ask what this looks like:
-\RLEQNS{
-  \true * (\Skip \lor P) &=& \bigvee_{i \in \Nat} P^i
-  & \elabel{loop-as-NDC}
-}
+\[
+  \true * (\Skip \lor P) = \bigvee_{i \in \Nat} P^i
+  \qquad \elabel{loop-as-NDC}
+\]
 We find that such a loop is equivalent to a non-deterministic
 choice over the number of times that $P$ is repeated,
 including zero.
-
-We choose to \emph{define} the healthiness condition as
+We \emph{choose to define} the healthiness condition as
 this large choice.
 \RLEQNS{
    P^0 & \defs& \Skip           & \elabel{seq-0}
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
 \\ \lhsWWW &\defs& \rhsWWW & \elabel{\lblWWW}
+} \noindent 
+We note that $\WWW$ is monotonic, idempotent,
+and can be ``un-nested'':
+\RLEQNS{
+   \WWW(P \lor \WWW(Q)) &=& \WWW(P \lor Q) & \elabel{WwW-unnest}
 }
-We note that $\WWW$ is monotonic and idempotent.
 
 \subsection{Label-Set Invariants}
 
@@ -149,4 +152,7 @@ by simply writing $[in|g|out]'$.'
 
 So, in summary, we have that every healthy predicate describing
 a shared-variable concurrent program's behaviour is of the form $\WWW(C)$
-for some predicate $C$ and also satisfies $DL$ and maintains $LE$.
+for some predicate $C$ and also satisfies $DL$ and  $LE$.
+\RLEQNS{
+   \lhsW &\defs& DL \land LE \land \WWW(P) & \elabel{\lblW}
+}

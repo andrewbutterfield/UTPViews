@@ -23,7 +23,16 @@ and dynamic ones ($s,s',ls,ls'$) it is worth extending this distinction
 to expressions and substitutions.
 The reason for this is do with the fact that, by design,
 semantic sequantial composition ignores the static variables.
-An expression is ``ground'' if the only variables present are static.
+An expression or predicate is ``ground''
+if the only variables present are static.
+The $DL$ healthiness condition is ground,
+but $LE$ is not, as it refers to $ls$.
+Ground predicates $K$ satisfy some important laws:
+\RLEQNS{
+   K \seq K &=& K
+\\ (K \land P)\seq Q &\;=\;& K \land (P\seq Q) \; = \; P \seq (K \land Q)
+\\ K \land \WWW(P) &=& \WWW(K \land P)
+} \noindent
 A substitution is also deemed ``ground'',
 if all the the replacement expressions are ground,
 and the target variables are all static.
@@ -31,7 +40,8 @@ A desired consequence of this is that
 ground substitutions $\gamma$
 will distribute through semantic sequential composition,
 semantic skip,
-and both disjoint label-set notations
+both disjoint label-set notations,
+and $\WWW$
 \RLEQNS{
    (P\seq Q)\gamma &=& P\gamma \seq Q\gamma  & \elabel{seq-gnd-distr}
 \\ \Skip\gamma     &=& \Skip                 &\elabel{skip-gamma}
@@ -39,12 +49,14 @@ and both disjoint label-set notations
 & \elabel{DL-gamma-subst}
 \\ ~[L_1|\dots|L_n]\gamma &=& [L_1\gamma|\dots|L_n\gamma]
 & \elabel{LE-gamma-subst}
+\\ (\WWW(P))\gamma &=& \WWW(P\gamma)
+& \elabel{WwW-gamma-subst}
 }
 Groundness is not enough, we also require substitutions to be ``sound''
 in the sense that they cannot transfrom a situation that satisfies $DL$
 or $LE$ into one that does not.
-A ground substitution $\varsigma$, of the form $[G,I,O/g,in,out]$ is \emph{sound}
-if $\setof{I|G|O}$ holds.
+A ground substitution $\varsigma$, of the form $[labs(G),I,O/g,in,out]$ is \emph{sound}
+if $\setof{labs(G)|I|O}$ holds.
 We will see that all substitutions in the semantic definitions
 below are sound, and that this is easy to check by inspection.
 
@@ -79,7 +91,7 @@ are all sound.
   \\&& \phW \rhsbPAR \lor {}
   \\&& \phW \rhscPAR \lor {}
   \\&& \phW \rhsdPAR \rghtW
-  \\ \lhsNDC &\defs& \invNDC \land \rhsNDC & \elabel{\lblNDC}
+  \\ \lhsNDC &\defs& \rhsNDC & \elabel{\lblNDC}
   \\ \lhsSTAR
      &\defs&
      \leftW \rhsaSTAR \lor {}
@@ -87,12 +99,34 @@ are all sound.
   \\&& \phW \rhsbSTAR \lor {}
   \\&& \phW \rhscSTAR \lor {}
   \\&& \phW \rhsdSTAR \rghtW
-  }\caption{Composite Semantics}
-\label{fig:composite-semantics}
+  }
+  \caption{Composite Semantics}
+  \label{fig:composite-semantics}
 \end{figure}
+
+We will explain the semantics of parallel in more detail,
+aided by the diagram in Fig. \ref{fig:PAR-plumbing}.
+\begin{figure}
+  \includegraphics[scale=1.0]{images/PAR}
+  \caption{Label and Generator ``plumbing'' for $P \parallel Q$.}
+  \label{fig:PAR-plumbing}
+\end{figure}
+We take the generator $g$ and split it to obtain $\g1$ and $\g2$.
+From $\g1$ we generate two labels $\ell_{g1}$ and $\ell_{g1:}$,
+and leftover generator $\g{1::}$.
+We then use a subtitution to replace all references
+by $P$ to $g$, $in$ and $out$ with $\g{1::}$, $\ell_{g1}$ and $\ell_{g1:}$,
+respectively. We do something similar with $\g2$ and $Q$.
+We also add a top-level control action that is enabled by label $in$,
+and adds both $\ell_{g1}$ and $\ell_{g2}$ into $ls$,
+so enabling both $P$ and $Q$ to start.
+We then have another control-flow action that waits for both of $\ell_{g1:}$
+and $\ell_{g2:}$  to appear in $ls$,
+at which point they will be replaced by the top-level $out$ label.
+
 Given that the invariant $LE$, which is $[in|labs(g)|out]$,
 is part of the definition of $\W$,
-then we have it statisfied, by definition, by any sub-components.
+then we have it satisfied, by definition, by any sub-components.
 From the perspective of the parent composite, this means that $LE\varsigma$
 also holds, where $\varsigma$ ranges over all the sound substitutions
 used in the definition of the parent's semantics.
@@ -100,12 +134,6 @@ For example, for program sequential composition,
 we not only assert $[in|g|out]$,
 but can also infer $[in|\g{:1}|\ell_g]$
 and $[\ell_g|\g{:2}|out]$.
-Some constructs require a little more than just $DL$, $LE$ and the sound substitution
-variants just discussed.
-For example in program non-deterministic choice ($+$),
-we need to insist that only one branch is taken, hence
-the need to assert that if any label is present in $ls$ from one component
-then none from the other are present.
 
 
 In summary,

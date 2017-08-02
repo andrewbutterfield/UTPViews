@@ -3,13 +3,19 @@
 In this paper we present a compositional UTP semantics
 for the shared-variable concurrent ``Command'' language described
 in the POPL13 ``Views'' paper\cite{conf/popl/Dinsdale-YoungBGPY13}.
-We use a slightly different syntax to that in the above cited paper,
-where $\Atom$ is a set of atomic state-change operations,:
-\begin{eqnarray*}
-   a &\in& \Atom
-\\ C &::=& \catom a \mid C \cseq C \mid C+C \mid C \parallel C \mid C^*
-\end{eqnarray*}
-The reason for the difference is explained, in context, in Sec \ref{sec:observe}.
+We use a slightly different syntax to that in the above cited paper:
+\RLEQNS{
+   a &\in& \Atom         & \mbox{Atomic state-change actions}
+\\ C &::=& \catom a      & \mbox{Atomic Command}
+\\  &\mid& C \cseq C     & \mbox{Command Sequential Compostion}
+\\  &\mid& C+C           &\mbox{Command Non-deterministic Choice}
+\\  &\mid& C \parallel C &\mbox{Command Parallel Compostion}
+\\  &\mid& C^*           &\mbox{Command Non-deterministic Iteration}
+} \noindent
+The reason for the difference is because
+we need to distinguish between the Command language operators above,
+and conceptually similar operators in the underlying UTP semantics,
+which is explained, in context, in Sec \ref{sec:observe}.
 
 \input{Movitation}
 
