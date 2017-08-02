@@ -26,12 +26,14 @@ semantic sequantial composition ignores the static variables.
 An expression or predicate is ``ground''
 if the only variables present are static.
 The $DL$ healthiness condition is ground,
-but $LE$ is not, as it refers to $ls$.
-Ground predicates $K$ satisfy some important laws:
+but $LE$ is not, as it refers to $ls$ and $ls'$.
+Ground predicates $K$ satisfy some important laws,
+and $LE$ satisfies something similar:
 \RLEQNS{
    K \seq K &=& K
 \\ (K \land P)\seq Q &\;=\;& K \land (P\seq Q) \; = \; P \seq (K \land Q)
 \\ K \land \WWW(P) &=& \WWW(K \land P)
+\\ (LE \land P)\seq(LE \land Q) &=& LE \land ((LE \land P)\seq(LE \land Q) )
 } \noindent
 A substitution is also deemed ``ground'',
 if all the the replacement expressions are ground,

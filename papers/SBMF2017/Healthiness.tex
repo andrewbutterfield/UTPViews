@@ -63,7 +63,7 @@ this large choice.
    P^0 & \defs& \Skip           & \elabel{seq-0}
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
 \\ \lhsWWW &\defs& \rhsWWW & \elabel{\lblWWW}
-} \noindent 
+} \noindent
 We note that $\WWW$ is monotonic, idempotent,
 and can be ``un-nested'':
 \RLEQNS{
@@ -140,15 +140,14 @@ variation, in order to ensure that flow of control is correctly managed.
 There is a general version of the invariant ($LE$) that holds
 for all language constructs that asserts that any point in time,
 only elements from of one of $in$, $labs(g)$ or $out$
-can be present in $ls$ at any point in time:
+can be present in $ls$ or $ls'$ at any point in time:
 \RLEQNS{
    LE &\defs&
-   ~[in|g|out]
+   ~[in|g|out] \land [in|g|out]'
    & \ecite{Exclusive-Labels}
 }
-Note that we also just use a dash to make
-the same assertion about the allowable contents of $ls'$
-by simply writing $[in|g|out]'$.'
+Note that $[in|g|out]'$ is simply indicates that it refers to $ls'$
+rather than $ls$.
 
 So, in summary, we have that every healthy predicate describing
 a shared-variable concurrent program's behaviour is of the form $\WWW(C)$
