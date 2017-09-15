@@ -21,8 +21,8 @@ that $LE'$ should also hold, with $out \in ls'$.
 Given that we have a distinction between static observations ($g$, $in$, $out$),
 and dynamic ones ($s,s',ls,ls'$) it is worth extending this distinction
 to expressions and substitutions.
-The reason for this is do with the fact that, by design,
-semantic sequantial composition ignores the static variables.
+The reason for this is to do with the fact that, by design,
+semantic sequential composition ignores the static variables.
 An expression or predicate is ``ground''
 if the only variables present are static.
 The $DL$ healthiness condition is ground,
@@ -43,7 +43,7 @@ ground substitutions $\gamma$
 will distribute through semantic sequential composition,
 semantic skip,
 both disjoint label-set notations,
-and $\WWW$
+and $\WWW$.
 \RLEQNS{
    (P\seq Q)\gamma &=& P\gamma \seq Q\gamma  & \elabel{seq-gnd-distr}
 \\ \Skip\gamma     &=& \Skip                 &\elabel{skip-gamma}
@@ -61,8 +61,8 @@ or $LE$ into one that does not.
 A ground substitution $\varsigma$,
 of the form $[labs(G),I,O/g,in,out]$ is \emph{sound}
 if $\setof{labs(G)|I|O}$ holds.
-We will see that all substitutions in the semantic definitions
-below are sound, and that this is easy to check by inspection.
+We will see that all substitutions in the semantic definitions are sound,
+and that this is easy to check by inspection.
 
 
 \subsection{Composing Actions}\label{ssec:composing}
@@ -74,7 +74,7 @@ of the form $A(E|ii|N)$, where $ii$ is atomic skip that simply asserts $s'=s$.
 The left-over generator is the split as required,
 and then the components are ``connected'' into
 the relevant new labels and generators using sound substitutions.
-Finally the relevant healthiness conditions are supplied.
+Finally the relevant healthiness conditions are applied.
 A key principle is to ensure that when any sub-component is ``active'',
 that is, at least one of its labels is present in $ls$,
 that none of the labels of the parent,

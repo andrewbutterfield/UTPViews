@@ -34,11 +34,11 @@ of such ``flow-controlled'' atomic action:
   \land
   a
   \land
-  ls'=(ls\setminus\setof{in})\cup\setof{out}
+  (ls'=(ls\setminus\setof{in})\cup\setof{out})
   \label{pred:flow-atomic-action}
 \end{equation}
 In short: the action when its $in$-label is in $ls$,
-it that it performs the state-change specified by $a$,
+is that it performs the state-change specified by $a$,
 and replaces the $in$-label by the $out$-label,
 in the updated set $ls'$ of enabled labels.
 If $in$ is not in $ls$,

@@ -15,7 +15,7 @@ the set of labels that are considered to be ``active''.
 \end{eqnarray}
 The theory in \cite{DBLP:conf/icfem/WoodcockH02} also uses $ok$ and $ok'$,
 but these are not required here
----they can added in though as derived observations, if wanted.
+---they can be added in though as derived observations, if wanted.
 
 The role of label-generators is rather different, however.
 They will be used to generate labels for statements,
@@ -79,7 +79,7 @@ which means that the execution of $P$ is immediately followed by the
 execution of $Q$, without any intervening external interfence.
 We define it as follows:
 \begin{equation}
-   P ; Q \defs \exists s_m, ls_m @ P[s_m,ls_m/s',ls'] \lor Q[s_m,ls_m/s,ls]
+   P ; Q \defs \exists s_m, ls_m @ P[s_m,ls_m/s',ls'] \land Q[s_m,ls_m/s,ls]
    \label{eqn:semantic-;}
 \end{equation}
 The key thing to note is that this definition makes no reference at all
