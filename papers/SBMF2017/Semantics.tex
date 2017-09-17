@@ -71,7 +71,7 @@ The semantics of composite actions basically involves using the generator
 to produce a suitable number of labels,
 that are then used in zero or more ``control-flow'' actions
 of the form $A(E|ii|N)$, where $ii$ is atomic skip that simply asserts $s'=s$.
-The left-over generator is the split as required,
+The left-over generator is then split as required,
 and then the components are ``connected'' into
 the relevant new labels and generators using sound substitutions.
 Finally the relevant healthiness conditions are applied.
@@ -83,8 +83,6 @@ are themsleves in $ls$.
 This prevents a parent starting a spurious copy of a sub-component
 while that sub-component is actually running.
 The semantic definitions are listed in Fig. \ref{fig:composite-semantics}.
-Careful inspection of all the substitutions present will confirm that they
-are all sound.
 \begin{figure}[t]
   \RLEQNS{
      \lhsSEQ &\defs& \rhsSEQ & \elabel{\lblSEQ}
@@ -127,6 +125,19 @@ so enabling both $P$ and $Q$ to start.
 We then have another control-flow action that waits for both of $\ell_{g1:}$
 and $\ell_{g2:}$  to appear in $ls$,
 at which point they will be replaced by the top-level $out$ label.
+
+The similarity between our labels and the sub-statement notation
+of Lamport is quite striking.
+His parallel construct, called \textbf{cobegin}, labels the subcomponents with
+numbers from 1 upwards. So he refers to $P$ within
+$\mathbf{cobegin}~P~ \Box~ Q~ \mathbf{coend}$
+as $(\mathbf{cobegin} ~P~ \Box ~Q~ \mathbf{coend},1)$.
+We call it $P[\g{1::},\dots/g,\dots]$.
+When for a construct $P$, we assert that $in \in ls$,
+he uses a predicate $at(P)$.
+In the parallel case here, an assertion by us that $\ell_{g1} \in ls$,
+corresponds to his assertion $at(\mathbf{cobegin} ~P~ \Box ~Q~ \mathbf{coend},1)$.
+
 
 Given that the invariant $LE$, which is $[in|labs(g)|out]$,
 is part of the definition of $\W$,

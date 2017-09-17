@@ -1,6 +1,6 @@
 \section{Calculations}\label{sec:calc}
 
-This semantic theory was validated by a series of test calculations
+Part of the validation of this his semantic theory was by a series of test calculations
 done to ensure that it was making the right predictions about program behaviour.
 This typically involved taking small programs with a few atomic actions
 and trying to simplify their semantic predicates
@@ -38,7 +38,7 @@ So our final result is
 \end{equation}
 Ignoring the healthiness conditions,
 this boils down to two possible observations we can make of $\catom a$:
-either we observe suttering---no change in state or label-sets ($\Skip$)
+either we observe stuttering---no change in state or label-sets ($\Skip$)
 or we see the complete execution of the underlyng basic action $A(in|a|out)$.
 
 Test calculations for simple usage of most of the composites is essentially the
@@ -153,7 +153,7 @@ that of $\catom a + \catom b$ to $a \lor b$
 and $\catom a \parallel \catom b$ to $ab\lor ba$.
 While this looks cleaner, it has lost too much information,
 and we cannot compose these further to get correct answers.
-With the explcitly labelled semantics presented here for UTCP,
+With the explictly labelled semantics presented here for UTCP,
 we can, for example, correctly compute $(\catom a \cseq \catom b) \parallel \catom c$
 by replacing the first $\cseq$ term by its expansion
 from Fig. \ref{fig:calc-results}.

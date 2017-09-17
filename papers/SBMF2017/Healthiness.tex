@@ -3,72 +3,83 @@
 
 \subsection{Wheels-within-Wheels}\label{ssec:WwW}
 
-The key intuition behind this compositional semantics was to take the
-top-level $run$ function of the action-system based semantic model used in UTPP,
-and drive it inwards to every level of the program.
-The original $run$ can be defined in the context of this theory as
-\[
-  run(P) \defs  ls' = \setof{in} ; \lnot (out \in ls) * P
-\]
-where $c * P$ is standard UTP (semantic) iteration.
-However this failed to keep atomic components ``live''.
-They could never be re-executed,
-as would be required if they were within an iteration.
-Instead it was realised that every construct (atomic and composite)
-would have to be within an infinite loop.%
-\[
-    \true * P \qquad \elabel{WWW-as-loop}
-\]
-This wrapping of the basic property in an infinite loop
-would occur at every level of the program hierarchy,
-hence the our use of the phrase ``Wheels within Wheels''
+We are building a semantics based on predicates
+that define before-after relations on program state $s,s'$
+and label-sets $ls,ls'$, using the static observations
+to put things in their syntactical context.
+In order to be able to extract the correct behaviour from
+this semantics,
+it was necessary to have a healthiness condition
+that effectively said that every program component,
+atomic or composite, has to be viewed as being
+willing to run as many times as necessary
+whenever its labels would appear in $ls$.
+At its simplest,
+the semantics required every construct to be
+embedded in its own infinite loop,
+to ensure it was always ready to ``go''.
+This lead to our use of the phrase ``Wheels within Wheels''
 (WwW) to refer to this principle.
+This did not mean that everything ran forever,
+but that, in some sense, it should always be ready.
 
-It should be noticed that this theory underwent
-a large number of iterations before the WwW principle was finally
-elucidated properly and shown to give the right results.
-Earlier work in this area, reported in \cite{conf/tase/BMN16},
-still had $run$ as shown above and was not fully compositional.
-The number and complexity of the test calculations needed to debug,
-develop and validate the theory presented in this paper
-necessitated the develoment of a bespoke ``UTP Calculator''\cite{DBLP:conf/utp/Butterfield16}.
-
-This bold step turns out to be remarkably effective,
-with some quite counter-intuitive outcomes.
-However it does depend on a specific tweak to the
-definition of an atomic action.
-In effect we define an atomic action
-as placing a basic action inside such a loop,
-but within a non-deterministic choice between it
-and a \emph{stuttering} step, denoted by UTP's \emph{semantic} skip ($\Skip$):
-\[
-  \catom a = \true * (\Skip \lor A(in|a|out))
-\]
-A result of this is that this stuttering step gets
-propagated up to enclosing composites,
-so in effect we see $\true * C = \true * (\Skip\lor C)$
-where $C$ is any predicate denoting the semantics of a command.
-Given that our loop bodies always have such a disjunction,
-it then becomes interesting to ask what this looks like:
-\[
-  \true * (\Skip \lor P) = \bigvee_{i \in \Nat} P^i
-  \qquad \elabel{loop-as-NDC}
-\]
-We find that such a loop is equivalent to a non-deterministic
-choice over the number of times that $P$ is repeated,
-including zero.
-We \emph{choose to define} the healthiness condition as
-this large choice.
+Technically we require any healthy UTCP program predicate
+to be equivalent to  a non-deterministic choice
+of how many times it repeats itself, including zero,
+using UTP semantic sequential composition.
 \RLEQNS{
    P^0 & \defs& \Skip           & \elabel{seq-0}
 \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
 \\ \lhsWWW &\defs& \rhsWWW & \elabel{\lblWWW}
 } \noindent
-We note that $\WWW$ is monotonic, idempotent,
-and can be ``un-nested'':
-\RLEQNS{
-   \WWW(P \lor \WWW(Q)) &=& \WWW(P \lor Q) & \elabel{WwW-unnest}
-}
+Here we have introduced a \emph{stuttering} step,
+denoted by UTP's \emph{semantic} skip ($\Skip$).
+We note also, that $\WWW$ is monotonic and idempotent.
+
+It should be noticed that this theory underwent
+a large number of iterations before the WwW principle was finally
+elucidated properly and shown to give the right results.
+The number and complexity of the test calculations needed to debug,
+develop and validate the theory presented in this paper
+necessitated the develoment of a bespoke ``UTP Calculator''\cite{DBLP:conf/utp/Butterfield16}.
+
+%
+% This bold step turns out to be remarkably effective,
+% with some quite counter-intuitive outcomes.
+% However it does depend on a specific tweak to the
+% definition of an atomic action.
+% In effect we define an atomic action
+% as placing a basic action inside such a loop,
+% but within a non-deterministic choice between it
+% and a \emph{stuttering} step, denoted by UTP's \emph{semantic} skip ($\Skip$):
+% \[
+%   \catom a = \true * (\Skip \lor A(in|a|out))
+% \]
+% A result of this is that this stuttering step gets
+% propagated up to enclosing composites,
+% so in effect we see $\true * C = \true * (\Skip\lor C)$
+% where $C$ is any predicate denoting the semantics of a command.
+% Given that our loop bodies always have such a disjunction,
+% it then becomes interesting to ask what this looks like:
+% \[
+%   \true * (\Skip \lor P) = \bigvee_{i \in \Nat} P^i
+%   \qquad \elabel{loop-as-NDC}
+% \]
+% We find that such a loop is equivalent to a non-deterministic
+% choice over the number of times that $P$ is repeated,
+% including zero.
+% We \emph{choose to define} the healthiness condition as
+% this large choice.
+% \RLEQNS{
+%    P^0 & \defs& \Skip           & \elabel{seq-0}
+% \\ P^{i+1} & \defs& P \seq P^i  & \elabel{seq-i-plus-1}
+% \\ \lhsWWW &\defs& \rhsWWW & \elabel{\lblWWW}
+% } \noindent
+% We note that $\WWW$ is monotonic, idempotent,
+% and can be ``un-nested'':
+% \RLEQNS{
+%    \WWW(P \lor \WWW(Q)) &=& \WWW(P \lor Q) & \elabel{WwW-unnest}
+% }
 
 \subsection{Label-Set Invariants}
 
@@ -155,3 +166,7 @@ for some predicate $C$ and also satisfies $DL$ and  $LE$.
 \RLEQNS{
    \lhsW &\defs& DL \land LE \land \WWW(P) & \elabel{\lblW}
 }
+We note that many of the axioms for a given construct
+in the semantics of Lamport\cite{Lamport1985}
+exist to ensure the same properties regarding construct
+activation as the healthiness conditions described here.

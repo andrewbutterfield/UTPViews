@@ -4,18 +4,16 @@ An atomic action ($a$) is simply a global state transformer whose effects,
 once started,
 occur immediately and completely, without any external interference.
 We can consider it be a relational predicate that only mentions $s$ and $s'$.
-In the semantics of UTPP, and here for UTCP,
-every atomic action is labelled.
-% Flow of control is managed by keeping a dynamic record
-% of which labels are considered current, or ``enabled''.
-% The behaviour of an atomic action is that it exhibits none
-% until its label is enabled.
-% Noting that many atomic actions can be enabled at once,
-% what happens is that one of actions is selected non-deterministically to run.
-% The action so selected transforms the global state,
-% and then the control-flow management marks its label as disabled,
-% and enables labels of atomic action that can immediately follow it
-% according to the control-flow structure of the program.
+Flow of control is managed by keeping a dynamic record
+of which labels are considered current, or ``enabled''.
+The behaviour of an atomic action is that it exhibits none
+until its label is enabled.
+Noting that many atomic actions can be enabled at once,
+what happens is that one of actions is selected non-deterministically to run.
+The action so selected transforms the global state,
+and then the control-flow management marks its label as disabled,
+and enables labels of atomic action that can immediately follow it
+according to the control-flow structure of the program.
 %
 % In order to define this behaviour compositionally,
 % we depart from the technique used in UTPP based on explicit program labels.
@@ -61,23 +59,26 @@ non-deterministic choice,
 itself in a loop that runs until some distinguished stop-label appears
 in the enabled label-set. The whole thing is initialised by enabling
 at least one atomic action $in$-label.
-We can imagine a predicate transformer $run$
-that takes such a non-deterministic choice ($NDC$) and produces
-a relational predicate that defines its overall running behaviour:
-\begin{eqnarray}
-   NDC
-   &=&
-   \bigvee_{j \in 0\dots n} (in_j \in ls
-   \land
-   a_j
-   \land
-   ls'=(ls\setminus\setof{in_j})\cup\setof{out_j})
-\\ run(NDC)
-   &\defs&
-   ls' = \setof{in_0} ; \textbf{ while } out_n \notin ls \textbf{ do } NDC
-\end{eqnarray}
-Here we assume $in_0$ and $out_n$ are the initial and final labels of the whole
-program.
+The result of initialising and running this loop once
+will be once possible complete execution sequence of the program
+(assuming it terminates).
+% We can imagine a predicate transformer $run$
+% that takes such a non-deterministic choice ($NDC$) and produces
+% a relational predicate that defines its overall running behaviour:
+% \begin{eqnarray}
+%    NDC
+%    &=&
+%    \bigvee_{j \in 0\dots n} (in_j \in ls
+%    \land
+%    a_j
+%    \land
+%    ls'=(ls\setminus\setof{in_j})\cup\setof{out_j})
+% \\ run(NDC)
+%    &\defs&
+%    ls' = \setof{in_0} ; \textbf{ while } out_n \notin ls \textbf{ do } NDC
+% \end{eqnarray}
+% Here we assume $in_0$ and $out_n$ are the initial and final labels of the whole
+% program.
 In effect, the meaning of a shared-variable concurrent program
 is all the interleavings of atomic actions that are consistent
 with flow-of-control restrictions, with each interleaving
@@ -142,4 +143,4 @@ and so the second action has been disabled by the first.
 So the whole predicate reduces to $\false$,
 indicating that it is not possible to observe those two actions in sequence,
 unless some other execution thread manages to add in the missing $E_2$ labels
-inbetween.
+inbetween, as an interference step.
