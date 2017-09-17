@@ -1,22 +1,83 @@
 \section{Introduction}\label{sec:Intro}
 
-In this paper we present a compositional UTP semantics
-for the shared-variable concurrent ``Command'' language described
-in the POPL13 ``Views'' paper\cite{conf/popl/Dinsdale-YoungBGPY13}.
-We use a slightly different syntax to that in the above cited paper:
-\RLEQNS{
-   a &\in& \Atom         & \mbox{Atomic state-change actions}
-\\ C &::=& \catom a      & \mbox{Atomic Command}
-\\  &\mid& C \cseq C     & \mbox{Command Sequential Compostion}
-\\  &\mid& C+C           &\mbox{Command Non-deterministic Choice}
-\\  &\mid& C \parallel C &\mbox{Command Parallel Compostion}
-\\  &\mid& C^*           &\mbox{Command Non-deterministic Iteration}
-} \noindent
-The reason for the difference is because
-we need to distinguish between the Command language operators above,
-and conceptually similar operators in the underlying UTP semantics,
-which is explained, in context, in Sec \ref{sec:observe}.
+In this paper we present a compositional semantics
+for a simple abstract shared-variable concurrent language,
+called the ``Command'' language
+presented in Figure \ref{fig:cmd-syntax}
+\begin{figure}
+  \RLEQNS{
+     a &\in& \Atom         & \mbox{Atomic state-change actions}
+  \\ C &::=& \catom a      & \mbox{Atomic Command}
+  \\  &\mid& C \cseq C     & \mbox{Sequential Compostion}
+  \\  &\mid& C+C           &\mbox{Non-deterministic Choice}
+  \\  &\mid& C \parallel C &\mbox{Parallel Compostion}
+  \\  &\mid& C^*           &\mbox{Non-deterministic Iteration}
+  }  \caption{Command language syntax}
+  \label{fig:cmd-syntax}
+\end{figure}
+The Command language is very simple,
+with sequential composition ($C_1 \cseq C_2$),
+and only non-deterministic choices,
+for alternative execution paths ($C_1 + C_2$)
+or deciding when to terminate a loop ($C^*$).
+The parallel composition ($C_1 \parallel C_2$)
+allows arbitrary interference by each side on any variables,
+all of which are considerd here to be global and shared.
+The semantics we present does not itself need to deal explicitly
+with any shared variables,
+but simply assumes a shared state $s$
+and the existence of atomic state-change actions $a$.
+This Command language corresponds directly
+to Concurrent Kleene Algebra (CKA)\cite{Hoare2009}.
 
-\input{Movitation}
+Our interest in this language stems from our general work within
+the Unifying Theories of Programming (UTP) framework\cite{Hoare-He98},
+in which we seek to find ways to unify the semantics of a wide range of programming and specification languages, and language features,
+in order to be able to reason formally about systems built using a mix of such languages.
+The Command language in this paper is based on that introduced in the
+``Views'' paper\cite{conf/popl/Dinsdale-YoungBGPY13},
+which describes how a range of approaches to reasoning about shared-variable concurrency can be mapped down onto CKA,
+and the Command language.
+Approaches covered in \cite{conf/popl/Dinsdale-YoungBGPY13} include
+various Separation logics\cite{conf/lics/CalcagnoOY07}, type-theories, Owicki-Gries\cite{DBLP:journals/acta/OwickiG76},
+and Rely-Guarantee\cite{DBLP:journals/toplas/Jones83}, among others.
+Our intention in developing a UTP semantics of the Command language
+is to be able to use it as a foundation on which to build UTP
+theories of the above approaches that will be easy to link together.
+In effect we hope to use the results of the Views paper as a
+conceptual architecture to organise our work.
 
-\input{Related}
+Another independent motivation for this work
+is a research collaboration that led us to give a UTP semantics to a process modelling
+language called PML\cite{DBLP:journals/infsof/AtkinsonWN07},
+which has the notion of basic actions that require certain resources to run,
+and which provide further resources as a result.
+Actions can be combined
+using sequencing, selection, branching and iteration.
+We published initial work on a UTP semantics for PML\cite{conf/tase/BMN16},
+noting that it is essentially the same as the Command language.
+The semantics we gave in \cite{conf/tase/BMN16} was not compositional, however, and finding a fully compositional semantics was noted
+for future work.
+
+Compositionality is important.
+By it we mean the property that the semantics of a composite
+construct can determined from the semantics of its parts,
+so for example, the meaning of the construct $C_1\cseq C_2$
+would be determined by the meanings of $C_1$ and $C_2$,
+combined with the meaning of $\cseq$.
+This property is desirable as without it both the semantics
+and any reasoning principle based on it would not scale up
+to large programs or systems.
+
+The structure of the rest of this paper is as follows:
+we describe some related work (Sec. \ref{sec:related}),
+followed by an introduction to the UTP methodology (Sec. \ref{sec:UTP}).
+We then explain various aspects of our UTP semantics,
+touching on labels (Sec. \ref{sec:labels}),
+observations (Sec. \ref{sec:observe}),
+atomic actions (Sec. \ref{sec:atomic}),
+and healthiness conditions (Sec. \ref{sec:health}).
+We can then present the semantics in Section \ref{sec:semantics}.
+Finally we discuss some calculations
+that contribute to the validation of the semantics (Sec. \ref{sec:calc})
+and conclude in Section \ref{sec:conc}.

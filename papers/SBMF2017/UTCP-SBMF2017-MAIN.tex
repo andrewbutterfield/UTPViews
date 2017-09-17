@@ -31,15 +31,6 @@
   \def\DRAFT#1{}
 \fi
 
-\input{TASE-Definitions}
-
-\def\HDRo#1{}
-\def\HDRa#1{\section{#1}}
-\def\HDRb#1{\subsection{#1}}
-\def\HDRc#1{\subsubsection{#1}}
-\def\HDRd#1{\paragraph{#1}}
-\def\HDRe#1{\paragraph{#1}}
-\def\HDRf#1{\paragraph{#1}}
 
 \title{UTCP: compositional semantics for shared-variable concurrency}%
 \author{
@@ -48,11 +39,13 @@ Andrew Butterfield
 This work was supported, in part,
 by Science Foundation Ireland grants 10/CE/I1855 and 13/RC/2094
 to Lero - the Irish Software Engineering Research Centre (www.lero.ie)}%
+${}^{[0000-0002-2337-2101]}$
 }
 \institute{
 Lero@TCD
 \\School of Computer Science and Statistics
 \\Trinity College Dublin
+\\\email{butrfeld@tcd.ie}
 }
 \date{\today}%
 
@@ -69,7 +62,20 @@ Lero@TCD
 \input{Abstract}
 %\newpage % to allow figures on top of first page below during drafting
 
+
+% Rely guarantee:
+% \cite{DBLP:phd/ethos/Jones81}
+% \cite{DBLP:journals/toplas/Jones83}
+% \cite{DBLP:conf/ifip/Jones83}
+% \cite{DBLP:phd/ethos/Coleman08}.
+% Lamport:
+% \cite{Lamport1985}
+% \cite{DBLP:journals/cacm/Lamport15a}.
+
+
+
 \input{Intro}
+\input{Related}
 \input{UTP}
 \input{Labels}
 \input{Observations}

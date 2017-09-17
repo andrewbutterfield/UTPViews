@@ -1,4 +1,4 @@
-\subsection{Related Work}\label{ssec:related}
+\section{Related Work}\label{sec:related}
 
 Key work was done on concurrent semantics in the 80s and 90s,
 with a strong focus on fully abstract denotational
@@ -15,7 +15,7 @@ Full abstraction meant that the semantics had to identify
 programs like $skip\cseq skip$ with $skip$,
 while distinguishing between $x:=2$ and $x:=1\cseq x:=x+1$.
 
-The first UTP theory in this area was presented in 
+The first UTP theory in this area was presented in
 the UTPP paper\cite{DBLP:conf/icfem/WoodcockH02}.
 This combined guarded commands\cite{1976:book:dijkstra}
 with the idea of action systems\cite{PODC::BackK1983},
@@ -27,11 +27,41 @@ forms the foundation and inspiration for the UTCP semantics presented here.
 
 More recently, also inspired by \cite{conf/popl/Dinsdale-YoungBGPY13},
 the  ``UTP Views'' paper by van Staden\cite{DBLP:conf/utp/Staden14},
-starts algebraically, looking at Kleene alebras over languages.
+starts algebraically, looking at Kleene algebras over languages.
 Languages here are sets of strings over an alphabet $A$.
 He then takes $A =\Sigma\times\Sigma$,
 which in effect encodes the Brookes model\cite{DBLP:journals/iandc/Brookes96}.
 His semantics fits with the usual UTP approach to concurrency,
 in that it is based on traces as sequences of some notion of event.
-The semantics presented in this paper is based on direct relations
-between before- and after-program states, without any notion of traces.
+
+
+All the compositional
+semantic frameworks we have discussed in this section
+are based on this notion of sets of transition traces,
+but we are seeking a semantics based on direct relations
+between before- and after-program states,
+without any explicit notion of traces.
+The reason for this is that the resulting UTP theory will have
+a form that will make it easier to link to concurrency approaches
+such as rely-guarantee, or separation logic, that
+are used with languages that are imperative and program-variable based.
+
+There is however a semantics for shared-variable concurrency
+that is much closer in form to the one developed in this paper.
+This is the ``actions with axioms'' approach of Lamport \cite{Lamport1985}.
+In this, the semantics of each language construct is given by a set
+of axioms, that are predicates over both program variables,
+and auxilliary variables that manage flow of control.
+The meaning of a composite is given by taking the axioms that
+describe each of its components, and combining them with appropriate
+renamings.
+This requires being able to identify specific sub-components
+of any given component, and a syntactical method for doing this
+is described.
+
+We were not aware of this work when we developed the UTCP theory
+in this paper,
+but there are very strong parallels between the features of our
+semantics and those in \cite{Lamport1985}.
+In some sense our semantics is a re-working of his within UTP.
+We shall point out specific correspondences as we proceed with our presentatiomn.
