@@ -79,7 +79,7 @@ A key principle is to ensure that when any sub-component is ``active'',
 that is, at least one of its labels is present in $ls$,
 that none of the labels of the parent,
 other than those explicitly shared with the sub-component,
-are themsleves in $ls$.
+are themselves in $ls$.
 This prevents a parent starting a spurious copy of a sub-component
 while that sub-component is actually running.
 The semantic definitions are listed in Fig. \ref{fig:composite-semantics}.
@@ -116,7 +116,7 @@ aided by the diagram in Fig. \ref{fig:PAR-plumbing}.
 We take the generator $g$ and split it to obtain $\g1$ and $\g2$.
 From $\g1$ we generate two labels $\ell_{g1}$ and $\ell_{g1:}$,
 and leftover generator $\g{1::}$.
-We then use a subtitution to replace all references
+We then use a substitution to replace all references
 by $P$ to $g$, $in$ and $out$ with $\g{1::}$, $\ell_{g1}$ and $\ell_{g1:}$,
 respectively. We do something similar with $\g2$ and $Q$.
 We also add a top-level control action that is enabled by label $in$,
