@@ -12,12 +12,13 @@
 \usepackage{hyperref}
 \allowdisplaybreaks[2]
 \newif\ifColour
-%\Colourtrue
+\Colourtrue
 \ifColour
 \usepackage{clstlhs}
 \else
 \usepackage{lstlhs}
 \fi
+\usepackage{lstPML}
 % ----------------------------------------------------------------
 
 
@@ -97,6 +98,10 @@ Lero@TCD
 \includegraphics[scale=0.8]{images/PAR}
 
 \includegraphics[scale=0.8]{images/STAR}
+
+\newpage
+\input{PML}
+
 
 \input{Denotation}
 \input{Calculations}

@@ -1,0 +1,95 @@
+\section{PML}\label{sec:PML}
+
+This is some example PML:
+
+\newpage
+\begin{pml}
+process RequirementsAndRelease {
+  sequence Requirements {
+    sequence SetProjectTimeline {
+      action ReviewNetBeans {
+	requires { NetBeansRoadmap }
+/*	provides { }*/
+	tool { "WebBrowser " }
+	agent { "Previous release manager, Sun ONE Studio development team (e.g. Forte'), Sun ONE Studio Marketing Manager " }
+	script {
+	  "available at <a href=http://www.netbeans.org/devhome/docs/roadmap.html>http://www.netbeans.org/devhome/docs/roadmap.html</a>"
+	}
+      }
+      action SetReleaseDate {
+	requires { NetBeansRoadmap }
+	provides { ReleaseDate }
+	tool { "Pen, paper " }
+	agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	script { "" }
+      }
+      sequence DetermineProject {
+	branch SunONEStudioDevelopmentMeeting {
+	  action ReviewNetBeansVisionStatmenet {
+	    requires { NetBeansVisionStatement }
+	    /*provides { }*/
+	    tool { "Web browser " }
+	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	    script {
+	      "available at <a href=http://www.netbeans.org/about/os/vision.html>http://www.netbeans.org/about/os/vision.html</a>"
+	    }
+	  }
+	  action ReviewUncompletedMilestonesFromPreviousRelease {
+	    requires { PreviousVersionReleaseDocuments }
+	    provides { ProspectiveFeaturesForUpcomingRelease }
+	    tool { "Web browser " }
+	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	    script {
+	      "Available at <a href=http://www.netbeans.org/devhome/docs/releases/33/features/nb33-features-overview.html>http://www.netbeans.org/devhome/docs/releases/33/features/nb33-features-overview.html</a>"
+	    }
+	  }
+	  action ReviewIssuzillaFeatureRequests {
+	    requires { IssuzillaIssueRepository }
+	    provides { ProspectiveFeaturesForUpcomingRelease }
+	    tool { "Web browser, Issuezilla " }
+	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	    script {
+	      "Go to <a href=http://www.netbeans.org/devhome/issues.html>Issuezilla</a>
+	      Search for feature requests/enhancements from current release"
+	    }
+	  }
+	}
+	iteration EstablishFeatureSet {
+	  action CompileListOfPossibleFeaturesToInclude {
+	    requires { ProspectiveFeaturesGatheredFromIssuezilla && ProspectiveFeaturesFromPreviousReleases }
+	    provides { FeatureSetForUpcomingRelease }
+	    tool { "Pen, paper " }
+	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	    script { "" }
+	  }
+	  action CategorizeFeaturesProposedFeatureSet /*into"Must Have," "Should Have," and "Nice to Have"*/ {
+	    requires { FeatureSetForUpcomingRelease }
+	    provides { WeightedListOfFeaturesToImplement /* (signifying relative importance) */ }
+	    tool { "Pen, paper " }
+	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	    script { "" }
+	  }
+	  action SendMessageToCommunityForFeedback /* {nbdev, nbusers, qa, nbdiscuss }*/ {
+	    requires { WeightedListOfFeaturesToImplement }
+	    /*provides { }*/
+	    tool { "Email client " }
+	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	    script { "" }
+	  }
+	  action ReviewFeedbackFromCommunity /* r.e. proposed feature set*/ {
+	    requires { FeebackMessagesOnMail }
+	    provides { PotentialRevisionsToDevelopmentProposal }
+	    tool { "Web browser " }
+	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	    script { "" }
+	  }
+	  action ReviseProposalBasedOnFeedback {
+	    requires { PotentialRevisionsToDevelopmentProposal }
+	    provides { RevisedDevelopmentProposal }
+	    tool { "Pen, paper " }
+	    agent { "Previous release manager, Sun ONE Studio Development team, Sun ONE Studio Marketing Manager " }
+	    script { "" }
+	  }
+	}
+  ...
+\end{pml}

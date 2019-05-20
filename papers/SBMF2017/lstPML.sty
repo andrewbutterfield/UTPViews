@@ -1,0 +1,34 @@
+
+\lstdefinelanguage{PML}
+  { basicstyle=\ttfamily\tiny\color{blue}
+  , identifierstyle=\color{red!40!blue}
+  , commentstyle={\color{red}}
+  , otherkeywords={[],:,(),=}
+  , keywords={action,agent,branch,executable,iteration,manual,process,provides,
+              requires,script,selection,sequence,task,tool}
+  , keywordstyle={\color{black}}
+  , sensitive=true
+  , comment=[s]{/*}{*/}
+  , morestring=[b]"
+  , stringstyle=\ttfamily\color{green!40!black}
+  , showstringspaces=false%
+ }
+
+
+\lstdefinestyle{PML}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=left, stepnumber=1, numberstyle=\tiny, numbersep=10pt,
+  xleftmargin=\parindent,
+  language=PML,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries,
+  commentstyle=\itshape\color{red},
+  identifierstyle=\color{blue},
+  stringstyle=,
+  morestring=[b]",
+  showstringspaces=false%
+}
+
+\lstnewenvironment{pml}{\lstset{language=PML,frame=lines}} {}
